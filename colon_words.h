@@ -6,7 +6,7 @@ void drop2(){ drop(); drop(); }
 /* over */
 void over(){ tor(); dup(); rto(); swap(); } 
 
-/* 2dup  */
+/* 2dup */
 void dup2(){ over(); over(); } 
 
 /* show top of DS */
