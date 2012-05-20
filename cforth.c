@@ -1,5 +1,5 @@
 /**************************** Cforth主程序 ****************************** 
- *版本号:	0.1.6							*
+ *版本号:	0.1.9							*
  *开发人员：ear & xiaohao						*
  *现有功能：模拟forth系统的运行，可以正确的进行堆栈操作			*	
  *缺失功能：冒号定义字功能						*
@@ -18,7 +18,7 @@ char strBuff[100];
 
 int main()
 {
-	printf("Cforth 0.2.0, Copyright (C) 2008-2012 \n");
+	printf("Cforth 0.1.9, Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
 	printf("Enjoy it and have a good time!Type 'bye' to exit\n");
     
