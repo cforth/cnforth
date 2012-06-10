@@ -1,90 +1,85 @@
-/**************************** Cforth主程序 ****************************** 
- *版本号:	0.1.9							*
- *开发人员：ear & xiaohao						*
- *现有功能：模拟forth系统的运行，可以正确的进行堆栈操作			*	
- *缺失功能：冒号定义字功能						*
- *欢迎Forth系统爱好者加入，群号：12781666				*
- *Cforth版权遵从GPL开源协议，欢迎大家继续开发				*
+/**************************** cforth.c **********************************
+ * Name: Cforth	0.3.0							*
+ * Copyright: ear & xiaohao						*
+ * Author: ear & xiaohao						*
+ * Date: 10-06-12 14:54							*
+ * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "code_words.h"
 #include "colon_words.h" 
+#define COREWORDS_NUM 17
+#define WORD_WIDTH 20
+char word_buff[WORD_WIDTH]; 
 
-/*定义数组inputBuff，申请一段空间用以存放键盘数入的字符串		* 
- *定义数组strBuff，用以存放字符串分解后的每一个cforth词			*/ 
-char inputBuff[1024]; 
-char strBuff[100]; 
+/*使用函数指针在解释模式下按个搜索字典中的词*/
+const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
+{	".s",	".rs",	".",	"swap",	">r",
+	"r>",	"dup",	"drop",	"2drop","2dup",
+	"over",	"+",	"-",	"*",	"/d",
+	"/",	"%"				};		
+typedef void (*pType) (void) ;
+pType arr[COREWORDS_NUM] = 
+{	showDS,	showRS,	showtopDS,swap,	tor,
+	rto,	dup,	drop,	drop2,	dup2,
+	over,	add,	sub,	mul,	ddiv,
+	divv,	mod				}; 
 
+
+/************************************************************************/ 
+
+
+/************************************************************************/ 
 int main()
 {
-	printf("Cforth 0.1.9, Copyright (C) 2008-2012 \n");
+	printf("Cforth 0.3.0, ear & xiaohao Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
-	printf("Enjoy it and have a good time!Type 'bye' to exit\n");
+	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
     
-/*cforth主循环，从键盘接受输入的命令，调用对应的子程序并执行		*
- *读取键盘输入的一行命令，存入inputBuff					*/
+	/*cforth主控制结构*/ 
 	while (1){
-		int i=0;
-        	int j=0;
-        	int k;
-        	printf(">>>");
-		gets(inputBuff);
-	
-/*以下一小段代码，用来解决必须在每行命令后加一个空格的缺陷		* 
- *将inputBuff的长度求出,放入k中保存					*
- *将inputBuff字符串结尾的'\0'换成一个空格				*
- *在inputBuff字符串末尾空格后添一个'\0'					*/
-        	k = lenInput();
-        	inputBuff[k]=' '; 
-        	inputBuff[k+1]='\0';
-
-/*cforth解释器主结构，首先以空格为标志，分解键盘输入的字符串		* 
- *遇到空格时，执行前一个forth词，直到遇到inputBuff字符串的结尾'\0'	*/ 
-        	while(inputBuff[j] != '\0') {
-			if(inputBuff[j]!= ' ') {    
-				strBuff[i] = inputBuff[j]; 
-				i++;
-				j++;
-			}
-			else {
-				strBuff[i]='\0';
-				if( isNum() ) chgNum();
-				else if( !strcmp(".s",strBuff) ) showDS();
-				else if( !strcmp(".rs",strBuff) ) showRS();
-				else if( !strcmp(".",strBuff) ) showtopDS();
-				else if( !strcmp("swap",strBuff)) swap();
-				else if( !strcmp(">r",strBuff) ) tor();
-				else if( !strcmp("r>",strBuff) ) rto();
-				else if( !strcmp("dup",strBuff) ) dup();
-				else if( !strcmp("drop",strBuff) ) drop();
-				else if( !strcmp("2drop",strBuff) ) drop2();
-				else if( !strcmp("2dup",strBuff) ) dup2();
-				else if( !strcmp("over",strBuff) ) over();
-				else if( !strcmp("+",strBuff) ) add();
-				else if( !strcmp("-",strBuff) ) sub();
-				else if( !strcmp("*",strBuff) ) mul();
-				else if( !strcmp("/d",strBuff) ) ddiv();
-				else if( !strcmp("/",strBuff) ) div();
-				else if( !strcmp("%",strBuff) ) mod();
-				else if( !strcmp("say",strBuff) ) say();
-				else if( !strcmp("bye",strBuff) ) return 0;
-				else printf("\n[%s]?\n",strBuff);
-				for(i=0;i<100;i++) strBuff[i]='\0';
-				i=0;
-				j++;
-			}
-		}
-        printf("OK\n");
+		scanf("%s", &word_buff);
+		interpret_words();
 	}
+	
     return 0;
 } 
+/************************************************************************/ 
 
-
-/*判断键盘输入流中是否有数字						*/ 
+/************************************************************************
+ *cforth解释器模式							*/ 
+int interpret_words()
+{
+	int i = 0;
+	while(i <= COREWORDS_NUM) {
+		if( isNum() ) {
+		chgNum();
+		break;
+		}
+		else if(!strcmp(word_str[i],word_buff)) {
+			arr[i]();
+			break;
+		}
+		else if( !strcmp("bye",word_buff) ) 
+			exit(0);
+			
+		else if(i == COREWORDS_NUM){
+			printf("\n[%s]?\n",word_buff);
+			clean_ds();
+			break;
+		}
+		i++;
+	}
+	
+	return 0;	
+}
+/************************************************************************/  
+/*cforth解释器数字判断子程序，判断键盘输入流中是否有数字		*/ 
 int isNum() 
 {
-	char *str=strBuff;
+	char *str=word_buff;
 	while(*str) {
 		if(*str<'0' || *str>'9') return 0;
 		str++;
@@ -92,36 +87,19 @@ int isNum()
         return 1;
 } 
 
-
-/*转换键盘输入流中的数字，并压入数据栈DS				*/
+/*cforth解释器数字处理子程序，转换键盘输入流中的数字，并压入数据栈DS	*/
 int chgNum() 
 {
-	char *str=strBuff;
+	char *str=word_buff;
 	int sum=0;
 	while(*str) {
 		sum=10*sum+(int)(*str-'0');
 		str++;
 	}    
-/*如果这个数字字符串只有一个'\0'，则直接返回0。				*
- *用来解决多余的空格键误操作DS的BUG					*/ 
-	if(str==&strBuff[0]) return 0; 
+	/*如果这个数字字符串只有一个'\0'，则直接返回0	* 
+ 	 *用来解决多余的空格键误操作DS的BUG		*/ 
+	if(str==&word_buff[0]) return 0; 
 	push(sum);
 	return 0;
 } 
-
-
-/*接收键盘输入的字符串，并打印到屏幕					*/
-int say() 
-{
-	gets(strBuff);
-	printf("Cforth: [%s]\n",strBuff);
-	return 0;
-}
-
-/*取得inputBuff字符串的长度						*/ 
-int lenInput()
-{
-	int k;
-	for(k=0;inputBuff[k]!='\0';k++);
-	return k;
-}
+/************************************************************************/ 
