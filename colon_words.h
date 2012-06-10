@@ -1,4 +1,6 @@
-/********************** cforth扩展词 ************************/
+/***************************** colon_words.h ****************************
+ * Used Code_words compose Colon words  				*
+ ************************************************************************/
 
 /* 2drop */
 void drop2(){ drop(); drop(); } 
@@ -13,4 +15,4 @@ void dup2(){ over(); over(); }
 void showtopDS(){ showTop(); drop(); } 
 
 /* 带余数的除法 */
-void div() { dup2(); mod(); tor(); ddiv();rto(); ifFlag0(); }
+void divv() { dup2(); mod(); tor(); ddiv();rto(); ifFlag0(); }
