@@ -2,7 +2,7 @@
  * Name: Cforth	0.3.1							*
  * Copyright: ear & xiaohao						*
  * Author: ear & xiaohao						*
- * Date: 25-06-12 11:07							*
+ * Date: 25-06-12 19:11							*
  * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
@@ -39,7 +39,6 @@ int main()
 	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
 
 	char word_buff[WORD_WIDTH];
-	/*cforth主控制结构*/ 
 	while (1){ 
 		scanf("%s", &word_buff);
 		interpret_words(word_buff);
