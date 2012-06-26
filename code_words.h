@@ -201,10 +201,3 @@ void showTop()
 	printf("%d\n",*dsp);
 	return;
 } 
-
-/* ifFlag0 若DS栈顶数为0，则丢弃DS栈顶，用于带余数除法 */
-void ifFlag0()
-{
-	int flag = *dsp;
-	if(flag == 0) drop();
-}
