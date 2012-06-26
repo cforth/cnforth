@@ -1,8 +1,8 @@
 /**************************** cforth.c **********************************
- * Name: Cforth	0.3.0							*
+ * Name: Cforth	0.3.1							*
  * Copyright: ear & xiaohao						*
  * Author: ear & xiaohao						*
- * Date: 10-06-12 14:54							*
+ * Date: 25-06-12 11:07							*
  * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "colon_words.h" 
 #define COREWORDS_NUM 17
 #define WORD_WIDTH 20
-char word_buff[WORD_WIDTH]; 
+
 
 /*使用函数指针在解释模式下按个搜索字典中的词*/
 const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
@@ -34,14 +34,15 @@ pType arr[COREWORDS_NUM] =
 /************************************************************************/ 
 int main()
 {
-	printf("Cforth 0.3.0, ear & xiaohao Copyright (C) 2008-2012 \n");
+	printf("Cforth 0.3.1, ear & xiaohao Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
 	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
     
 	/*cforth主控制结构*/ 
 	while (1){
+		char word_buff[WORD_WIDTH]; 
 		scanf("%s", &word_buff);
-		interpret_words();
+		interpret_words(word_buff);
 	}
 	
     return 0;
@@ -50,12 +51,12 @@ int main()
 
 /************************************************************************
  *cforth解释器模式							*/ 
-int interpret_words()
+int interpret_words(char *word_buff)
 {
 	int i = 0;
 	while(i <= COREWORDS_NUM) {
-		if( isNum() ) {
-		chgNum();
+		if( isNum(word_buff) ) {
+		chgNum(word_buff);
 		break;
 		}
 		else if(!strcmp(word_str[i],word_buff)) {
@@ -77,18 +78,17 @@ int interpret_words()
 }
 /************************************************************************/  
 /*cforth解释器数字判断子程序，判断键盘输入流中是否有数字		*/ 
-int isNum() 
+int isNum(char *word_buff) 
 {
-	char *str=word_buff;
-	while(*str) {
-		if(*str<'0' || *str>'9') return 0;
-		str++;
+	while(*word_buff) {
+		if(*word_buff<'0' || *word_buff>'9') return 0;
+		word_buff++;
 	}
         return 1;
 } 
 
 /*cforth解释器数字处理子程序，转换键盘输入流中的数字，并压入数据栈DS	*/
-int chgNum() 
+int chgNum(char *word_buff) 
 {
 	char *str=word_buff;
 	int sum=0;
