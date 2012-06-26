@@ -37,10 +37,10 @@ int main()
 	printf("Cforth 0.3.1, ear & xiaohao Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
 	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
-    
+
+	char word_buff[WORD_WIDTH];
 	/*cforth主控制结构*/ 
-	while (1){
-		char word_buff[WORD_WIDTH]; 
+	while (1){ 
 		scanf("%s", &word_buff);
 		interpret_words(word_buff);
 	}
