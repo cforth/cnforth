@@ -25,20 +25,20 @@ int rsLen()
 	return n;
 }
 
-/* 栈底溢出警告 */
+/* Warning of stack overflow */
 void stackOver()
 {
 	printf("Stack Overflow!\n");
 }
 
-/* 清空DS栈 */
+/* Clean contents of DS */
 void clean_ds()
 {
 	dsp=&ds[0];
 	return;
 }
  
-/* push 将数压入数据栈DS栈顶  */
+/* Push into DS */
 void push(int a)
 { 
 	dsp++;
@@ -46,7 +46,7 @@ void push(int a)
 	return;
 } 
 
-/* >r 将DS栈顶的数弹出，压入RS栈顶  */
+/* Pop from the top of DS, push into RS */
 void tor()
 {
 	if(dsLen() < 1){
@@ -59,7 +59,7 @@ void tor()
 	return;
 } 
 
-/* r> 将RS栈顶的数弹出，压入DS栈顶  */
+/* Pop from the top of RS, push into DS */
 void rto()
 { 
 	if(rsLen() < 1){
@@ -72,7 +72,7 @@ void rto()
 	return;
 } 
 
-/* drop 丢弃DS栈顶  */
+/* Drop the top of DS */
 void drop()
 {
 	if(dsLen() < 1){
@@ -83,7 +83,7 @@ void drop()
 	return;
 } 
 
-/* dup 复制DS栈顶数  */
+/* Dup the top of DS, push into DS */
 void dup()
 {
 	if(dsLen() < 1) {
@@ -95,7 +95,7 @@ void dup()
 	return;
 } 
 
-/* swap 交换DS栈顶前两个数  */
+/* Swap of the first two top of DS */
 void swap()
 {
 	if(dsLen() < 2) {
