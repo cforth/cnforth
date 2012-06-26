@@ -15,4 +15,4 @@ void dup2(){ over(); over(); }
 void showtopDS(){ showTop(); drop(); } 
 
 /* Division，show results and the remainder */
-void divv() { dup2(); mod(); tor(); ddiv();rto(); ifFlag0(); }
+void divv() { dup2(); mod(); tor(); ddiv(); rto();}
