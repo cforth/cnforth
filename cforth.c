@@ -18,8 +18,8 @@
 const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"2drop","2dup",
-	"over",	"+",	"-",	"*",	"/d",
-	"/",	"%"				};		
+	"over",	"+",	"-",	"*",	"/",
+	"/d",	"%"				};		
 typedef void (*pType) (void) ;
 pType arr[COREWORDS_NUM] = 
 {	showDS,	showRS,	showtopDS,swap,	tor,
@@ -44,7 +44,7 @@ int main()
 		interpret_words(word_buff);
 	}
 	
-    return 0;
+	return 0;
 } 
 /************************************************************************/ 
 
@@ -52,11 +52,11 @@ int main()
  *cforth解释器模式							*/ 
 int interpret_words(char *word_buff)
 {
-	int i = 0;
-	while(i <= COREWORDS_NUM) {
+	int i;
+	for (i = 0; i <= COREWORDS_NUM; i++) {
 		if( isNum(word_buff) ) {
-		chgNum(word_buff);
-		break;
+			chgNum(word_buff);
+			break;
 		}
 		else if(!strcmp(word_str[i],word_buff)) {
 			arr[i]();
@@ -70,7 +70,6 @@ int interpret_words(char *word_buff)
 			clean_ds();
 			break;
 		}
-		i++;
 	}
 	
 	return 0;	
