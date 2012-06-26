@@ -1,2 +1,4 @@
+Cforth 0.3.1
+
 Cforth is a forth interpreter implemented in C programming language. 
-It's simple model, not real forth.
+But now it's just a simple model, not real forth.
