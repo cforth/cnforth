@@ -1,45 +1,49 @@
 /**************************** cforth.c **********************************
- * Name: Cforth	0.3.1							*
+ * Name: Cforth	0.3.2							*
  * Copyright: ear & xiaohao						*
  * Author: ear & xiaohao						*
- * Date: 25-06-12 19:11							*
+ * Date: 27-06-12 12:28							*
  * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "code_words.h"
-#include "colon_words.h" 
-#define COREWORDS_NUM 17
-#define WORD_WIDTH 20
+#include "colon_words.h"
+#define COMPILER	0
+#define INTERPRETER	1
+#define COREWORDS_NUM	19
+#define WORD_WIDTH	20
 
 
-/*使用函数指针在解释模式下按个搜索字典中的词*/
+/*使用函数指针在解释模式下挨个搜索字典中的词*/
 const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"2drop","2dup",
 	"over",	"+",	"-",	"*",	"/",
-	"/d",	"%"				};		
+	"/d",	"%",	"--",	"++"		};		
 typedef void (*pType) (void) ;
-pType arr[COREWORDS_NUM] = 
-{	showDS,	showRS,	showtopDS,swap,	tor,
+pType word_pointer[COREWORDS_NUM] = 
+{	showDS,	showRS,	showTop,swap,	tor,
 	rto,	dup,	drop,	drop2,	dup2,
 	over,	add,	sub,	mul,	ddiv,
-	divv,	mod				}; 
+	divv,	mod,	sub1,	add1		}; 
 
 
 /************************************************************************/ 
 
 
-/************************************************************************/ 
+/************************************************************************
+ *cforth主控制结构							*/  
 int main()
 {
-	printf("Cforth 0.3.1, ear & xiaohao Copyright (C) 2008-2012 \n");
+	printf("Cforth 0.3.2, ear & xiaohao Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
 	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
 
+	int status = INTERPRETER;
 	char word_buff[WORD_WIDTH];
-	while (1){ 
+	while (status == INTERPRETER){ 
 		scanf("%s", &word_buff);
 		interpret_words(word_buff);
 	}
@@ -48,25 +52,26 @@ int main()
 } 
 /************************************************************************/ 
 
+
 /************************************************************************
- *cforth解释器模式							*/ 
-int interpret_words(char *word_buff)
+ *cforth解释器函数							*/ 
+int interpret_words(char *str)
 {
 	int i;
 	for (i = 0; i <= COREWORDS_NUM; i++) {
-		if( isNum(word_buff) ) {
-			chgNum(word_buff);
+		if( isNum(str) ) {
+			push(atoi(str));
 			break;
 		}
-		else if(!strcmp(word_str[i],word_buff)) {
-			arr[i]();
+		else if(!strcmp(word_str[i],str)) {
+			word_pointer[i]();
 			break;
 		}
-		else if( !strcmp("bye",word_buff) ) 
+		else if( !strcmp("bye",str) ) 
 			exit(0);
 			
 		else if(i == COREWORDS_NUM){
-			printf("\n[%s]?\n",word_buff);
+			printf("Undifine word!\n>>>%s<<<\n",str);
 			clean_ds();
 			break;
 		}
@@ -74,30 +79,18 @@ int interpret_words(char *word_buff)
 	
 	return 0;	
 }
-/************************************************************************/  
-/*cforth解释器数字判断子程序，判断键盘输入流中是否有数字		*/ 
-int isNum(char *word_buff) 
+/*数值字符串判断函数，是int型则返回1，否则返回0				*/ 
+int isNum(char *str) 
 {
-	while(*word_buff) {
-		if(*word_buff<'0' || *word_buff>'9') return 0;
-		word_buff++;
+	if(*str=='-' && *(str+1)=='\0')
+		return 0;
+	if((*str<'0' || *str>'9') && *str!='-')
+		return 0;
+	str++;
+	for(; *str!='\0'; str++) {
+		if(*str<'0' || *str>'9')
+			return 0;
 	}
-        return 1;
-} 
-
-/*cforth解释器数字处理子程序，转换键盘输入流中的数字，并压入数据栈DS	*/
-int chgNum(char *word_buff) 
-{
-	char *str=word_buff;
-	int sum=0;
-	while(*str) {
-		sum=10*sum+(int)(*str-'0');
-		str++;
-	}    
-	/*如果这个数字字符串只有一个'\0'，则直接返回0	* 
- 	 *用来解决多余的空格键误操作DS的BUG		*/ 
-	if(str==&word_buff[0]) return 0; 
-	push(sum);
-	return 0;
-} 
+	return 1;
+}
 /************************************************************************/ 
