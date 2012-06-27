@@ -13,3 +13,6 @@ void dup2(){ over(); over(); }
 
 /* Division，show results and the remainder */
 void divv() { dup2(); mod(); tor(); ddiv(); rto();}
+
+/* rot */
+void rot() { tor(); swap(); rto(); swap(); }
