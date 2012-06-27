@@ -3,50 +3,44 @@
  * rs[256] ==> ReturnStack						*
  ************************************************************************/
 int ds[256],rs[256];
-int *dsp=ds,*rsp=rs;
+int *dsp = ds, *rsp = rs;
 
 /* Length of DS */
 int dsLen()
 {
-	int *tmp=&ds[1];
-	int n;
-	for(n=0;tmp<=dsp;n++)
-		tmp++;
-	return n;
+	return dsp - ds;
 }
 
 /* Length of RS */
 int rsLen()
 {
-	int *tmp=&rs[1];
-	int n;
-	for(n=0;tmp<=rsp;n++)
-		tmp++;
-	return n;
+	return rsp - rs;
 }
 
-/* Warning of stack overflow */
+/* Warning of stack overflow, clean DS */
 void stackOver()
 {
-	printf("Stack Overflow!\n");
+	dsp = ds;
+	printf("Stack underflower!\n");
+	return;
 }
 
 /* Clean contents of DS */
 void clean_ds()
 {
-	dsp=&ds[0];
+	dsp = ds;
 	return;
 }
  
 /* Push into DS */
-void push(int a)
+void push(int num)
 { 
 	dsp++;
-	*dsp=a;
+	*dsp = num;
 	return;
 } 
 
-/* Pop from the top of DS, push into RS */
+/* >r  Pop from the top of DS, push into RS */
 void tor()
 {
 	if(dsLen() < 1){
@@ -54,12 +48,12 @@ void tor()
 		return ;
 	} 
 	rsp++;
-	*rsp=*dsp;
+	*rsp = *dsp;
 	dsp--;
 	return;
 } 
 
-/* Pop from the top of RS, push into DS */
+/* r>  Pop from the top of RS, push into DS */
 void rto()
 { 
 	if(rsLen() < 1){
@@ -67,12 +61,12 @@ void rto()
 		return;
 	} 
 	dsp++; 
-	*dsp=*rsp; 
+	*dsp = *rsp; 
 	rsp--; 
 	return;
 } 
 
-/* Drop the top of DS */
+/* drop  Drop the top of DS */
 void drop()
 {
 	if(dsLen() < 1){
@@ -83,7 +77,7 @@ void drop()
 	return;
 } 
 
-/* Dup the top of DS, push into DS */
+/* dup  Dup the top of DS, push into DS */
 void dup()
 {
 	if(dsLen() < 1) {
@@ -91,11 +85,11 @@ void dup()
 		return;
 	} 
 	dsp++; 
-	*dsp=*(dsp-1); 
+	*dsp = *(dsp-1); 
 	return;
 } 
 
-/* Swap of the first two top of DS */
+/* swap  Swap of the first two top of DS */
 void swap()
 {
 	if(dsLen() < 2) {
@@ -103,9 +97,9 @@ void swap()
 		return;
 	} 
 	int tmp; 
-	tmp=*dsp;
-	*dsp=*(dsp-1);
-	*(dsp-1)=tmp;
+	tmp = *dsp;
+	*dsp = *(dsp-1);
+	*(dsp-1) = tmp;
 	return;
 } 
 
@@ -116,7 +110,7 @@ void add()
 		stackOver();
 		return;
 	} 
-	*(dsp-1)=*(dsp-1) + *dsp; 
+	*(dsp-1) += *dsp; 
 	dsp--; 
 	return;
 } 
@@ -128,7 +122,7 @@ void sub()
 		stackOver();
 		return;
 	} 
-	*(dsp-1)=*(dsp-1) - *dsp; 
+	*(dsp-1) -= *dsp; 
 	dsp--;
 	return;
 } 
@@ -140,7 +134,7 @@ void mul()
 		stackOver();
 		return;
 	} 
-	*(dsp-1)=*(dsp-1) * *dsp; 
+	*(dsp-1) *= *dsp; 
 	dsp--;
 	return;
 } 
@@ -152,7 +146,7 @@ void ddiv()
 		stackOver();
 		return;
 	}
-	*(dsp-1)=*(dsp-1) / *dsp; 
+	*(dsp-1) /= *dsp; 
 	dsp--;
 	return;
 } 
@@ -164,7 +158,7 @@ void mod()
 		stackOver();
 		return;
 	} 
-	*(dsp-1)=*(dsp-1) % *dsp; 
+	*(dsp-1) %= *dsp; 
 	dsp--;
 	return;
 } 
@@ -173,11 +167,9 @@ void mod()
 void showDS()
 {
 	printf("[%d] ",dsLen());
-	int *tmp=&ds[1];
-	while(tmp<=dsp) {
+	int *tmp;
+	for(tmp=ds+1; tmp<=dsp; tmp++)
 		printf("%d ",*tmp);
-        	tmp++;
-	}
 	printf("<DS]\n");
 	return;
 } 
@@ -186,18 +178,44 @@ void showDS()
 void showRS()
 {
 	printf("[%d] ",rsLen());
-	int *tmp=&rs[1];
-	while(tmp<=rsp) {
+	int *tmp;
+	for(tmp=rs+1; tmp<=rsp; tmp++)
 		printf("%d ",*tmp);
-		tmp++;
-	}
 	printf("<RS]\n");
 	return;
 } 
 
-/* showTop 显示DS栈顶，对DS栈无影响 */
+/* . 弹出DS栈顶到显示 */
 void showTop()
 {
+	if(dsLen() < 1){
+		stackOver();
+		return ;
+	} 
 	printf("%d\n",*dsp);
+	dsp--; 
 	return;
 } 
+
+
+/* -- */
+void sub1()
+{
+	if(dsLen() < 1){
+		stackOver();
+		return ;
+	}
+	*dsp -= 1;
+	return;
+}
+
+/* ++ */
+void add1()
+{
+	if(dsLen() < 1){
+		stackOver();
+		return ;
+	}
+	*dsp += 1;
+	return;
+}
