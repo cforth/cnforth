@@ -1,8 +1,8 @@
 /**************************** cforth.c **********************************
- * Name: Cforth	0.3.2							*
+ * Name: Cforth	0.3.3							*
  * Copyright: ear & xiaohao						*
  * Author: ear & xiaohao						*
- * Date: 27-06-12 12:28							*
+ * Date: 27-06-12 19:29							*
  * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include "colon_words.h"
 #define COMPILER	0
 #define INTERPRETER	1
+#define MAX_LENGTH	1000
 #define COREWORDS_NUM	20
 #define WORD_WIDTH	20
 
@@ -37,17 +38,21 @@ pType word_pointer[COREWORDS_NUM] =
  *cforth主控制结构							*/  
 int main()
 {
-	printf("Cforth 0.3.2, ear & xiaohao Copyright (C) 2008-2012 \n");
+	printf("Cforth 0.3.3, ear & xiaohao Copyright (C) 2008-2012 \n");
 	printf("Cforth comes with ABSOLUTELY NO WARRANTY.\n");
-	printf("Enjoy it and have a good time! Type 'bye' to exit\n");
+	printf("Enjoy it and have a good time! Type 'bye' to exit!\n");
 
 	int status = INTERPRETER;
-	char word_buff[WORD_WIDTH];
-	while (status == INTERPRETER){ 
-		scanf("%s", &word_buff);
-		interpret_words(word_buff);
-	}
-	
+	char input_buff[MAX_LENGTH];
+	while (status == INTERPRETER) { 
+		gets(input_buff);
+		
+		char* token = strtok(input_buff, " ");
+		while(token != NULL) {
+        		interpret_words(token);
+        		token = strtok(NULL, " ");
+    		}
+	}	
 	return 0;
 } 
 /************************************************************************/ 
