@@ -1,5 +1,5 @@
 /***************************** colon_words.h ****************************
- * Used Code_words compose Colon words    			*
+ * Used Code_words compose Colon words					*
  ************************************************************************/
 
 /* 2drop */
