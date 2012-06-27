@@ -12,7 +12,7 @@
 #include "colon_words.h"
 #define COMPILER	0
 #define INTERPRETER	1
-#define COREWORDS_NUM	19
+#define COREWORDS_NUM	20
 #define WORD_WIDTH	20
 
 
@@ -21,13 +21,13 @@ const char word_str[COREWORDS_NUM][WORD_WIDTH] =
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"2drop","2dup",
 	"over",	"+",	"-",	"*",	"/",
-	"/d",	"%",	"--",	"++"		};		
+	"/d",	"%",	"--",	"++",	"rot"	};		
 typedef void (*pType) (void) ;
 pType word_pointer[COREWORDS_NUM] = 
 {	showDS,	showRS,	showTop,swap,	tor,
 	rto,	dup,	drop,	drop2,	dup2,
 	over,	add,	sub,	mul,	ddiv,
-	divv,	mod,	sub1,	add1		}; 
+	divv,	mod,	sub1,	add1,	rot	}; 
 
 
 /************************************************************************/ 
