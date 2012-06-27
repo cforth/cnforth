@@ -2,7 +2,7 @@
  * Name: Cforth	0.3.3							*
  * Copyright: ear & xiaohao						*
  * Author: ear & xiaohao						*
- * Date: 27-06-12 19:29							*
+ * Date: 27-06-12 21:33							*
  * Description: Cforth is a forth interpreter, using C language		*
  ************************************************************************/	 
 #include <stdio.h>
@@ -45,7 +45,7 @@ int main()
 	int status = INTERPRETER;
 	char input_buff[MAX_LENGTH];
 	while (status == INTERPRETER) { 
-		gets(input_buff);
+		gets_input(input_buff);
 		
 		char* token = strtok(input_buff, " ");
 		while(token != NULL) {
@@ -55,6 +55,18 @@ int main()
 	}	
 	return 0;
 } 
+/************************************************************************/ 
+
+/************************************************************************
+ *字符串输入接收函数，可以从键盘或者文本中接收输入字符串 		*/
+int gets_input(char *str)
+{
+	char c;
+	for(; (c=getchar())!='\n'; str++)
+		*str = c;
+	*str = '\0';
+	return 0;
+}
 /************************************************************************/ 
 
 
