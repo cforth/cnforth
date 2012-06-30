@@ -34,7 +34,7 @@ pType word_pointer[COREWORDS_NUM] =
 
 
 /************************************************************************
- *cforth主控制结构							*/  
+ *Cforth's main control structure					*/  
 int main()
 {
 	printf("Cforth_alpha 0.3.3\n"); 
@@ -60,10 +60,8 @@ int main()
 	}	
 	return 0;
 } 
-/************************************************************************/ 
 
-/************************************************************************
- *字符串输入接收函数,可以从键盘或者文本中接收输入字符串 		*/
+ /* String input receiver function */
 int gets_input(char* str)
 {
 	char c;
@@ -76,7 +74,7 @@ int gets_input(char* str)
 
 
 /************************************************************************
- *cforth解释器函数							*/ 
+ *Cforth interpreter mode						*/ 
 int interpret_words(char* str)
 {
 	int i;
@@ -110,7 +108,7 @@ int interpret_words(char* str)
 	return status;
 }
 
-/*数值字符串判断函数，是int型则返回1，否则返回0				*/ 
+/* 数值字符串判断函数，是int型则返回1，否则返回0 */ 
 int isNum(char* str) 
 {
 	if(*str == '-' && *(str+1) == '\0')
@@ -130,7 +128,7 @@ int isNum(char* str)
 
 
 /************************************************************************
- *cforth编译器函数,未完成						*/ 
+ *Cforth compiler mode -- Not ready 					*/ 
 int compiler_words(char* str)
 {
 	int status = COMPILER;
