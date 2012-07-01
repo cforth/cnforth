@@ -9,27 +9,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include "code_words.h"
-#include "colon_words.h"
 #define COMPILER	0
 #define INTERPRETER	1
 #define MAX_LENGTH	1000
-#define COREWORDS_NUM	20
+#define COREWORDS_NUM	17
 #define WORD_WIDTH	20
 
 
 /*使用函数指针在解释模式下挨个搜索字典中的词*/
 const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
 {	".s",	".rs",	".",	"swap",	">r",
-	"r>",	"dup",	"drop",	"2drop","2dup",
-	"over",	"+",	"-",	"*",	"/",
-	"/d",	"%",	"--",	"++",	"rot"	};
+	"r>",	"dup",	"drop",	"over",	"+",
+	"-",	"*",	"/",	"%",	"--",
+	"++",	"rot"	};
 		
 typedef void (*pType) (void) ;
 pType word_pointer[COREWORDS_NUM] = 
-{	showDS,	showRS,	showTop,swap,	tor,
-	rto,	dup,	drop,	drop2,	dup2,
-	over,	add,	sub,	mul,	ddiv,
-	divv,	mod,	sub1,	add1,	rot	}; 
+{	sh_ds,	sh_rs,	pop,	swap,	tor,
+	rto,	dup,	drop,	over,	add,
+	sub,	mul,	div_new,mod,	sub1,
+	add1,	rot	}; 
 /************************************************************************/ 
 
 
@@ -81,7 +80,7 @@ int interpret_words(char* str)
 	int status = INTERPRETER;
 	for (i = 0; i <= COREWORDS_NUM; i++) {
 		if( isNum(str) ) {
-			push(atoi(str));
+			push( atoi(str));
 			break;
 		}
 		
