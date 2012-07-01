@@ -16,3 +16,5 @@ void divv() { dup2(); mod(); tor(); ddiv(); rto();}
 
 /* rot */
 void rot() { tor(); swap(); rto(); swap(); }
+
+/* test */
