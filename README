@@ -2,3 +2,9 @@ Cforth_alpha 0.3.3
 
 Cforth is a forth interpreter implemented in C programming language. 
 But now it's just a simple model, not real forth.
+
+/*
+** 2012-7-1
+** 重新构造了cforth的核心字模块
+** 使核心字模块与前端处理模块能分开独立编译
+*/
