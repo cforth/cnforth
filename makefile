@@ -1,7 +1,9 @@
-cforth: cforth.o
-	gcc $< -o $@
-cforth.o: cforth.c code_words.h colon_words.h
+cforth: cforth.o code_words.o
+	gcc $^ -o $@
+cforth.o: cforth.c code_words.h
 	gcc -c cforth.c
+code_words.o: code_words.c code_words.h
+	gcc -c code_words.c
 clean:
 	@echo "cleanning project"
 	-rm -f cforth *.o
