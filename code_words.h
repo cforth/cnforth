@@ -10,21 +10,14 @@
 ** ds_len
 ** 返回数据栈中值的数量 
 */
-int ds_len(void);
+int ds_len( void );
 
 
 /*
 ** rs_len
 ** 返回返回栈中值的数量
 */
-int rs_len(void);
-
-
-/*
-** stack_error
-** 清空数据栈和返回栈，并打印出警告信息
-*/
-void stack_error( void );
+int rs_len( void );
 
 
 /*
