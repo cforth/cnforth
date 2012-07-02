@@ -36,22 +36,11 @@ int rs_len( void )
 }
 
 
-/*
-** stack_error
-*/
-void stack_error( void )
-{
-	dsp = ds;
-	rsp = rs;
-	printf("Stack underflower!\n");
-	return;
-}
-
 
 /*
-** clean_ds
+** clean_stack
 */
-void clean_ds( void )
+void clean_stack( void )
 {
 	dsp = ds;
 	rsp = rs;
@@ -64,6 +53,11 @@ void clean_ds( void )
 */
 void push( STACK_TYPE value )
 { 
+	if(ds_len() >= STACK_SIZE){
+		printf("Stack overflower!\n");
+		clean_stack();
+		return;
+	}
 	dsp++;
 	*dsp = value;
 	return;
@@ -75,8 +69,9 @@ void push( STACK_TYPE value )
 */
 void tor( void )
 {
-	if(ds_len() < 1){
-		stack_error();
+	if((ds_len() < 1) || (rs_len() >= STACK_SIZE)){
+		printf("Stack error!\n");
+		clean_stack();
 		return ;
 	} 
 	rsp++;
@@ -91,8 +86,9 @@ void tor( void )
 */
 void rto( void )
 { 
-	if(rs_len() < 1){
-		stack_error();
+	if((rs_len() < 1) || (ds_len() >= STACK_SIZE)){
+		printf("Stack error!\n");
+		clean_stack();
 		return;
 	} 
 	dsp++; 
@@ -108,7 +104,8 @@ void rto( void )
 void drop( void )
 {
 	if(ds_len() < 1){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	dsp--; 
@@ -122,7 +119,8 @@ void drop( void )
 void dup( void )
 {
 	if(ds_len() < 1) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	dsp++; 
@@ -137,7 +135,8 @@ void dup( void )
 void swap( void )
 {
 	if(ds_len() < 2) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	STACK_TYPE tmp; 
@@ -154,7 +153,8 @@ void swap( void )
 void add( void )
 {
 	if(ds_len() < 2) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	*(dsp-1) += *dsp; 
@@ -169,7 +169,8 @@ void add( void )
 void sub( void )
 {
 	if(ds_len() < 2) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	*(dsp-1) -= *dsp; 
@@ -184,7 +185,8 @@ void sub( void )
 void mul( void )
 {
 	if(ds_len() < 2) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	*(dsp-1) *= *dsp; 
@@ -199,7 +201,8 @@ void mul( void )
 void div_new( void )
 {
 	if((ds_len() < 2) || (*dsp == 0)) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	}
 	*(dsp-1) /= *dsp; 
@@ -214,7 +217,8 @@ void div_new( void )
 void mod( void )
 {
 	if((ds_len() < 2) || (*dsp == 0)) {
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	} 
 	*(dsp-1) %= *dsp; 
@@ -257,7 +261,8 @@ void sh_rs( void )
 void pop( void )
 {
 	if(ds_len() < 1){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return ;
 	} 
 	printf("%d\n",*dsp);
@@ -272,7 +277,8 @@ void pop( void )
 void sub1( void )
 {
 	if(ds_len() < 1){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return ;
 	}
 	*dsp -= 1;
@@ -286,7 +292,8 @@ void sub1( void )
 void add1( void )
 {
 	if(ds_len() < 1){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return ;
 	}
 	*dsp += 1;
@@ -300,7 +307,8 @@ void add1( void )
 void over( void )
 {
 	if(ds_len() < 2){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	}
 	dsp++;
@@ -316,7 +324,8 @@ void rot( void )
 {
 	STACK_TYPE tmp;
 	if(ds_len() <3){
-		stack_error();
+		printf("Stack overflower!\n");
+		clean_stack();
 		return;
 	}
 	tmp = *(dsp-2);
