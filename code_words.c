@@ -54,7 +54,7 @@ void clean_stack( void )
 void push( STACK_TYPE value )
 { 
 	if(ds_len() >= STACK_SIZE){
-		printf("Stack overflower!\n");
+		printf("Stack overflow! Data_stack is full!\n");
 		clean_stack();
 		return;
 	}
@@ -69,11 +69,17 @@ void push( STACK_TYPE value )
 */
 void tor( void )
 {
-	if((ds_len() < 1) || (rs_len() >= STACK_SIZE)){
-		printf("Stack error!\n");
+	if(ds_len() < 1){
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
-		return ;
+		return;
 	} 
+	else if(rs_len() >= STACK_SIZE){
+		printf("Stack overflow! Return_stack is full!\n");
+		clean_stack();
+		return;
+	}
+
 	rsp++;
 	*rsp = *dsp;
 	dsp--;
@@ -86,11 +92,17 @@ void tor( void )
 */
 void rto( void )
 { 
-	if((rs_len() < 1) || (ds_len() >= STACK_SIZE)){
-		printf("Stack error!\n");
+	if(rs_len() < 1){
+		printf("Stack underflow! Return_stack is empty!\n");
 		clean_stack();
 		return;
 	} 
+	else if(ds_len() >= STACK_SIZE){
+		printf("Stack overflow! Data_stack is full!\n");
+		clean_stack();
+		return;
+	}
+
 	dsp++; 
 	*dsp = *rsp; 
 	rsp--; 
@@ -104,7 +116,7 @@ void rto( void )
 void drop( void )
 {
 	if(ds_len() < 1){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
 		return;
 	} 
@@ -119,7 +131,7 @@ void drop( void )
 void dup( void )
 {
 	if(ds_len() < 1) {
-		printf("Stack overflower!\n");
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
 		return;
 	} 
@@ -135,7 +147,7 @@ void dup( void )
 void swap( void )
 {
 	if(ds_len() < 2) {
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	} 
@@ -153,7 +165,7 @@ void swap( void )
 void add( void )
 {
 	if(ds_len() < 2) {
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	} 
@@ -169,7 +181,7 @@ void add( void )
 void sub( void )
 {
 	if(ds_len() < 2) {
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	} 
@@ -185,7 +197,7 @@ void sub( void )
 void mul( void )
 {
 	if(ds_len() < 2) {
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	} 
@@ -200,11 +212,17 @@ void mul( void )
 */
 void div_new( void )
 {
-	if((ds_len() < 2) || (*dsp == 0)) {
-		printf("Stack overflower!\n");
+	if(ds_len() < 2) {
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	}
+	else if(*dsp == 0) {
+		printf("Error! Divisor is 0!\n");
+		clean_stack();
+		return;
+	}
+
 	*(dsp-1) /= *dsp; 
 	dsp--;
 	return;
@@ -216,11 +234,17 @@ void div_new( void )
 */
 void mod( void )
 {
-	if((ds_len() < 2) || (*dsp == 0)) {
-		printf("Stack overflower!\n");
+	if(ds_len() < 2) {
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	} 
+	else if(*dsp == 0) {
+		printf("Error! Divisor is 0!\n");
+		clean_stack();
+		return;
+	}
+
 	*(dsp-1) %= *dsp; 
 	dsp--;
 	return;
@@ -261,7 +285,7 @@ void sh_rs( void )
 void pop( void )
 {
 	if(ds_len() < 1){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
 		return ;
 	} 
@@ -277,7 +301,7 @@ void pop( void )
 void sub1( void )
 {
 	if(ds_len() < 1){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
 		return ;
 	}
@@ -292,7 +316,7 @@ void sub1( void )
 void add1( void )
 {
 	if(ds_len() < 1){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! Data_stack is empty!\n");
 		clean_stack();
 		return ;
 	}
@@ -307,7 +331,7 @@ void add1( void )
 void over( void )
 {
 	if(ds_len() < 2){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not two values in data_stack!\n");
 		clean_stack();
 		return;
 	}
@@ -324,7 +348,7 @@ void rot( void )
 {
 	STACK_TYPE tmp;
 	if(ds_len() <3){
-		printf("Stack overflower!\n");
+		printf("Stack underflow! There is not three values in data_stack!\n");
 		clean_stack();
 		return;
 	}
