@@ -1,39 +1,71 @@
-/**************************** cforth.c **********************************
- * Name: Cforth_alpha 0.3.3						*
- * Copyright: ear & xiaohao						*
- * Author: ear & xiaohao						*
- * Date: 28-06-12 16:00							*
- * Description: Cforth is a forth interpreter, using C language		*
- ************************************************************************/	 
+/*
+** Cforth_alpha 0.3.3
+** cforth.c	Cforth主程序
+** 作者：	ear & xiaohao
+** 版本号：	alpha 0.3.3
+** 更新时间：	2012-07-02
+*/
+	 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "code_words.h"
-#define COMPILER	0
-#define INTERPRETER	1
-#define MAX_LENGTH	1000
-#define COREWORDS_NUM	17
-#define WORD_WIDTH	20
+#include "code_words.h"		/* cforth.c依赖code_words.h */
 
+#define COMPILER	0	/* 设置编译模式 */
+#define INTERPRETER	1	/* 设置解释模式 */ 
+#define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
+#define CODEWORDS_NUM	17	/* 设置核心字的最大数量 */ 
+#define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
 
-/*使用函数指针在解释模式下挨个搜索字典中的词*/
-const char word_str[COREWORDS_NUM][WORD_WIDTH] = 
+/*
+** gets_input
+** 从标准输入流中读取字符串，并储存到*str指向的字符串中。 
+*/
+int gets_input(char* str); 
+
+/*
+** interpret_words
+** 接收字符串作为参数，并执行解释模式。 
+*/
+int interpret_words(char* str);
+
+/*
+** isNum
+** 接收字符串作为参数，判断是否为整数型字符串。 
+*/
+int isNum(char* str); 
+
+/*
+** compiler_words
+** 编译器模式，预留了位置，代码未完成。 
+*/
+int compiler_words(char* str);
+
+/*
+** word_str
+** 核心字索引数组，用于解释模式下核心字的搜索执行。 
+*/
+const char word_str[CODEWORDS_NUM][WORD_WIDTH] = 
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"over",	"+",
 	"-",	"*",	"/",	"%",	"--",
 	"++",	"rot"	};
-		
+
+/*
+** word_pointer
+** 函数指针数组，用于解释模式下核心字的搜索执行。 
+*/		
 typedef void (*pType) (void) ;
-pType word_pointer[COREWORDS_NUM] = 
+pType word_pointer[CODEWORDS_NUM] = 
 {	sh_ds,	sh_rs,	pop,	swap,	tor,
 	rto,	dup,	drop,	over,	add,
 	sub,	mul,	div_new,mod,	sub1,
 	add1,	rot	}; 
-/************************************************************************/ 
 
 
-/************************************************************************
- *Cforth's main control structure					*/  
+/* 
+** Cforth主控制结构，目前只有解释器功能。 
+*/  
 int main()
 {
 	printf("Cforth_alpha 0.3.3\n"); 
@@ -60,7 +92,10 @@ int main()
 	return 0;
 } 
 
- /* String input receiver function */
+
+/*
+** gets_input 
+*/
 int gets_input(char* str)
 {
 	char c;
@@ -69,16 +104,16 @@ int gets_input(char* str)
 	*str = '\0';
 	return 0;
 }
-/************************************************************************/ 
+ 
 
-
-/************************************************************************
- *Cforth interpreter mode						*/ 
+/*
+** interpret_words 
+*/
 int interpret_words(char* str)
 {
 	int i;
 	int status = INTERPRETER;
-	for (i = 0; i <= COREWORDS_NUM; i++) {
+	for (i = 0; i <= CODEWORDS_NUM; i++) {
 		if( isNum(str) ) {
 			push( atoi(str));
 			break;
@@ -97,7 +132,7 @@ int interpret_words(char* str)
 		else if( !strcmp("bye", str) ) 
 			exit(0);
 			
-		else if(i == COREWORDS_NUM) {
+		else if(i == CODEWORDS_NUM) {
 			printf("Undefine word!\n-->%s<--\n",str);
 			clean_ds();
 			break;
@@ -107,7 +142,10 @@ int interpret_words(char* str)
 	return status;
 }
 
-/* 数值字符串判断函数，是int型则返回1，否则返回0 */ 
+
+/*
+** isNum 
+*/
 int isNum(char* str) 
 {
 	if(*str == '-' && *(str+1) == '\0')
@@ -123,11 +161,12 @@ int isNum(char* str)
 	}
 	return 1;
 }
-/************************************************************************/ 
 
 
-/************************************************************************
- *Cforth compiler mode -- Not ready 					*/ 
+/*
+** compiler_words
+** 编译器模式，预留了位置，代码未完成。 
+*/
 int compiler_words(char* str)
 {
 	int status = COMPILER;
@@ -135,4 +174,3 @@ int compiler_words(char* str)
 		status = INTERPRETER;
 	return status;
 } 
-/************************************************************************/ 
