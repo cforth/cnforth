@@ -134,7 +134,7 @@ int interpret_words(char* str)
 			
 		else if(i == CODEWORDS_NUM) {
 			printf("Undefine word!\n-->%s<--\n",str);
-			clean_ds();
+			clean_stack();
 			break;
 		}
 	}
