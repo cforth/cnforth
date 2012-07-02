@@ -198,7 +198,7 @@ void mul( void )
 */
 void div_new( void )
 {
-	if(ds_len() < 2) {
+	if((ds_len() < 2) || (*dsp == 0)) {
 		stack_error();
 		return;
 	}
@@ -213,7 +213,7 @@ void div_new( void )
 */
 void mod( void )
 {
-	if(ds_len() < 2) {
+	if((ds_len() < 2) || (*dsp == 0)) {
 		stack_error();
 		return;
 	} 
