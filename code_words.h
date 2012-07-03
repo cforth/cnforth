@@ -3,7 +3,14 @@
 ** 核心字模块的接口
 */
 
+#define	DEBUG		1 /* 开启DEBUG模式 */
 #define STACK_TYPE	int /*堆栈所存储的值的类型*/
+
+#if	DEBUG
+#	define dprintf(args) printf args
+#else
+#	define dprintf(args)
+#endif
 
 
 /*
