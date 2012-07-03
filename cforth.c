@@ -3,7 +3,7 @@
 ** cforth.c	Cforth主程序
 ** 作者：	ear & xiaohao
 ** 版本号：	alpha 0.3.3
-** 更新时间：	2012-07-02
+** 更新时间：	2012-07-03
 */
 	 
 #include <stdio.h>
@@ -21,31 +21,31 @@
 ** gets_input
 ** 从标准输入流中读取字符串，并储存到*str指向的字符串中。 
 */
-int gets_input(char* str); 
+int gets_input( char *str ); 
 
 /*
 ** interpret_words
 ** 接收字符串作为参数，并执行解释模式。 
 */
-int interpret_words(char* str);
+int interpret_words( char *str );
 
 /*
 ** isNum
 ** 接收字符串作为参数，判断是否为整数型字符串。 
 */
-int isNum(char* str); 
+int isNum( char *str ); 
 
 /*
 ** compiler_words
 ** 编译器模式，预留了位置，代码未完成。 
 */
-int compiler_words(char* str);
+int compiler_words( char *str );
 
 /*
 ** word_str
 ** 核心字索引数组，用于解释模式下核心字的搜索执行。 
 */
-const char word_str[CODEWORDS_NUM][WORD_WIDTH] = 
+const char word_str[ CODEWORDS_NUM ][ WORD_WIDTH ] = 
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"over",	"+",
 	"-",	"*",	"/",	"%",	"--",
@@ -55,8 +55,8 @@ const char word_str[CODEWORDS_NUM][WORD_WIDTH] =
 ** word_pointer
 ** 函数指针数组，用于解释模式下核心字的搜索执行。 
 */		
-typedef void (*pType) (void) ;
-pType word_pointer[CODEWORDS_NUM] = 
+typedef void ( *pType ) ( void ) ;
+pType word_pointer[ CODEWORDS_NUM ] = 
 {	sh_ds,	sh_rs,	pop,	swap,	tor,
 	rto,	dup,	drop,	over,	add,
 	sub,	mul,	div_new,mod,	sub1,
@@ -66,13 +66,13 @@ pType word_pointer[CODEWORDS_NUM] =
 /* 
 ** Cforth主控制结构，目前只有解释器功能。 
 */  
-int main()
+int main( void )
 {
 	printf("Cforth_alpha 0.3.3\n"); 
 
-	char* token;
+	char *token;
 	int status = INTERPRETER;
-	char input_buff[MAX_LENGTH];
+	char input_buff[ MAX_LENGTH ];
 	
 	while(1) { 
 		printf(">>>");
@@ -96,7 +96,7 @@ int main()
 /*
 ** gets_input 
 */
-int gets_input(char* str)
+int gets_input( char *str )
 {
 	char c;
 	for(; (c = getchar()) != '\n'; str++)
@@ -109,13 +109,13 @@ int gets_input(char* str)
 /*
 ** interpret_words 
 */
-int interpret_words(char* str)
+int interpret_words( char *str )
 {
 	int i;
 	int status = INTERPRETER;
 	for (i = 0; i <= CODEWORDS_NUM; i++) {
 		if( isNum(str) ) {
-			push( atoi(str));
+			push( atoi(str) );
 			break;
 		}
 		
@@ -133,7 +133,7 @@ int interpret_words(char* str)
 			exit(0);
 			
 		else if(i == CODEWORDS_NUM) {
-			printf("Undefine word!\n-->%s<--\n",str);
+			printf("Undefine word!\n-->%s<--\n", str);
 			clean_stack();
 			break;
 		}
@@ -146,17 +146,17 @@ int interpret_words(char* str)
 /*
 ** isNum 
 */
-int isNum(char* str) 
+int isNum( char *str ) 
 {
-	if(*str == '-' && *(str+1) == '\0')
+	if( *str == '-' && *(str+1) == '\0' )
 		return 0;
 
-	if((*str < '0' || *str > '9') && *str != '-')
+	if( (*str < '0' || *str > '9') && *str != '-' )
 		return 0;
 
 	str++;
 	for(; *str != '\0'; str++) {
-		if(*str < '0' || *str > '9')
+		if( *str < '0' || *str > '9' )
 			return 0;
 	}
 	return 1;
@@ -167,7 +167,7 @@ int isNum(char* str)
 ** compiler_words
 ** 编译器模式，预留了位置，代码未完成。 
 */
-int compiler_words(char* str)
+int compiler_words( char *str )
 {
 	int status = COMPILER;
 	if( !strcmp(";", str) ) 
