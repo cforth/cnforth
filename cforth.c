@@ -8,6 +8,12 @@
 	 
 #include "cforth.h"
 
+#define COMPILER	0	/* 设置编译模式 */
+#define INTERPRETER	1	/* 设置解释模式 */ 
+#define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
+#define CODEWORDS_NUM	17	/* 设置核心字的最大数量 */ 
+#define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
+
 /*
 ** compiler_words
 ** 编译器模式，预留了位置，代码未完成。 
