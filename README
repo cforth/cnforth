@@ -4,6 +4,11 @@ Cforth is a forth interpreter implemented in C programming language.
 But now it's just a simple model, not real forth.
 
 /*
+** 2012-7-6
+** 将cforth.h独立了出来
+*/
+
+/*
 ** 2012-7-3
 ** 增加了DEBUG模式
 ** DEBUG模式开启时，打印出堆栈操作的错误信息
