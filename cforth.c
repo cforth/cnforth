@@ -15,12 +15,6 @@
 #define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
 
 /*
-** compiler_words
-** 编译器模式，预留了位置，代码未完成。 
-*/
-int compiler_words( char *str );
-
-/*
 ** word_str
 ** 核心字索引数组，用于解释模式下核心字的搜索执行。 
 */
