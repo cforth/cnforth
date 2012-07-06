@@ -8,12 +8,6 @@
 #include <string.h>
 #include "code_words.h"		/* cforth.c依赖code_words.h */
 
-#define COMPILER	0	/* 设置编译模式 */
-#define INTERPRETER	1	/* 设置解释模式 */ 
-#define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
-#define CODEWORDS_NUM	17	/* 设置核心字的最大数量 */ 
-#define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
-
 /*
 ** gets_input
 ** 从标准输入流中读取字符串，并储存到*str指向的字符串中。 
