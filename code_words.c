@@ -4,6 +4,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "code_words.h"
 
 #define	STACK_SIZE	256 /* 堆栈中值数量的最大限制 */
@@ -357,4 +358,12 @@ void rot( void )
 	*(dsp-1) = *dsp;
 	*dsp = tmp;
 	return;
+}
+
+/*
+** bye
+*/
+void bye( void )
+{
+	exit( 0 );
 }
