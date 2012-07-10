@@ -5,6 +5,12 @@ But now it's just a simple model, not real forth.
 
 /*
 ** 2012-7-10
+** 使用有限自动机原理重写了解释器模块
+** 将bye加入核心字
+*/
+
+/*
+** 2012-7-10
 ** 使用有限自动机原理重写了isNum，作为实验
 */
 
