@@ -119,12 +119,12 @@ int interpret_words( char *str )
 /*
 ** isNum 
 */
-char edges[ ][12] = {	/*   1  2  3  4  5  6  7  8  9  0  - */
-	/* state 0 */	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	/* state 1 */	{ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 },
-	/* state 2 */	{ 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0 },
-	/* state 3 */	{ 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0 },
-	/* state 4 */	{ 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0 }
+char edges[ ][12] = {   /*   num  -  */
+	/* state 0 */	{ 0,  0,  0 },
+	/* state 1 */	{ 0,  2,  3 },
+	/* state 2 */	{ 0,  2,  0 },
+	/* state 3 */	{ 0,  4,  0 },
+	/* state 4 */	{ 0,  4,  0 }
 };
 
 int isNum( char* str )
@@ -132,27 +132,17 @@ int isNum( char* str )
 	int state, i;
 	for(state=1; *str != '\0'; str++) {
 		
-		switch( *str ) {
-			case '1': i = 1; break;
-			case '2': i = 2; break;
-			case '3': i = 3; break;
-			case '4': i = 4; break;
-			case '5': i = 5; break;
-			case '6': i = 6; break;
-			case '7': i = 7; break;
-			case '8': i = 8; break;
-			case '9': i = 9; break;
-			case '0': i = 10; break;
-			case '-': i = 11; break;
-			default : return 0;
-		}
-		
+		if( *str>='0' && *str<='9' ) 
+			i = 1;
+		else if( *str=='-' )
+			i = 2;
+		else
+			return 0;
+			
 		state = edges[state][i];
 	}
 	
-	if(state == 2 || state == 4)
-		return 1;
-	return 0;
+	return state == 2 || state == 4;
 }
 
 
