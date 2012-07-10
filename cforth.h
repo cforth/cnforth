@@ -4,9 +4,8 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include "code_words.h"		/* cforth.c依赖code_words.h */
+#include "code_words.h"  	/* cforth.c依赖code_words.h */
 
 /*
 ** gets_input
@@ -21,15 +20,15 @@ int gets_input( char *str );
 int interpret_words( char *str );
 
 /*
-** isNum
-** 接收字符串作为参数，判断是否为整数型字符串。 
+** what_is 
+** 接收字符串作为参数，判断是何种类型的词。 
+** 整型数字返回1，冒号返回2，其他返回0。 
 */
-int isNum( char *str ); 
+int what_is ( char *str ); 
 
 /*
 ** compiler_words
 ** 编译器模式，预留了位置，代码未完成。 
 */
 int compiler_words( char *str );
-
 
