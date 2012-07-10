@@ -11,7 +11,7 @@
 #define COMPILER	0	/* 设置编译模式 */
 #define INTERPRETER	1	/* 设置解释模式 */ 
 #define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
-#define CODEWORDS_NUM	17	/* 设置核心字的最大数量 */ 
+#define CODEWORDS_NUM	18	/* 设置核心字的最大数量 */ 
 #define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
 
 /*
@@ -22,7 +22,7 @@ const char word_str[ CODEWORDS_NUM ][ WORD_WIDTH ] =
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"over",	"+",
 	"-",	"*",	"/",	"%",	"--",
-	"++",	"rot"	};
+	"++",	"rot",	"bye"	};
 
 /*
 ** word_pointer
@@ -33,7 +33,7 @@ pType word_pointer[ CODEWORDS_NUM ] =
 {	sh_ds,	sh_rs,	pop,	swap,	tor,
 	rto,	dup,	drop,	over,	add,
 	sub,	mul,	div_new,mod,	sub1,
-	add1,	rot	}; 
+	add1,	rot,	bye	}; 
 
 
 /* 
@@ -86,48 +86,44 @@ int interpret_words( char *str )
 {
 	int i;
 	int status = INTERPRETER;
-	for (i = 0; i <= CODEWORDS_NUM; i++) {
-		if( isNum(str) ) {
-			push( atoi(str) );
-			break;
-		}
+
+	switch( what_is(str) ) {
+
+	case 1:	push( atoi(str) ); break;
 		
-		else if( !strcmp(word_str[i], str) ) {
-			word_pointer[i]();
-			break;
-		}
-		
-		else if( !strcmp(":", str) ) {
-			status = COMPILER;
-			break;
-		}
-		
-		else if( !strcmp("bye", str) ) 
-			exit(0);
-			
-		else if(i == CODEWORDS_NUM) {
-			printf("Undefine word!\n-->%s<--\n", str);
-			clean_stack();
-			break;
-		}
-	}
+	case 2:	status = COMPILER; break;
 	
+	case 0: 	
+		for (i = 0; i <= CODEWORDS_NUM; i++) {
+			if( i == CODEWORDS_NUM ) {
+				printf("Undefine word!\n-->%s<--\n", str);
+				clean_stack();
+				break;
+			}
+			else if( !strcmp(word_str[i], str) ) {
+				word_pointer[i]();
+				break;
+			}
+		} break;
+	}
+				
 	return status;
 }
 
 
 /*
-** isNum 
+** what_is 
 */
-char edges[ ][12] = {   /*   num  -  */
-	/* state 0 */	{ 0,  0,  0 },
-	/* state 1 */	{ 0,  2,  3 },
-	/* state 2 */	{ 0,  2,  0 },
-	/* state 3 */	{ 0,  4,  0 },
-	/* state 4 */	{ 0,  4,  0 }
+char edges[ ][4] =  {   /*   num  -   : */
+	/* state 0 */	{ 0,  0,  0,  0 },
+	/* state 1 */	{ 0,  2,  3,  5 },
+	/* state 2 */	{ 0,  2,  0,  0 },
+	/* state 3 */	{ 0,  4,  0,  0 },
+	/* state 4 */	{ 0,  4,  0,  0 },
+	/* state 5 */	{ 0,  0,  0,  0 }
 };
 
-int isNum( char* str )
+int what_is( char* str )
 {
 	int state, i;
 	for(state=1; *str != '\0'; str++) {
@@ -136,13 +132,22 @@ int isNum( char* str )
 			i = 1;
 		else if( *str=='-' )
 			i = 2;
+		else if( *str==':' )
+			i = 3;
 		else
 			return 0;
 			
 		state = edges[state][i];
 	}
 	
-	return state == 2 || state == 4;
+	switch (state) {
+	
+	case 0: return 0;
+	case 2: return 1;
+	case 3: return 0;
+	case 4: return 1;
+	case 5: return 2;
+	}
 }
 
 
