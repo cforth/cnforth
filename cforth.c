@@ -89,11 +89,13 @@ int interpret_words( char *str )
 
 	switch( what_is(str) ) {
 
-	case 1:	push( atoi(str) ); break;
+	case 2:
+	case 4:	push( atoi(str) ); break;
 		
-	case 2:	status = COMPILER; break;
+	case 5:	status = COMPILER; break;
 	
-	case 0: 	
+	case 0:
+	case 3: 	
 		for (i = 0; i <= CODEWORDS_NUM; i++) {
 			if( i == CODEWORDS_NUM ) {
 				printf("Undefine word!\n-->%s<--\n", str);
@@ -135,19 +137,12 @@ int what_is( char* str )
 		else if( *str==':' )
 			i = 3;
 		else
-			return 0;
+			i = 0;
 			
 		state = edges[state][i];
 	}
 	
-	switch (state) {
-	
-	case 0: return 0;
-	case 2: return 1;
-	case 3: return 0;
-	case 4: return 1;
-	case 5: return 2;
-	}
+	return state;
 }
 
 
