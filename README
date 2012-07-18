@@ -6,6 +6,8 @@ But now it's just a simple model, not real forth.
 /*
 ** 2012-7-18
 ** 增加了negate和bool功能
+** tab字符被认为是空格
+** 增加了注释模式，忽略‘（’与‘）’之间的词。
 */
 
 /*
