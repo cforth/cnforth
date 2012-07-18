@@ -360,10 +360,44 @@ void rot( void )
 	return;
 }
 
+
 /*
 ** bye
 */
 void bye( void )
 {
 	exit( 0 );
+}
+
+
+/*
+** negate 
+*/
+void negate( void )
+{
+	if(ds_len() < 1){
+		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		clean_stack();
+		return ;
+	}
+	
+	*dsp = 0 - *dsp;
+	return;
+}
+
+
+/*
+** bool1 
+*/
+void bool1( void )
+{
+	if(ds_len() < 1){
+		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		clean_stack();
+		return ;
+	}
+	
+	if(*dsp != 0)
+		*dsp = 1; 
+	return;
 }
