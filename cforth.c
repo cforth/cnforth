@@ -10,6 +10,7 @@
 
 #define COMPILER	0	/* 设置编译模式 */
 #define INTERPRETER	1	/* 设置解释模式 */ 
+#define	COMMENT		2	/* 设置注释模式 */
 #define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
 #define CODEWORDS_NUM	20	/* 设置核心字的最大数量 */ 
 #define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
@@ -59,6 +60,9 @@ int main( void )
         		else if(status == COMPILER)
         			status = compiler_words(token);
         			
+        		else if(status == COMMENT)
+        			status = ignore_words(token);
+        			
         		token = strtok(NULL, " ");
     		}
 	}	
@@ -72,8 +76,8 @@ int main( void )
 int gets_input( char *str )
 {
 	char c;
-	for(; (c = getchar()) != '\n'; str++)
-		*str = c;
+	for(; (c = getchar()) != '\n'; str++) 
+		*str = (c == '\t') ? ' ' : c;
 	*str = '\0';
 	return 0;
 }
@@ -93,6 +97,8 @@ int interpret_words( char *str )
 	case 4:	push( atoi(str) ); break;
 		
 	case 5:	status = COMPILER; break;
+	
+	case 6:	status = COMMENT; break;
 	
 	case 0:
 	case 3: 	
@@ -116,13 +122,14 @@ int interpret_words( char *str )
 /*
 ** what_is 
 */
-char edges[ ][4] =  {   /*   num  -   : */
-	/* state 0 */	{ 0,  0,  0,  0 },
-	/* state 1 */	{ 0,  2,  3,  5 },
-	/* state 2 */	{ 0,  2,  0,  0 },
-	/* state 3 */	{ 0,  4,  0,  0 },
-	/* state 4 */	{ 0,  4,  0,  0 },
-	/* state 5 */	{ 0,  0,  0,  0 }
+char edges[ ][5] =  {   /*   num  -   :  （ */
+	/* state 0 */	{ 0,  0,  0,  0,  0 },
+	/* state 1 */	{ 0,  2,  3,  5,  6 },
+	/* state 2 */	{ 0,  2,  0,  0,  0 },
+	/* state 3 */	{ 0,  4,  0,  0,  0 },
+	/* state 4 */	{ 0,  4,  0,  0,  0 },
+	/* state 5 */	{ 0,  0,  0,  0,  0 },
+	/* state 6 */	{ 0,  0,  0,  0,  0 }
 };
 
 int what_is( char* str )
@@ -136,6 +143,8 @@ int what_is( char* str )
 			i = 2;
 		else if( *str==':' )
 			i = 3;
+		else if( *str=='(' )
+			i = 4;
 		else
 			i = 0;
 			
@@ -157,3 +166,15 @@ int compiler_words( char *str )
 		status = INTERPRETER;
 	return status;
 } 
+
+/*
+** ignore_words 
+*/
+int ignore_words( char *str )
+{
+	int status = COMMENT;
+	if( !strcmp(")", str) ) 
+		status = INTERPRETER;
+	return status;
+} 
+
