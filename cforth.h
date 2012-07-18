@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "code_words.h"  	/* cforth.c依赖code_words.h */
+#include "code_words.h"    /* cforth.c依赖code_words.h */
 
 /*
 ** gets_input
@@ -32,3 +32,8 @@ int what_is ( char *str );
 */
 int compiler_words( char *str );
 
+/*
+** ignore_words
+** 注释模式，忽略输入的词。 
+*/
+int ignore_words( char *str );
