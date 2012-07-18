@@ -2,7 +2,7 @@
 ** Cforth_alpha 0.3.4
 ** cforth.c	Cforth主程序
 ** 作者：	ear & xiaohao
-** 版本号：	alpha 0.3.3
+** 版本号：	alpha 0.3.4
 ** 更新时间：	2012-07-18
 */
 	 
