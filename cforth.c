@@ -1,9 +1,9 @@
 /*
-** Cforth_alpha 0.3.3
+** Cforth_alpha 0.3.4
 ** cforth.c	Cforth主程序
 ** 作者：	ear & xiaohao
 ** 版本号：	alpha 0.3.3
-** 更新时间：	2012-07-10
+** 更新时间：	2012-07-18
 */
 	 
 #include "cforth.h"
@@ -11,7 +11,7 @@
 #define COMPILER	0	/* 设置编译模式 */
 #define INTERPRETER	1	/* 设置解释模式 */ 
 #define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
-#define CODEWORDS_NUM	18	/* 设置核心字的最大数量 */ 
+#define CODEWORDS_NUM	20	/* 设置核心字的最大数量 */ 
 #define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
 
 /*
@@ -22,7 +22,7 @@ const char word_str[ CODEWORDS_NUM ][ WORD_WIDTH ] =
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"over",	"+",
 	"-",	"*",	"/",	"%",	"--",
-	"++",	"rot",	"bye"	};
+	"++",	"rot",	"bye",	"~",	"bool"	};
 
 /*
 ** word_pointer
@@ -33,7 +33,7 @@ pType word_pointer[ CODEWORDS_NUM ] =
 {	sh_ds,	sh_rs,	pop,	swap,	tor,
 	rto,	dup,	drop,	over,	add,
 	sub,	mul,	div_new,mod,	sub1,
-	add1,	rot,	bye	}; 
+	add1,	rot,	bye,	negate,	bool1	}; 
 
 
 /* 
@@ -41,7 +41,7 @@ pType word_pointer[ CODEWORDS_NUM ] =
 */  
 int main( void )
 {
-	printf("Cforth_alpha 0.3.3\n"); 
+	printf("Cforth_alpha 0.3.4\n"); 
 
 	char *token;
 	int status = INTERPRETER;
