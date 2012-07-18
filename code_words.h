@@ -3,7 +3,7 @@
 ** 核心字模块的接口
 */
 
-#define  DEBUG		1 /* 开启DEBUG模式 */
+#define  DEBUG  	1 /* 开启DEBUG模式 */
 #define STACK_TYPE	int /*堆栈所存储的值的类型*/
 
 #if	DEBUG
@@ -171,3 +171,15 @@ void rot( void );
 ** 退出Cforth。 
 */
 void bye( void );
+
+/*
+** negate
+** 将栈顶值取反。 
+*/
+void negate( void );
+
+/*
+** bool1 
+** 栈顶值为非零值，则将栈顶值改为1。 
+*/
+void bool1( void );
