@@ -257,11 +257,11 @@ void mod( void )
 */
 void sh_ds( void )
 {
-	printf("[%d] ",ds_len());
+	printf("<%d> ",ds_len());
 	STACK_TYPE *tmp;
 	for(tmp=ds+1; tmp<=dsp; tmp++)
 		printf("%d ",*tmp);
-	printf("<DS]\n");
+	printf("\n");
 	return;
 } 
 
