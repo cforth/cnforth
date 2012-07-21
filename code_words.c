@@ -271,11 +271,11 @@ void sh_ds( void )
 */
 void sh_rs( void )
 {
-	printf("[%d] ",rs_len());
+	printf("<%d> ",rs_len());
 	STACK_TYPE *tmp;
 	for(tmp=rs+1; tmp<=rsp; tmp++)
 		printf("%d ",*tmp);
-	printf("<RS]\n");
+	printf("[RS]\n");
 	return;
 } 
 
