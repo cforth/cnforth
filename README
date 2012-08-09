@@ -3,6 +3,14 @@ Cforth_alpha 0.3.4
 Cforth is a forth interpreter implemented in C programming language. 
 But now it's just a simple model, not real forth.
 
+
+/*
+** 2012-8-9
+** 增加了error_msg核心字
+** 打印出堆栈错误信息。
+** 可以在code_words.h中设置DEBUG为0来关闭错误提示。
+*/
+
 /*
 ** 2012-7-18
 ** 增加了negate和bool功能
