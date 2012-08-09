@@ -55,7 +55,7 @@ void clean_stack( void )
 void push( STACK_TYPE value )
 { 
 	if(ds_len() >= STACK_SIZE){
-		dprintf(("Stack overflow! Data_stack is full!\n"));
+		error_msg(1);
 		clean_stack();
 		return;
 	}
@@ -71,12 +71,12 @@ void push( STACK_TYPE value )
 void tor( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return;
 	} 
 	else if(rs_len() >= STACK_SIZE){
-		dprintf(("Stack overflow! Return_stack is full!\n"));
+		error_msg(3);
 		clean_stack();
 		return;
 	}
@@ -94,12 +94,12 @@ void tor( void )
 void rto( void )
 { 
 	if(rs_len() < 1){
-		dprintf(("Stack underflow! Return_stack is empty!\n"));
+		error_msg(4);
 		clean_stack();
 		return;
 	} 
 	else if(ds_len() >= STACK_SIZE){
-		dprintf(("Stack overflow! Data_stack is full!\n"));
+		error_msg(1);
 		clean_stack();
 		return;
 	}
@@ -117,7 +117,7 @@ void rto( void )
 void drop( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return;
 	} 
@@ -132,7 +132,7 @@ void drop( void )
 void dup( void )
 {
 	if(ds_len() < 1) {
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return;
 	} 
@@ -148,7 +148,7 @@ void dup( void )
 void swap( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	} 
@@ -166,7 +166,7 @@ void swap( void )
 void add( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	} 
@@ -182,7 +182,7 @@ void add( void )
 void sub( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	} 
@@ -198,7 +198,7 @@ void sub( void )
 void mul( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	} 
@@ -214,12 +214,12 @@ void mul( void )
 void div_new( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	}
 	else if(*dsp == 0) {
-		dprintf(("Error! Divisor is 0!\n"));
+		error_msg(7);
 		clean_stack();
 		return;
 	}
@@ -236,12 +236,12 @@ void div_new( void )
 void mod( void )
 {
 	if(ds_len() < 2) {
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	} 
 	else if(*dsp == 0) {
-		dprintf(("Error! Divisor is 0!\n"));
+		error_msg(7);
 		clean_stack();
 		return;
 	}
@@ -286,7 +286,7 @@ void sh_rs( void )
 void pop( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return ;
 	} 
@@ -302,7 +302,7 @@ void pop( void )
 void sub1( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return ;
 	}
@@ -317,7 +317,7 @@ void sub1( void )
 void add1( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return ;
 	}
@@ -332,7 +332,7 @@ void add1( void )
 void over( void )
 {
 	if(ds_len() < 2){
-		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		error_msg(5);
 		clean_stack();
 		return;
 	}
@@ -349,7 +349,7 @@ void rot( void )
 {
 	STACK_TYPE tmp;
 	if(ds_len() <3){
-		dprintf(("Stack underflow! There is not three values in data_stack!\n"));
+		error_msg(6);
 		clean_stack();
 		return;
 	}
@@ -376,7 +376,7 @@ void bye( void )
 void negate( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return ;
 	}
@@ -392,12 +392,44 @@ void negate( void )
 void bool1( void )
 {
 	if(ds_len() < 1){
-		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		error_msg(2);
 		clean_stack();
 		return ;
 	}
 	
 	if(*dsp != 0)
 		*dsp = 1; 
+	return;
+}
+
+
+/*
+** error_msg
+*/
+void error_msg( int id )
+{
+	switch(id){
+	case 1:
+		dprintf(("Stack overflow! Data_stack is full!\n"));
+		break;
+	case 2:
+		dprintf(("Stack underflow! Data_stack is empty!\n"));
+		break;
+	case 3:
+		dprintf(("Stack overflow! Return_stack is full!\n"));
+		break;
+	case 4:	
+		dprintf(("Stack underflow! Return_stack is empty!\n"));
+		break;
+	case 5:
+		dprintf(("Stack underflow! There is not two values in data_stack!\n"));
+		break;
+	case 6:
+		dprintf(("Stack underflow! There is not three values in data_stack!\n"));
+		break;
+	case 7:
+		dprintf(("Error! Divisor is 0!\n"));
+		break;
+	}
 	return;
 }
