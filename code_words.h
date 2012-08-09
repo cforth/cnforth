@@ -183,3 +183,9 @@ void negate( void );
 ** 栈顶值为非零值，则将栈顶值改为1。 
 */
 void bool1( void );
+
+/*
+** error_msg
+** 打印错误信息。
+*/
+void error_msg( int id );
