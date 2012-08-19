@@ -3,7 +3,7 @@
 ** cforth.c	Cforth主程序
 ** 作者：	ear & xiaohao
 ** 版本号：	alpha 0.3.4
-** 更新时间：	2012-07-18
+** 更新时间：	2012-08-19
 */
 	 
 #include "cforth.h"
@@ -50,21 +50,25 @@ int main( void )
 	
 	while(1) { 
 		printf(">>>");
-		gets_input(input_buff);		
+		gets_input(input_buff, MAX_LENGTH);		
 		token = strtok(input_buff, " ");
 		
 		while(token != NULL) {
-			if(status == INTERPRETER)
-        			status = interpret_words(token);
+			switch(status) {
+			case INTERPRETER:
+        		status = interpret_words(token);
+				break;
         			
-        		else if(status == COMPILER)
-        			status = compiler_words(token);
+        	case COMPILER:
+        		status = compiler_words(token);
+				break;
         			
-        		else if(status == COMMENT)
-        			status = ignore_words(token);
-        			
-        		token = strtok(NULL, " ");
-    		}
+        	case COMMENT:
+        		status = ignore_words(token);
+				break;
+        	}
+        	token = strtok(NULL, " ");
+    	}
 	}	
 	return 0;
 } 
@@ -73,12 +77,18 @@ int main( void )
 /*
 ** gets_input 
 */
-int gets_input( char *str )
+int gets_input( char *s, int n )
 {
 	char c;
-	for(; (c = getchar()) != '\n'; str++) 
-		*str = (c == '\t') ? ' ' : c;
-	*str = '\0';
+
+	while(--n > 0) {
+		if((c = getchar()) == '\n')
+			break;
+		else
+			*s++ = (c == '\t') ? ' ' : c;
+	}
+
+	*s = '\0';
 	return 0;
 }
  
@@ -86,33 +96,40 @@ int gets_input( char *str )
 /*
 ** interpret_words 
 */
-int interpret_words( char *str )
+int interpret_words( char *s )
 {
 	int i;
 	int status = INTERPRETER;
 
-	switch( what_is(str) ) {
+	switch( what_is(s) ) {
 
 	case 2:
-	case 4:	push( atoi(str) ); break;
+	case 4:
+		push( atoi(s) );
+		break;
 		
-	case 5:	status = COMPILER; break;
+	case 5:
+		status = COMPILER;
+		break;
 	
-	case 6:	status = COMMENT; break;
+	case 6:
+		status = COMMENT;
+		break;
 	
 	case 0:
 	case 3: 	
 		for (i = 0; i <= CODEWORDS_NUM; i++) {
 			if( i == CODEWORDS_NUM ) {
-				printf("Undefine word!\n-->%s<--\n", str);
+				printf("Undefine word!\n-->%s<--\n", s);
 				clean_stack();
 				break;
 			}
-			else if( !strcmp(word_str[i], str) ) {
+			else if( !strcmp(word_str[i], s) ) {
 				word_pointer[i]();
 				break;
 			}
-		} break;
+		}
+		break;
 	}
 				
 	return status;
@@ -122,7 +139,8 @@ int interpret_words( char *str )
 /*
 ** what_is 
 */
-char edges[ ][5] =  {   /*   num  -   :  （ */
+char edges[ ][5]  = {
+					/*   num  -   :  （ */
 	/* state 0 */	{ 0,  0,  0,  0,  0 },
 	/* state 1 */	{ 0,  2,  3,  5,  6 },
 	/* state 2 */	{ 0,  2,  0,  0,  0 },
@@ -132,18 +150,18 @@ char edges[ ][5] =  {   /*   num  -   :  （ */
 	/* state 6 */	{ 0,  0,  0,  0,  0 }
 };
 
-int what_is( char* str )
+int what_is( char* s )
 {
 	int state, i;
-	for(state=1; *str != '\0'; str++) {
+	for(state = 1; *s != '\0'; s++) {
 		
-		if( *str>='0' && *str<='9' ) 
+		if( *s >= '0' && *s <= '9' ) 
 			i = 1;
-		else if( *str=='-' )
+		else if( *s == '-' )
 			i = 2;
-		else if( *str==':' )
+		else if( *s == ':' )
 			i = 3;
-		else if( *str=='(' )
+		else if( *s == '(' )
 			i = 4;
 		else
 			i = 0;
@@ -159,10 +177,10 @@ int what_is( char* str )
 ** compiler_words
 ** 编译器模式，预留了位置，代码未完成。 
 */
-int compiler_words( char *str )
+int compiler_words( char *s )
 {
 	int status = COMPILER;
-	if( !strcmp(";", str) ) 
+	if( !strcmp(";", s) ) 
 		status = INTERPRETER;
 	return status;
 } 
@@ -170,10 +188,10 @@ int compiler_words( char *str )
 /*
 ** ignore_words 
 */
-int ignore_words( char *str )
+int ignore_words( char *s )
 {
 	int status = COMMENT;
-	if( !strcmp(")", str) ) 
+	if( !strcmp(")", s) ) 
 		status = INTERPRETER;
 	return status;
 } 
