@@ -5,6 +5,11 @@ But now it's just a simple model, not real forth.
 
 
 /*
+** 2012-8-20
+** 使用strtok_r函数替代了strtok函数。
+*/
+
+/*
 ** 2012-8-19
 ** 修补了gets_input函数的数组溢出漏洞。
 ** gets_input函数指定了最大存储字符数。
