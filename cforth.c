@@ -44,30 +44,32 @@ int main( void )
 {
 	printf("Cforth_alpha 0.3.4\n"); 
 
-	char *token;
+	char *next = NULL;
+	char *tmp = NULL;
+	char *d = " ";
 	int status = INTERPRETER;
 	char input_buff[ MAX_LENGTH ];
 	
 	while(1) { 
 		printf(">>>");
 		gets_input(input_buff, MAX_LENGTH);		
-		token = strtok(input_buff, " ");
+		next = strtok_r(input_buff, d, &tmp);
 		
-		while(token != NULL) {
+		while(next != NULL) {
 			switch(status) {
 			case INTERPRETER:
-        		status = interpret_words(token);
+        		status = interpret_words(next);
 				break;
         			
         	case COMPILER:
-        		status = compiler_words(token);
+        		status = compiler_words(next);
 				break;
         			
         	case COMMENT:
-        		status = ignore_words(token);
+        		status = ignore_words(next);
 				break;
         	}
-        	token = strtok(NULL, " ");
+        	next = strtok_r(NULL, d, &tmp);
     	}
 	}	
 	return 0;
