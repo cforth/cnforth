@@ -12,7 +12,7 @@
 #define INTERPRETER	1	/* 设置解释模式 */ 
 #define	COMMENT		2	/* 设置注释模式 */
 #define MAX_LENGTH	1000	/* 设置字符串处理的最大长度 */
-#define CODEWORDS_NUM	20	/* 设置核心字的最大数量 */ 
+#define CODEWORDS_NUM	21	/* 设置核心字的最大数量 */ 
 #define WORD_WIDTH	20	/* 设置单个核心字名字的最大宽度 */
 
 /*
@@ -23,7 +23,8 @@ const char word_str[ CODEWORDS_NUM ][ WORD_WIDTH ] =
 {	".s",	".rs",	".",	"swap",	">r",
 	"r>",	"dup",	"drop",	"over",	"+",
 	"-",	"*",	"/",	"%",	"--",
-	"++",	"rot",	"bye",	"~",	"bool"	};
+	"++",	"rot",	"bye",	"~",	"bool",
+	"look"	};
 
 /*
 ** word_pointer
@@ -34,7 +35,16 @@ pType word_pointer[ CODEWORDS_NUM ] =
 {	sh_ds,	sh_rs,	pop,	swap,	tor,
 	rto,	dup,	drop,	over,	add,
 	sub,	mul,	div_new,mod,	sub1,
-	add1,	rot,	bye,	negate,	bool1	}; 
+	add1,	rot,	bye,	negate,	bool1,
+	printf_dict	}; 
+
+/*
+** name为冒号字名字缓冲区，defin为冒号字定义缓冲区。
+** if_name 为冒号字位置状态，1为名字，0为定义。
+*/
+static char name[20];
+static char defin[100];
+static int if_name = 1;
 
 
 /* 
@@ -177,14 +187,30 @@ int what_is( char* s )
 
 /*
 ** compiler_words
-** 编译器模式，预留了位置，代码未完成。 
 */
 int compiler_words( char *s )
 {
-	int status = COMPILER;
-	if( !strcmp(";", s) ) 
-		status = INTERPRETER;
-	return status;
+
+	if( if_name == 1 && !strcmp(";", s) ) { 
+		return INTERPRETER;
+	}
+
+	if(if_name == 1) {
+		strcpy(name, s);
+		strcpy(defin, "\0");
+		if_name = 0;
+	}
+	else if ( if_name == 0 && !strcmp(";", s) ) {
+		add_word(name, defin);
+		if_name = 1;
+		return INTERPRETER; 
+	}
+	else {
+		strcat(defin, s);
+		strcat(defin, " ");
+	}
+	
+	return COMPILER;
 } 
 
 /*

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "code_words.h"    /* cforth.c依赖code_words.h */
+#include "dict.h"
 
 /*
 ** gets_input
