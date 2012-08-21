@@ -9,14 +9,26 @@
 #include <assert.h>
 #include "dict.h"
 
+
+/*
+** 使用链表实现字典结构
+*/
 typedef struct DICT_NODE {
 	char name[20];
 	char defin[100];
 	struct DICT_NODE *next;
 } DictNode;
 
+
+/*
+** 设置字典链表的初始节点指向NULL。
+*/
 static DictNode *dict = NULL;
 
+
+/*
+** add_word
+*/
 void add_word( char *n, char *d )
 {
 	DictNode *new_node;
@@ -30,6 +42,10 @@ void add_word( char *n, char *d )
 	return;
 }
 
+
+/*
+** find_word
+*/
 char *find_word(char *n)
 {
 	DictNode *p = dict;
@@ -41,6 +57,10 @@ char *find_word(char *n)
 	return NULL;
 }
 
+
+/*
+** printf_dict
+*/
 void printf_dict( void )
 {
 	DictNode *p = dict;
@@ -51,20 +71,4 @@ void printf_dict( void )
 	return;
 }
 
-int main()
-{
-	char tmp[20];
-	add_word("1", "111");
-	add_word("2", "ca adsa asd");
-	add_word("3", "333");
-	strcpy(tmp, find_word("1"));
-	printf("%s\n",tmp);
-	strcpy(tmp, find_word("3"));
-	printf("%s\n",tmp);
-	strcpy(tmp, find_word("2"));
-	printf("%s\n",tmp);
-	if(find_word("4") == NULL)
-		printf("error\n");
-	printf_dict();
-	return 0;
-}
+
