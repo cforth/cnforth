@@ -15,8 +15,8 @@
 */
 static	STACK_TYPE	ds[ STACK_SIZE ];
 static	STACK_TYPE	rs[ STACK_SIZE ];
-static	STACK_TYPE	*dsp = ds;
-static	STACK_TYPE	*rsp = rs;
+static	STACK_TYPE	*ds_p = ds;
+static	STACK_TYPE	*rs_p = rs;
 
 
 /*
@@ -24,7 +24,7 @@ static	STACK_TYPE	*rsp = rs;
 */
 int ds_len( void )
 {
-	return dsp - ds;
+	return ds_p - ds;
 }
 
 
@@ -33,7 +33,7 @@ int ds_len( void )
 */
 int rs_len( void )
 {
-	return rsp - rs;
+	return rs_p - rs;
 }
 
 
@@ -43,8 +43,8 @@ int rs_len( void )
 */
 void clean_stack( void )
 {
-	dsp = ds;
-	rsp = rs;
+	ds_p = ds;
+	rs_p = rs;
 	return;
 }
 
@@ -59,8 +59,8 @@ void push( STACK_TYPE value )
 		clean_stack();
 		return;
 	}
-	dsp++;
-	*dsp = value;
+	ds_p++;
+	*ds_p = value;
 	return;
 } 
 
@@ -81,9 +81,9 @@ void tor( void )
 		return;
 	}
 
-	rsp++;
-	*rsp = *dsp;
-	dsp--;
+	rs_p++;
+	*rs_p = *ds_p;
+	ds_p--;
 	return;
 } 
 
@@ -104,9 +104,9 @@ void rto( void )
 		return;
 	}
 
-	dsp++; 
-	*dsp = *rsp; 
-	rsp--; 
+	ds_p++; 
+	*ds_p = *rs_p; 
+	rs_p--; 
 	return;
 } 
 
@@ -121,7 +121,7 @@ void drop( void )
 		clean_stack();
 		return;
 	} 
-	dsp--; 
+	ds_p--; 
 	return;
 } 
 
@@ -136,8 +136,8 @@ void dup( void )
 		clean_stack();
 		return;
 	} 
-	dsp++; 
-	*dsp = *(dsp-1); 
+	ds_p++; 
+	*ds_p = *(ds_p-1); 
 	return;
 } 
 
@@ -153,9 +153,9 @@ void swap( void )
 		return;
 	} 
 	STACK_TYPE tmp; 
-	tmp = *dsp;
-	*dsp = *(dsp-1);
-	*(dsp-1) = tmp;
+	tmp = *ds_p;
+	*ds_p = *(ds_p-1);
+	*(ds_p-1) = tmp;
 	return;
 } 
 
@@ -170,8 +170,8 @@ void add( void )
 		clean_stack();
 		return;
 	} 
-	*(dsp-1) += *dsp; 
-	dsp--; 
+	*(ds_p-1) += *ds_p; 
+	ds_p--; 
 	return;
 } 
 
@@ -186,8 +186,8 @@ void sub( void )
 		clean_stack();
 		return;
 	} 
-	*(dsp-1) -= *dsp; 
-	dsp--;
+	*(ds_p-1) -= *ds_p; 
+	ds_p--;
 	return;
 } 
 
@@ -202,8 +202,8 @@ void mul( void )
 		clean_stack();
 		return;
 	} 
-	*(dsp-1) *= *dsp; 
-	dsp--;
+	*(ds_p-1) *= *ds_p; 
+	ds_p--;
 	return;
 } 
 
@@ -218,14 +218,14 @@ void div_new( void )
 		clean_stack();
 		return;
 	}
-	else if(*dsp == 0) {
+	else if(*ds_p == 0) {
 		error_msg(7);
 		clean_stack();
 		return;
 	}
 
-	*(dsp-1) /= *dsp; 
-	dsp--;
+	*(ds_p-1) /= *ds_p; 
+	ds_p--;
 	return;
 } 
 
@@ -240,14 +240,14 @@ void mod( void )
 		clean_stack();
 		return;
 	} 
-	else if(*dsp == 0) {
+	else if(*ds_p == 0) {
 		error_msg(7);
 		clean_stack();
 		return;
 	}
 
-	*(dsp-1) %= *dsp; 
-	dsp--;
+	*(ds_p-1) %= *ds_p; 
+	ds_p--;
 	return;
 } 
 
@@ -259,7 +259,7 @@ void sh_ds( void )
 {
 	printf("<%d> ",ds_len());
 	STACK_TYPE *tmp;
-	for(tmp=ds+1; tmp<=dsp; tmp++)
+	for(tmp=ds+1; tmp<=ds_p; tmp++)
 		printf("%d ",*tmp);
 	printf("\n");
 	return;
@@ -273,7 +273,7 @@ void sh_rs( void )
 {
 	printf("<%d> ",rs_len());
 	STACK_TYPE *tmp;
-	for(tmp=rs+1; tmp<=rsp; tmp++)
+	for(tmp=rs+1; tmp<=rs_p; tmp++)
 		printf("%d ",*tmp);
 	printf("[RS]\n");
 	return;
@@ -290,8 +290,8 @@ void pop( void )
 		clean_stack();
 		return ;
 	} 
-	printf("%d\n",*dsp);
-	dsp--; 
+	printf("%d\n",*ds_p);
+	ds_p--; 
 	return;
 } 
 
@@ -306,7 +306,7 @@ void sub1( void )
 		clean_stack();
 		return ;
 	}
-	*dsp -= 1;
+	*ds_p -= 1;
 	return;
 }
 
@@ -321,7 +321,7 @@ void add1( void )
 		clean_stack();
 		return ;
 	}
-	*dsp += 1;
+	*ds_p += 1;
 	return;
 }
 
@@ -336,8 +336,8 @@ void over( void )
 		clean_stack();
 		return;
 	}
-	dsp++;
-	*dsp = *(dsp-2);
+	ds_p++;
+	*ds_p = *(ds_p-2);
 	return;
 }
 
@@ -353,10 +353,10 @@ void rot( void )
 		clean_stack();
 		return;
 	}
-	tmp = *(dsp-2);
-	*(dsp-2) = *(dsp-1);
-	*(dsp-1) = *dsp;
-	*dsp = tmp;
+	tmp = *(ds_p-2);
+	*(ds_p-2) = *(ds_p-1);
+	*(ds_p-1) = *ds_p;
+	*ds_p = tmp;
 	return;
 }
 
@@ -381,7 +381,7 @@ void negate( void )
 		return ;
 	}
 	
-	*dsp = 0 - *dsp;
+	*ds_p = 0 - *ds_p;
 	return;
 }
 
@@ -397,8 +397,8 @@ void bool1( void )
 		return ;
 	}
 	
-	if(*dsp != 0)
-		*dsp = 1; 
+	if(*ds_p != 0)
+		*ds_p = 1; 
 	return;
 }
 
