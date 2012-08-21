@@ -5,7 +5,12 @@
 ** 版本号：	alpha 0.3.5
 ** 更新时间：	2012-08-21
 */
-	 
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include "code_words.h"
+#include "dict.h"
 #include "cforth.h"
 
 #define COMPILER	0	/* 设置编译模式 */
