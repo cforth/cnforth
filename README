@@ -5,6 +5,11 @@ But now it's just a simple model, not real forth.
 
 
 /*
+** 2012-8-21
+** 增加了dict字典模块，在测试中，未完成。
+*/
+
+/*
 ** 2012-8-20
 ** 使用strtok_r函数替代了strtok函数。
 */
