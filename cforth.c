@@ -1,9 +1,9 @@
 /*
-** Cforth_alpha 0.3.4
+** Cforth_alpha 0.3.5
 ** cforth.c	Cforth主程序
 ** 作者：	ear & xiaohao
-** 版本号：	alpha 0.3.4
-** 更新时间：	2012-08-19
+** 版本号：	alpha 0.3.5
+** 更新时间：	2012-08-21
 */
 	 
 #include "cforth.h"
@@ -52,7 +52,7 @@ static int if_name = 1;
 */  
 int main( void )
 {
-	printf("Cforth_alpha 0.3.4\n"); 
+	printf("Cforth_alpha 0.3.5\n"); 
 
 	char *next = NULL;
 	char *tmp = NULL;
