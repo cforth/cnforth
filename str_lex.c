@@ -12,7 +12,7 @@ typedef struct STR_NODE {
 } StrNode;
 
 
-static StrNode *str_p;
+static StrNode *str_p = NULL;
 static StrNode *str_tail = NULL;
 
 StrNode *create_str( void ) {
@@ -51,6 +51,19 @@ void printf_str( StrNode *str_head )
 	}
 }
 
+void destroy_str( StrNode *str_d )
+{
+	StrNode *p = str_d->next;
+	str_p = str_d;
+	while(p != NULL) {
+		str_d = p->next;
+		free(p);
+		p = str_d;
+	}
+	str_tail = NULL;
+	return;
+}
+
 int main()
 {
 	StrNode *str_head;
@@ -59,6 +72,10 @@ int main()
 	add_str(1,2,"cf");
 	add_str(2,5,"hello");
 	add_str(3,3,"cff");
+	printf_str(str_head);
+	destroy_str(str_head);
+	printf_str(str_head);
+	add_str(1,2,"cf");
 	printf_str(str_head);
 	return 0;
 }
