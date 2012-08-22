@@ -5,6 +5,12 @@ But now it's just a simple model, not real forth.
 
 
 /*
+** 2012-8-22
+** 增加了str_lex模块，在测试中，未完成。
+** 使用队列保存经过词法分析后的forth词。
+*/
+
+/*
 ** 2012-8-21
 ** 增加了dict字典模块，在测试中，未完成。
 */
