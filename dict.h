@@ -5,6 +5,17 @@
 
 
 /*
+** DICT_NODE
+** 使用链表实现字典结构
+*/
+typedef struct DICT_NODE {
+	char name[20];
+	char defin[100];
+	struct DICT_NODE *next;
+} DictNode;
+
+
+/*
 ** add_word
 ** 再字典链表中添加一个新冒号字。
 ** n为指向冒号字名字符串的指针。

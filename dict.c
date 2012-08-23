@@ -11,16 +11,6 @@
 
 
 /*
-** 使用链表实现字典结构
-*/
-typedef struct DICT_NODE {
-	char name[20];
-	char defin[100];
-	struct DICT_NODE *next;
-} DictNode;
-
-
-/*
 ** 设置字典链表的初始节点指向NULL。
 */
 static DictNode *dict = NULL;
