@@ -3,6 +3,10 @@ Cforth_alpha 0.3.5
 Cforth is a forth interpreter implemented in C programming language. 
 But now it's just a simple model, not real forth.
 
+/*
+** 2012-8-23
+** 给str_lex模块增加了销毁列表的操作函数。
+*/
 
 /*
 ** 2012-8-22
