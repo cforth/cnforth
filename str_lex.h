@@ -9,7 +9,6 @@
 ** 链表队列结构体，保存词法分析后的forth词。
 */
 typedef struct STR_NODE {
-	int index;
 	int type;
 	int length;
 	char str[20];
@@ -28,7 +27,14 @@ StrNode *create_str( void );
 ** add_str
 ** 在队列中新增一个节点。
 */
-void add_str( int t, int l, char *s );
+void add_str( int t, char *s );
+
+
+/*
+** del_str
+** 在队列中删除包含指定字符串的节点。
+*/
+void del_str( StrNode *head, char *s );
 
 
 /*

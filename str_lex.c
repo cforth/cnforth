@@ -27,7 +27,6 @@ StrNode *create_str( void ) {
 
 	p = malloc(sizeof(StrNode));
 	assert(p != NULL);
-	p->index = 0;
 	p->next = NULL;
 	str_prev = p;
 	return p;
@@ -37,20 +36,41 @@ StrNode *create_str( void ) {
 /*
 ** add_str
 */
-void add_str( int t, int l, char *s )
+void add_str( int t, char *s )
 {
 	StrNode *new;
 
 	new = malloc(sizeof(StrNode));
 	assert(new != NULL);
-	new->index = (str_prev->index) + 1;
 	new->type = t;
-	new->length = l;
+	new->length = strlen(s);
 	strcpy(new->str, s);
 	str_now = new;
 	str_now->next = NULL;
 	str_prev->next = str_now;
 	str_prev = str_now;
+	return;
+}
+
+
+/*
+** del_str
+*/
+void del_str( StrNode *head, char *s )
+{
+	StrNode *prov = head;
+	StrNode *now = head->next;
+	while(now != NULL) {
+		if(!strcmp(now->str, s)) {
+			now = now->next;
+			free(prov->next);
+			prov->next = now;
+		}
+		else {
+			prov = now;
+			now = now->next;
+		}
+	}
 	return;
 }
 
@@ -62,7 +82,7 @@ void printf_str( StrNode *head )
 {
 	StrNode *p = head->next;
 	while(p != NULL) {
-		printf("index:%d\ntype:%d\nlength:%d\nstring:%s\n\n",p->index,p->type,p->length,p->str);
+		printf("type:%d\nlength:%d\nstring:%s\n\n",p->type,p->length,p->str);
 		p = p->next;
 	}
 	return;
@@ -94,15 +114,20 @@ int main()
 {
 	StrNode *str_head;
 	str_head = create_str();
-	int i = 10;
-	while(i--) {
-		add_str(1,2,"cf");
-		add_str(1,5,"hello");
-		add_str(3,3,"811");
-		printf_str(str_head);
+		
+	while(1) {
+		add_str(1,"cf");
+		add_str(1,"hello");
+		add_str(0,"811");
+		add_str(1,"hello");
+		add_str(0,"811");
+		add_str(1,"tail");
+	
+		del_str(str_head, "hello");
+		del_str(str_head, "811");
+		del_str(str_head, "cf");
+	
 		destroy_str(str_head);
-		printf_str(str_head);
 	}
-	printf_str(str_head);
 	return 0;
 }
