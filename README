@@ -4,6 +4,12 @@ Cforth is a forth interpreter implemented in C programming language.
 But now it's just a simple model, not real forth.
 
 /*
+** 2012-8-27
+** 增加了list模块，把链表数据结构模块独立出来。
+** 测试中，未完成。
+*/
+
+/*
 ** 2012-8-24
 ** 给str_lex模块增加了删除列表中指定节点的操作函数。
 */
