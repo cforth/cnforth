@@ -6,7 +6,7 @@
 
 typedef struct List List;
 struct List {
-	char name[20];
+	char *name;
 	char type;
 	List *next;
 };
@@ -18,7 +18,7 @@ List *newitem(char *name, char type)
 
 	newp = (List *) malloc(sizeof(List));
 	assert(newp != NULL);
-	strcpy(newp->name, name);
+	newp->name = name;
 	newp->type = type;
 	newp->next = NULL;
 	return newp;
@@ -79,15 +79,58 @@ void inccounter(List *p, void *arg)
 }
 
 
+void freeall(List *listp)
+{
+	List *next;
+
+	for (; listp != NULL; listp = next) {
+		next = listp->next;
+		free(listp);
+	}
+}
+
+
+List *delitem(List *listp, char *name)
+{
+	List *p, *prev;
+
+	prev = NULL;
+	for (p = listp; p != NULL; p = p->next) {
+		if (strcmp(name, p->name) == 0) {
+			if(prev == NULL)
+				listp = p->next;
+			else
+				prev->next = p->next;
+			free(p);
+			return listp;
+		}
+		prev = p;
+	}
+	printf("delitem: %s not in list\n", name);
+	return listp;
+}
+
+
 int main()
 {
 	List *list;
-	int n = 0;
+	int n = 10;
+	while(1) {
 	list = newitem("12", 'n');
 	list = addfront(list, newitem("34", 'n'));
 	list = addend(list, newitem("+", 'e'));
+//	apply(list, printnt, "name:%s\ntype:%c\n\n");
+	
+	list = delitem(list, "+");
+//	list = delitem(list, "-");
+//	apply(list, printnt, "name:%s\ntype:%c\n\n");
+	
+//	apply(list, inccounter, &n);
+//	printf("%d elements in list\n",n);
+
+	freeall(list);
+	}
+	list = newitem("12", 'n');
 	apply(list, printnt, "name:%s\ntype:%c\n\n");
-	apply(list, inccounter, &n);
-	printf("%d elements in list\n",n);
 	return 0;
 }
