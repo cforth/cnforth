@@ -1,7 +1,16 @@
 Cforth_alpha 0.3.5
+====================
+
+
+######作者:十八哥
+######E-mail:cforth@163.com
+--------------------
 
 Cforth is a forth interpreter implemented in C programming language. 
 But now it's just a simple model, not real forth.
+
+
+--------------------
 
 /*
 ** 2012-8-27
