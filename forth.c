@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include "code_words.h"
 #include "dict.h"
-#include "cforth.h"
+#include "forth.h"
 
 #define COMPILER	0	/* 设置编译模式 */
 #define INTERPRETER	1	/* 设置解释模式 */ 
