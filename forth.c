@@ -2,30 +2,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "words.h"
 #include "forth.h"
-
-typedef void(*fnP)();  
-
-//int cell=sizeof(int);
-typedef struct Word_
-{
-	struct Word_ *next; 
-	char *name;
-	fnP fn;                //核心字
-	struct Word_ **wplist;//word类型指针数组(指针的指针),扩展字用
-//    int num;              //变量字中保存值
-} Word;
-
-
-static int DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];//(data return temp)stack
-static int *DP, *RP, *TP;//stack pointer
-static Word  **IP;//Word类型指针数组(指针的指针)
-
 
 //缓存区
 char cmdstr[BUFF_LEN];
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为cmdstr_len/4
 Word **IP_list_p=IP_list;        //Word类型指针，指向IP_list[0]
+
+Word *dict_head; //字典入口指针
+Word *pushh;   //push字指针
 
 void showDS()
 {
@@ -34,86 +20,7 @@ void showDS()
 	for (;i<=DP ;i++ )
 	{
 		printf("%d ",*i);
-	}printf("\n");
-}
-
-//STACK OPERATE 
-void bye()	 {exit(0);}//结束程序
-void push(){IP++;DP++;*DP=(int)*IP;}
-void dup(){DP++;*DP=*(DP-1);if (DEBUG) printf("[DEBUG]进入dup\n");}
-void swap(){int t=*DP; *DP=*(DP-1); *(DP-1)=t;}
-void over(){*(DP+1)=*(DP-1);DP++;}
-void drop(){DP--;}
-//RS
-void tor()	{RP++;*RP=*DP;DP--;}
-void rto()	{DP++;*DP=*RP;RP--;}
-void rat()	{DP++;*DP=*RP;}
-//TS
-void tot()	{TP++;*TP=*DP;DP--;}
-void tto()	{DP++;*DP=*TP;TP--;}
-void tat()	{DP++;*DP=*TP;}
-//加减乘除
-void add(){ *(DP-1)=*(DP-1)+(*DP); DP--;}
-void sub(){ *(DP-1)=*(DP-1)-(*DP); DP--;}
-void mul(){ *(DP-1)=*(DP-1)*(*DP); DP--;}
-void divv(){ *(DP-1)=*(DP-1)/(*DP); DP--;}
-
-//;
-void ret()	{IP=(Word**)*RP;	RP--;if (DEBUG) printf("[DEBUG]进入ret\n");}
-
-//if else then语句
-void iff() {if(*DP==0){IP = IP + (int)(*(IP+1));}else{IP++;} DP--;}
-void elsee() {IP = IP + (int)(*(IP+1));}
-void then() {;}
-
-
-//for next 循环
-void forr() {if(*DP<1){IP = IP + (int)(*(IP+1)); DP--;}else{IP++; (*DP)--; tot();}}
-void next() {IP = IP - (int)(*(IP+1)); tto();}
-
-//变量存入和取出
-void var() {;}
-void invar() {;}
-void outvar() {;}
-
-Word *dict_head, *pushh;
-Word * code(char*s, fnP  fp)
-{
-	Word *w=(Word*)malloc(sizeof(Word));
-	w->next=dict_head;
-	dict_head=w;
-	w->fn=fp;
-	w->wplist=NULL;
-//    w->num = NULL;  //实现变量
-
-	w->name=s;
-
-	return w;
-}
-
-void dolist()
-{
-	RP++;
-	*RP=(int)IP;
-	IP=(*IP)->wplist-1;
-	if (DEBUG) printf("[DEBUG]进入dolist\n");
-}
-
-void colon(char*s)
-{
-	Word *w=(Word*)malloc(sizeof(Word));
-	w->next=dict_head;
-	dict_head=w;
-	w->fn=dolist;
-
-	w->name=(char*)malloc(strlen(s)+1);
-	strcpy(w->name,s);
-
-	int n=(int)IP_list_p-(int)IP_list;
-	w->wplist=(Word**)malloc(n);
-	memcpy(w->wplist,IP_list, n);
-    
-    
+	}printf("\n\n");
 }
 
 
@@ -157,9 +64,8 @@ Word** if_p = NULL;
 Word** else_p = NULL;
 Word** for_p = NULL;
 
-int find_Word(char *w)
+int find_Word(char *w, Word *dict)
 {
-	Word * dict=dict_head;
 	while (strcmp(dict->name,w))
 	{  
 		dict=dict->next;
@@ -232,7 +138,7 @@ int find_Word(char *w)
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
         IP_list_p++;
     }
-    else if(!strcmp("variable",w))
+    else if(!strcmp("variable",w)) //未完成
     {
     }
     else if(!strcmp("!",w)) //未完成
@@ -260,8 +166,7 @@ void init()
 	TP=TS-1;
     //*TP=0;
 	IP_list_p=IP_list;
-	//DS[0]=123;DS[1]=456;
-    //DP=DS+1;
+
 }
 
 void explain()
@@ -279,6 +184,7 @@ void explain()
 
 void compile(char *s)
 {
+    int n;
 	s=ignore_blankchar( s);
 	
 	char *name=NULL;
@@ -298,7 +204,7 @@ void compile(char *s)
 		s=split_Word(s);
         w_after = ignore_blankchar(s);
 
-		if(!find_Word(w) )
+		if(!find_Word(w, dict_head) )
 		{//判断后面一个字是否为！或者@  //未完成
             if((*w_after!=0 && *w_after == '!') || (*w_after!=0 && *w_after == '@'))
             {
@@ -324,9 +230,11 @@ void compile(char *s)
     }
 
 //	printf("%s\n",name);
-    if (name!=NULL)
-		colon(name);
-	else
+    if (name!=NULL) {
+        n=(int)IP_list_p-(int)IP_list;
+		dict_head = colon(name, IP_list, n, dict_head);
+	}
+    else
 		explain();
 
     
@@ -345,45 +253,38 @@ int main()
 	dict_head=NULL;
 	
 
-	pushh=code("push",push);
-	code("bye",bye);
-	code("dup",dup);
-	code("swap",swap);
-	code("over",over);
-	code("drop",drop);
+	pushh = code("push",push,dict_head);
+	dict_head = code("bye",bye,pushh);
+	dict_head = code("dup",dup,dict_head);
+	dict_head = code("swap",swap,dict_head);
+	dict_head = code("over",over,dict_head);
+	dict_head = code("drop",drop,dict_head);
 	
-	code(">r",tor);
-	code("r>",rto);
-	code("r@",rat);
+	dict_head = code(">r",tor,dict_head);
+	dict_head = code("r>",rto,dict_head);
+	dict_head = code("r@",rat,dict_head);
 
-	code(">t",tot);
-	code("t>",tto);
-	code("t@",tat);
+	dict_head = code(">t",tot,dict_head);
+	dict_head = code("t>",tto,dict_head);
+	dict_head = code("t@",tat,dict_head);
 
-	code("+",add);
-	code("-",sub);
-	code("*",mul);
-	code("/",divv);
+	dict_head = code("+",add,dict_head);
+	dict_head = code("-",sub,dict_head);
+	dict_head = code("*",mul,dict_head);
+	dict_head = code("/",divv,dict_head);
 
 
-	code("ret",ret);
-	code(";",ret);
-	code("dolist",dolist);
-    code("if",iff);
-    code("else",elsee);
-    code("then",then);
-    code("for",forr);
-    code("next",next);
-    code("variable", var);
-    code("!", invar);
-    code("@", outvar);
-
-/*
-	fnP x[]={dup,dup,ret,0};
-	colon("x",x);
-
-	fnP y[]={dict_head->wplist,0};colon("y",y);
-*/	
+	dict_head = code("ret",ret,dict_head);
+	dict_head = code(";",ret,dict_head);
+	dict_head = code("dolist",dolist,dict_head);
+    dict_head = code("if",iff,dict_head);
+    dict_head = code("else",elsee,dict_head);
+    dict_head = code("then",then,dict_head);
+    dict_head = code("for",forr,dict_head);
+    dict_head = code("next",next,dict_head);
+    dict_head = code("variable", var,dict_head);
+    dict_head = code("!", invar,dict_head);
+    dict_head = code("@", outvar,dict_head);
 
 
 	while (1)
