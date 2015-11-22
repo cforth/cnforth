@@ -2,14 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "forth.h"
 
-#define	DEBUG	 1
-#define	BUFF_LEN 1024
-#define	S_LEN	 100
-
-
-
-typedef void(*fnP)();//funcion pointer
+typedef void(*fnP)();  
 
 //int cell=sizeof(int);
 typedef struct Word_
@@ -22,7 +17,7 @@ typedef struct Word_
 } Word;
 
 
-static int DS[S_LEN], RS[S_LEN], TS[10];//(data return temp)stack
+static int DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];//(data return temp)stack
 static int *DP, *RP, *TP;//stack pointer
 static Word  **IP;//Word类型指针数组(指针的指针)
 
@@ -90,12 +85,9 @@ Word * code(char*s, fnP  fp)
 	w->fn=fp;
 	w->wplist=NULL;
 //    w->num = NULL;  //实现变量
-/*暂定
-	w->name=(char*)malloc(strlen(s)+1);
-	strcpy(w->name,s);
-/*/
+
 	w->name=s;
-//*/
+
 	return w;
 }
 
@@ -180,7 +172,7 @@ int find_Word(char *w)
                 if (DEBUG)	printf("[DEBUG]成功找到数字%s\n",w);
                 *IP_list_p=pushh;	  //将push核心字指针存入IP_list_p数组        
                 IP_list_p++;        //数组指针指向下一个位置
-                *IP_list_p=(Word*)atoi(w);	//！！！
+                *IP_list_p=(Word*)atoi(w);	//将int型数强制转换为Word指针类型
                 IP_list_p++;
 
                 return 1;
