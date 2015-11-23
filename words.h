@@ -1,14 +1,14 @@
-#define	STACK_LEN	 100
-#define	DEBUG	 1
+#define    STACK_LEN     100
+#define    DEBUG     1
 typedef void(*fnP)();  
 
 //int cell=sizeof(int);
-typedef struct Word_
+typedef struct Word
 {
-	struct Word_ *next; 
-	char *name;
-	fnP fn;                //核心字
-	struct Word_ **wplist;//word类型指针数组(指针的指针),扩展字用
+    struct Word *next; 
+    char *name;
+    fnP fn;                //核心字
+    struct Word **wplist;//word类型指针数组(指针的指针),扩展字用
 //    int num;              //变量字中保存值
 } Word;
 

@@ -1,4 +1,4 @@
-#define	DEBUG	 1
-#define	BUFF_LEN 1024
+#define    DEBUG    1
+#define    BUFF_LEN 1024
 
 

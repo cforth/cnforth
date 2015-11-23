@@ -5,8 +5,7 @@
 #include "words.h"
 #include "forth.h"
 
-//缓存区
-char cmdstr[BUFF_LEN];
+char cmdstr[BUFF_LEN];    //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为cmdstr_len/4
 Word **IP_list_p=IP_list;        //Word类型指针，指向IP_list[0]
 
@@ -15,49 +14,53 @@ Word *pushh;   //push字指针
 
 void showDS()
 {
-	printf("DS> ");
-	int *i=DS;
-	for (;i<=DP ;i++ )
-	{
-		printf("%d ",*i);
-	}printf("\n\n");
+    printf("DS> ");
+    int *i=DS;
+    for (;i<=DP ;i++ )
+    {
+        printf("%d ",*i);
+    }
+    printf("\n\n");
 }
 
 
-int is_blankchar(char c)	{ return (c==' ' || c=='\t' || c=='\n' ); }
+int is_blankchar(char c)
+{
+    return (c==' ' || c=='\t' || c=='\n' );
+}
 
 
 char * ignore_blankchar(char *s)
 {
-	while (is_blankchar(*s))
-		s++;
-	return s;
+    while (is_blankchar(*s))
+        s++;
+    return s;
 }
 char * until_Wordend(char *s)
 {
-	while ( !is_blankchar(*s)  && *s!='\0')
-		s++;
-	return s;
+    while ( !is_blankchar(*s)  && *s!='\0')
+        s++;
+    return s;
 }
 
 char * split_Word(char *s)
 {
-	s=until_Wordend(s);
-	if (*s=='\0')
-		return s;
-	*s='\0';
-	s++;
-	return s;
+    s=until_Wordend(s);
+    if (*s=='\0')
+        return s;
+    *s='\0';
+    s++;
+    return s;
 }
 
 int is_num(char *s)
 {
-	while (*s != 0)
-	{
-		if (!isdigit((int)*s)) return 0;
-		s++;
-	}
-	return 1;
+    while (*s != 0)
+    {
+        if (!isdigit((int)*s)) return 0;
+        s++;
+    }
+    return 1;
 }
 
 Word** if_p = NULL;
@@ -66,30 +69,30 @@ Word** for_p = NULL;
 
 int find_Word(char *w, Word *dict)
 {
-	while (strcmp(dict->name,w))
-	{  
-		dict=dict->next;
-		if(dict==NULL)    //字典链表搜索不到名字后执行
-		{
-			if (!is_num(w))	{
+    while (strcmp(dict->name,w))
+    {  
+        dict=dict->next;
+        if(dict==NULL)    //字典链表搜索不到名字后执行
+        {
+            if (!is_num(w))    {
                     return 0; //如果不是数字，返回0
             }
             else {               //如果是数字
-                if (DEBUG)	printf("[DEBUG]成功找到数字%s\n",w);
-                *IP_list_p=pushh;	  //将push核心字指针存入IP_list_p数组        
+                if (DEBUG)    printf("[DEBUG]成功找到数字%s\n",w);
+                *IP_list_p=pushh;      //将push核心字指针存入IP_list_p数组        
                 IP_list_p++;        //数组指针指向下一个位置
-                *IP_list_p=(Word*)atoi(w);	//将int型数强制转换为Word指针类型
+                *IP_list_p=(Word*)atoi(w);    //将int型数强制转换为Word指针类型
                 IP_list_p++;
 
                 return 1;
-            }			
-		}
-	}
+            }            
+        }
+    }
     
     
     if(!strcmp("if",w))
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         IP_list_p++;
         if_p = IP_list_p;
@@ -97,7 +100,7 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("else",w)) 
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;  
         IP_list_p++;
         else_p = IP_list_p;
@@ -106,7 +109,7 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("then",w))
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         if(else_p == NULL)
         {
@@ -122,7 +125,7 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("for",w))
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         IP_list_p++;
         for_p = IP_list_p;
@@ -131,7 +134,7 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("next",w))
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;  
         IP_list_p++;
         *for_p = (Word*)(IP_list_p - for_p + 1); 
@@ -149,8 +152,8 @@ int find_Word(char *w, Word *dict)
     }
     else 
     {
-        if (DEBUG)	printf("[DEBUG]成功找到%s字\n",w);
-        *IP_list_p=dict;	
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
+        *IP_list_p=dict;    
         IP_list_p++;
     }
     
@@ -159,64 +162,64 @@ int find_Word(char *w, Word *dict)
 
 void init()
 {
-	DP=DS-1;
+    DP=DS-1;
     //*DP=0;
-	RP=RS-1;
+    RP=RS-1;
     //*RP=0;
-	TP=TS-1;
+    TP=TS-1;
     //*TP=0;
-	IP_list_p=IP_list;
+    IP_list_p=IP_list;
 
 }
 
 void explain()
 {
-	IP=IP_list;
-	
-	while(IP != IP_list_p)
-	{
+    IP=IP_list;
+    
+    while(IP != IP_list_p)
+    {
         if (DEBUG) printf("[DEBUG]解释执行> %s\n", (*IP)->name);
         
-		(*IP)->fn();
-		++IP;
-	}
+        (*IP)->fn();
+        ++IP;
+    }
 }
 
 void compile(char *s)
 {
     int n;
-	s=ignore_blankchar( s);
-	
-	char *name=NULL;
-	if (*s==':')
-	{
-		s++;
-		name=ignore_blankchar(s);
-		s=name;
-		s=split_Word(s);
-	}
-	char *w;
+    s=ignore_blankchar( s);
+    
+    char *name=NULL;
+    if (*s==':')
+    {
+        s++;
+        name=ignore_blankchar(s);
+        s=name;
+        s=split_Word(s);
+    }
+    char *w;
     char *w_after;
-	while (*s!=0)
-	{
-		s=ignore_blankchar(s);
-		w=s;
-		s=split_Word(s);
+    while (*s!=0)
+    {
+        s=ignore_blankchar(s);
+        w=s;
+        s=split_Word(s);
         w_after = ignore_blankchar(s);
 
-		if(!find_Word(w, dict_head) )
-		{//判断后面一个字是否为！或者@  //未完成
+        if(!find_Word(w, dict_head) )
+        {//判断后面一个字是否为！或者@  //未完成
             if((*w_after!=0 && *w_after == '!') || (*w_after!=0 && *w_after == '@'))
             {
                 printf("后面一个字是%s\n", w_after);
             }
-			else
+            else
                 printf("\n[%s]?\n",w);
-			init();
-			return;
-		}
-	}
-	//*IP_list_p=0;
+            init();
+            return;
+        }
+    }
+    //*IP_list_p=0;
     
     
     if(DEBUG) {
@@ -229,13 +232,13 @@ void compile(char *s)
         printf("\n");
     }
 
-//	printf("%s\n",name);
+//    printf("%s\n",name);
     if (name!=NULL) {
         n=(int)IP_list_p-(int)IP_list;
-		dict_head = colon(name, IP_list, n, dict_head);
-	}
+        dict_head = colon(name, IP_list, n, dict_head);
+    }
     else
-		explain();
+        explain();
 
     
     IP_list_p=IP_list;//临时区复原
@@ -249,34 +252,34 @@ void compile(char *s)
 
 int main() 
 {
-	init();
-	dict_head=NULL;
-	
+    init();
+    dict_head=NULL;
+    
 
-	pushh = code("push",push,dict_head);
-	dict_head = code("bye",bye,pushh);
-	dict_head = code("dup",dup,dict_head);
-	dict_head = code("swap",swap,dict_head);
-	dict_head = code("over",over,dict_head);
-	dict_head = code("drop",drop,dict_head);
-	
-	dict_head = code(">r",tor,dict_head);
-	dict_head = code("r>",rto,dict_head);
-	dict_head = code("r@",rat,dict_head);
+    pushh = code("push",push,dict_head);
+    dict_head = code("bye",bye,pushh);
+    dict_head = code("dup",dup,dict_head);
+    dict_head = code("swap",swap,dict_head);
+    dict_head = code("over",over,dict_head);
+    dict_head = code("drop",drop,dict_head);
+    
+    dict_head = code(">r",tor,dict_head);
+    dict_head = code("r>",rto,dict_head);
+    dict_head = code("r@",rat,dict_head);
 
-	dict_head = code(">t",tot,dict_head);
-	dict_head = code("t>",tto,dict_head);
-	dict_head = code("t@",tat,dict_head);
+    dict_head = code(">t",tot,dict_head);
+    dict_head = code("t>",tto,dict_head);
+    dict_head = code("t@",tat,dict_head);
 
-	dict_head = code("+",add,dict_head);
-	dict_head = code("-",sub,dict_head);
-	dict_head = code("*",mul,dict_head);
-	dict_head = code("/",divv,dict_head);
+    dict_head = code("+",add,dict_head);
+    dict_head = code("-",sub,dict_head);
+    dict_head = code("*",mul,dict_head);
+    dict_head = code("/",divv,dict_head);
 
 
-	dict_head = code("ret",ret,dict_head);
-	dict_head = code(";",ret,dict_head);
-	dict_head = code("dolist",dolist,dict_head);
+    dict_head = code("ret",ret,dict_head);
+    dict_head = code(";",ret,dict_head);
+    dict_head = code("dolist",dolist,dict_head);
     dict_head = code("if",iff,dict_head);
     dict_head = code("else",elsee,dict_head);
     dict_head = code("then",then,dict_head);
@@ -287,11 +290,11 @@ int main()
     dict_head = code("@", outvar,dict_head);
 
 
-	while (1)
-	{
-		printf(">>>");
-		gets(cmdstr);
-	//	printf("%s\n",cmdstr);
-		compile(cmdstr);
-	}
+    while (1)
+    {
+        printf(">>>");
+        gets(cmdstr);
+    //    printf("%s\n",cmdstr);
+        compile(cmdstr);
+    }
 }
