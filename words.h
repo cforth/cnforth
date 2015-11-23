@@ -9,7 +9,7 @@ typedef struct Word
     char *name;
     fnP fn;                //核心字
     struct Word **wplist;//word类型指针数组(指针的指针),扩展字用
-//    int num;              //变量字中保存值
+    int num;              //变量字中保存值
 } Word;
 
 
@@ -20,6 +20,7 @@ Word  **IP;//Word类型指针数组(指针的指针)
 Word *code(char*s, fnP  fp, Word *dict);
 void dolist();
 Word *colon(char*s, Word **list, int n, Word *dict);
+Word *variable(char*s, int num, Word *list);
 
 void bye();
 void push();
@@ -55,6 +56,5 @@ void forr();
 void next();
 
 //变量存入和取出
-void var();
 void invar();
 void outvar();

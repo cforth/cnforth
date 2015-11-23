@@ -11,7 +11,6 @@ Word *code(char*s, fnP  fp, Word *dict)
     dict=w;
     w->fn=fp;
     w->wplist=NULL;
-//    w->num = NULL;  //实现变量
 
     w->name=s;
 
@@ -38,6 +37,22 @@ Word *colon(char*s, Word **list, int n, Word *dict)
 
     w->wplist=(Word**)malloc(n);
     memcpy(w->wplist,list, n);
+    
+    return w;
+}
+
+Word *variable(char*s, int num, Word *dict)
+{
+    Word *w=(Word*)malloc(sizeof(Word));
+    w->next=dict;
+    dict=w;
+    w->fn=NULL;
+    
+    w->name=(char*)malloc(strlen(s)+1);
+    strcpy(w->name,s);
+    
+    
+    w->num = num;
     
     return w;
 }
@@ -78,6 +93,5 @@ void forr() {if(*DP<1){IP = IP + (int)(*(IP+1)); DP--;}else{IP++; (*DP)--; tot()
 void next() {IP = IP - (int)(*(IP+1)); tto();}
 
 //变量存入和取出
-void var() {;}
-void invar() {;}
-void outvar() {;}
+void invar() {((Word*)*DP)->num = *(DP-1);DP-=2;}
+void outvar() {*DP = ((Word*)*DP)->num;}

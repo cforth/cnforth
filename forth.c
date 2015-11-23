@@ -72,6 +72,7 @@ int find_Word(char *w, Word *dict)
     while (strcmp(dict->name,w))
     {  
         dict=dict->next;
+       
         if(dict==NULL)    //字典链表搜索不到名字后执行
         {
             if (!is_num(w))    {
@@ -88,7 +89,18 @@ int find_Word(char *w, Word *dict)
             }            
         }
     }
-    
+ 
+    if(dict->fn == NULL)  //判断这个字是否是变量字！！
+    {
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
+        *IP_list_p=pushh;
+        IP_list_p++;
+        *IP_list_p=dict;
+        IP_list_p++;
+        
+        return 1;
+    }
+        
     
     if(!strcmp("if",w))
     {
@@ -141,15 +153,19 @@ int find_Word(char *w, Word *dict)
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
         IP_list_p++;
     }
-    else if(!strcmp("variable",w)) //未完成
+/*     else if(!strcmp("variable",w)) //未完成
     {
-    }
-    else if(!strcmp("!",w)) //未完成
+        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
+        *IP_list_p=dict;
+        (*IP_list_p)->
+        
+    } */
+/*     else if(!strcmp("!",w)) //未完成
     {
     }
     else if(!strcmp("@",w)) //未完成
     {
-    }
+    } */
     else 
     {
         if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
@@ -191,6 +207,7 @@ void compile(char *s)
     s=ignore_blankchar( s);
     
     char *name=NULL;
+    char *var_name=NULL;
     if (*s==':')
     {
         s++;
@@ -198,23 +215,24 @@ void compile(char *s)
         s=name;
         s=split_Word(s);
     }
+    else if (*s=='$')  //变量定义方式 $ var_name 无法一行定义多个变量
+    {
+        s++;
+        var_name=ignore_blankchar(s);
+        s=var_name;
+        s=split_Word(s);        
+    }
+    
     char *w;
-    char *w_after;
     while (*s!=0)
     {
         s=ignore_blankchar(s);
         w=s;
         s=split_Word(s);
-        w_after = ignore_blankchar(s);
 
         if(!find_Word(w, dict_head) )
-        {//判断后面一个字是否为！或者@  //未完成
-            if((*w_after!=0 && *w_after == '!') || (*w_after!=0 && *w_after == '@'))
-            {
-                printf("后面一个字是%s\n", w_after);
-            }
-            else
-                printf("\n[%s]?\n",w);
+        {
+            printf("\n[%s]?\n",w);
             init();
             return;
         }
@@ -237,9 +255,11 @@ void compile(char *s)
         n=(int)IP_list_p-(int)IP_list;
         dict_head = colon(name, IP_list, n, dict_head);
     }
+    else if (var_name!=NULL) {
+        dict_head = variable(var_name, 0, dict_head);
+    }
     else
-        explain();
-
+        explain();  //进入解释模式
     
     IP_list_p=IP_list;//临时区复原
     if_p = NULL;   //复原if和else和for指针
@@ -285,7 +305,7 @@ int main()
     dict_head = code("then",then,dict_head);
     dict_head = code("for",forr,dict_head);
     dict_head = code("next",next,dict_head);
-    dict_head = code("variable", var,dict_head);
+    
     dict_head = code("!", invar,dict_head);
     dict_head = code("@", outvar,dict_head);
 
