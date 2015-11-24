@@ -153,19 +153,7 @@ int find_Word(char *w, Word *dict)
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
         IP_list_p++;
     }
-/*     else if(!strcmp("variable",w)) //未完成
-    {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
-        *IP_list_p=dict;
-        (*IP_list_p)->
-        
-    } */
-/*     else if(!strcmp("!",w)) //未完成
-    {
-    }
-    else if(!strcmp("@",w)) //未完成
-    {
-    } */
+
     else 
     {
         if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
@@ -314,7 +302,6 @@ int main()
     {
         printf(">>>");
         gets(cmdstr);
-    //    printf("%s\n",cmdstr);
         compile(cmdstr);
     }
 }
