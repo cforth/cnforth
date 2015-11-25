@@ -79,7 +79,7 @@ int find_Word(char *w, Word *dict)
                     return 0; //如果不是数字，返回0
             }
             else {               //如果是数字
-                if (DEBUG)    printf("[DEBUG]成功找到数字%s\n",w);
+                PRINT("[DEBUG]成功找到数字%s\n",w);
                 *IP_list_p=pushh;      //将push核心字指针存入IP_list_p数组        
                 IP_list_p++;        //数组指针指向下一个位置
                 *IP_list_p=(Word*)atoi(w);    //将int型数强制转换为Word指针类型
@@ -92,7 +92,7 @@ int find_Word(char *w, Word *dict)
  
     if(dict->fn == NULL)  //判断这个字是否是变量字！！
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
+        PRINT("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=pushh;
         IP_list_p++;
         *IP_list_p=dict;
@@ -104,7 +104,6 @@ int find_Word(char *w, Word *dict)
     
     if(!strcmp("if",w))
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         IP_list_p++;
         if_p = IP_list_p;
@@ -112,7 +111,6 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("else",w)) 
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;  
         IP_list_p++;
         else_p = IP_list_p;
@@ -121,7 +119,6 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("then",w))
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         if(else_p == NULL)
         {
@@ -137,7 +134,6 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("for",w))
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;
         IP_list_p++;
         for_p = IP_list_p;
@@ -146,7 +142,6 @@ int find_Word(char *w, Word *dict)
     }
     else if(!strcmp("next",w))
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;  
         IP_list_p++;
         *for_p = (Word*)(IP_list_p - for_p + 1); 
@@ -156,11 +151,11 @@ int find_Word(char *w, Word *dict)
 
     else 
     {
-        if (DEBUG)    printf("[DEBUG]成功找到%s字\n",w);
         *IP_list_p=dict;    
         IP_list_p++;
     }
     
+    PRINT("[DEBUG]成功找到%s字\n",w);
     return 1;
 }
 
@@ -182,7 +177,7 @@ void explain()
     
     while(IP != IP_list_p)
     {
-        if (DEBUG) printf("[DEBUG]解释执行> %s\n", (*IP)->name);
+        PRINT("[DEBUG]解释执行> %s\n", (*IP)->name);
         
         (*IP)->fn();
         ++IP;
@@ -240,7 +235,7 @@ void compile(char *s)
 
 
     if (name!=NULL) {
-        if (DEBUG) printf("[DEBUG]定义扩展字 %s\n", name);
+        PRINT("[DEBUG]定义扩展字 %s\n", name);
         n=(int)IP_list_p-(int)IP_list;
         dict_head = colon(name, IP_list, n, dict_head);
     }

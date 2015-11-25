@@ -22,7 +22,7 @@ void dolist()
     RP++;
     *RP=(int)IP;
     IP=(*IP)->wplist-1;
-    if (DEBUG) printf("[DEBUG]进入dolist\n");
+    PRINT("[DEBUG]进入dolist\n");
 }
 
 Word *colon(char*s, Word **list, int n, Word *dict)
@@ -61,7 +61,7 @@ Word *variable(char*s, int num, Word *dict)
 //STACK OPERATE 
 void bye()     {exit(0);}//结束程序
 void push(){IP++;DP++;*DP=(int)*IP;}
-void dup(){DP++;*DP=*(DP-1);if (DEBUG) printf("[DEBUG]进入dup\n");}
+void dup(){DP++;*DP=*(DP-1);}
 void swap(){int t=*DP; *DP=*(DP-1); *(DP-1)=t;}
 void over(){*(DP+1)=*(DP-1);DP++;}
 void drop(){DP--;}
@@ -80,7 +80,7 @@ void mul(){ *(DP-1)=*(DP-1)*(*DP); DP--;}
 void divv(){ *(DP-1)=*(DP-1)/(*DP); DP--;}
 
 //;
-void ret()    {IP=(Word**)*RP;    RP--;if (DEBUG) printf("[DEBUG]进入ret\n");}
+void ret()    {IP=(Word**)*RP; RP--;}
 
 //if else then语句
 void iff() {if(*DP==0){IP = IP + (int)(*(IP+1));}else{IP++;} DP--;}

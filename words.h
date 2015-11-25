@@ -1,5 +1,12 @@
 #define    STACK_LEN     100
-#define    DEBUG     1
+
+#define DEBUG 1
+#if DEBUG
+    #define PRINT(fmt, args...) printf(fmt,##args)
+#else
+    #define PRINT(fmt, args...)
+#endif
+
 typedef void(*fnP)();  
 
 //int cell=sizeof(int);
