@@ -238,8 +238,9 @@ void compile(char *s)
         printf("\n");
     }
 
-//    printf("%s\n",name);
+
     if (name!=NULL) {
+        if (DEBUG) printf("[DEBUG]定义扩展字 %s\n", name);
         n=(int)IP_list_p-(int)IP_list;
         dict_head = colon(name, IP_list, n, dict_head);
     }
