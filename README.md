@@ -12,7 +12,7 @@ c_forth 开发分支
 
 1. Windows(32位) + Cygwin + gcc 4.9.3 ;
 
-2. Windows(64位)支持在计划中。
+2. Windows(64位) + Cygwin + gcc 4.9.3。
 
 
 ## 特性支持
