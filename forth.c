@@ -5,13 +5,15 @@
 #include "words.h"
 #include "forth.h"
 
-char cmdstr[BUFF_LEN];    //输入缓存区
-Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为cmdstr_len/4
-Word **IP_list_p=IP_list;        //Word类型指针，指向IP_list[0]
+char cmdstr[BUFF_LEN];       //输入缓存区
+Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
+Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Word *dict_head; //字典入口指针
-Word *pushh;   //push字指针
+Word *dict_head; //Forth的字典入口指针
+Word *pushh;     //push字指针
 
+
+//打印数据栈
 void showDS()
 {
     printf("DS> ");
@@ -24,18 +26,23 @@ void showDS()
 }
 
 
+//判断字符是否为空白字符
 int is_blankchar(char c)
 {
     return (c==' ' || c=='\t' || c=='\n' );
 }
 
 
+//跳过字符串头部的空白字符后返回指针
 char * ignore_blankchar(char *s)
 {
     while (is_blankchar(*s))
         s++;
     return s;
 }
+
+
+//跳过字符串中第一个词后返回指针
 char * until_Wordend(char *s)
 {
     while ( !is_blankchar(*s)  && *s!='\0')
@@ -43,6 +50,8 @@ char * until_Wordend(char *s)
     return s;
 }
 
+
+//将字符串中第一个词后的空格变为'\0'，返回当前指针
 char * split_Word(char *s)
 {
     s=until_Wordend(s);
@@ -53,20 +62,27 @@ char * split_Word(char *s)
     return s;
 }
 
+
+//判断字符串是否为数字
 int is_num(char *s)
 {
     while (*s != 0)
     {
-        if (!isdigit((CELL)*s)) return 0;
+        if (!isdigit((CELL)*s)) 
+            return 0;
         s++;
     }
     return 1;
 }
 
+
+//定义if字、else字、for字定义时的临时位置指针
 Word** if_p = NULL;
 Word** else_p = NULL;
 Word** for_p = NULL;
 
+
+//根据Forth代码中的当前字的名字，去执行相应的编译操作
 int find_Word(char *w, Word *dict)
 {
     while (strcmp(dict->name,w))
@@ -76,11 +92,11 @@ int find_Word(char *w, Word *dict)
         if(dict==NULL)    //字典链表搜索不到名字后执行
         {
             if (!is_num(w))    {
-                    return 0; //如果不是数字，返回0
+                    return 0;    //如果不是数字，返回0
             }
             else {               //如果是数字
                 PRINT("[DEBUG]成功找到数字%s\n",w);
-                *IP_list_p=pushh;      //将push核心字指针存入IP_list_p数组        
+                *IP_list_p=pushh;   //将push核心字指针存入IP_list_p数组        
                 IP_list_p++;        //数组指针指向下一个位置
                 *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
                 IP_list_p++;
@@ -100,8 +116,7 @@ int find_Word(char *w, Word *dict)
         
         return 1;
     }
-        
-    
+                
     if(!strcmp("if",w))
     {
         *IP_list_p=dict;
@@ -159,6 +174,8 @@ int find_Word(char *w, Word *dict)
     return 1;
 }
 
+
+//重置数据栈指针、返回栈指针、临时栈指针、指令列表的指针
 void init()
 {
     DP=DS-1;
@@ -171,6 +188,8 @@ void init()
 
 }
 
+
+//对指令列表进行解释执行
 void explain()
 {
     IP=IP_list;
@@ -184,6 +203,8 @@ void explain()
     }
 }
 
+
+//将一行Forth代码字符串编译为指令列表
 void compile(char *s)
 {
     CELL n;
@@ -254,12 +275,13 @@ void compile(char *s)
 }
 
 
+//主程序入口
 int main() 
 {
     init();
     dict_head=NULL;
     
-
+    //初始化字典
     pushh = code("push",push,dict_head);
     dict_head = code("bye",bye,pushh);
     dict_head = code("dup",dup,dict_head);
@@ -297,7 +319,7 @@ int main()
     while (1)
     {
         printf(">>>");
-        gets(cmdstr);
-        compile(cmdstr);
+        gets(cmdstr);     //从标准输入获取一行Forth代码字符串
+        compile(cmdstr);  //编译执行
     }
 }

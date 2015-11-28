@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "words.h"
 
+
 Word *code(char*s, fnP  fp, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
@@ -17,6 +18,7 @@ Word *code(char*s, fnP  fp, Word *dict)
     return w;
 }
 
+
 void dolist()
 {
     RP++;
@@ -24,6 +26,7 @@ void dolist()
     IP=(*IP)->wplist-1;
     PRINT("[DEBUG]进入dolist\n");
 }
+
 
 Word *colon(char*s, Word **list, int n, Word *dict)
 {
@@ -41,6 +44,7 @@ Word *colon(char*s, Word **list, int n, Word *dict)
     return w;
 }
 
+
 Word *variable(char*s, CELL num, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
@@ -50,48 +54,192 @@ Word *variable(char*s, CELL num, Word *dict)
     
     w->name=(char*)malloc(strlen(s)+1);
     strcpy(w->name,s);
-    
-    
+       
     w->num = num;
     
     return w;
 }
 
 
-//STACK OPERATE 
-void bye()     {exit(0);}//结束程序
-void push(){IP++;DP++;*DP=(CELL)*IP;}
-void dup(){DP++;*DP=*(DP-1);}
-void swap(){CELL t=*DP; *DP=*(DP-1); *(DP-1)=t;}
-void over(){*(DP+1)=*(DP-1);DP++;}
-void drop(){DP--;}
-//RS
-void tor()    {RP++;*RP=*DP;DP--;}
-void rto()    {DP++;*DP=*RP;RP--;}
-void rat()    {DP++;*DP=*RP;}
-//TS
-void tot()    {TP++;*TP=*DP;DP--;}
-void tto()    {DP++;*DP=*TP;TP--;}
-void tat()    {DP++;*DP=*TP;}
-//加减乘除
-void add(){ *(DP-1)=*(DP-1)+(*DP); DP--;}
-void sub(){ *(DP-1)=*(DP-1)-(*DP); DP--;}
-void mul(){ *(DP-1)=*(DP-1)*(*DP); DP--;}
-void divv(){ *(DP-1)=*(DP-1)/(*DP); DP--;}
-
-//;
-void ret()    {IP=(Word**)*RP; RP--;}
-
-//if else then语句
-void iff() {if(*DP==0){IP = IP + (CELL)(*(IP+1));}else{IP++;} DP--;}
-void elsee() {IP = IP + (CELL)(*(IP+1));}
-void then() {;}
+void bye()
+{
+    exit(0);
+}
 
 
-//for next 循环
-void forr() {if(*DP<1){IP = IP + (CELL)(*(IP+1)); DP--;}else{IP++; (*DP)--; tot();}}
-void next() {IP = IP - (CELL)(*(IP+1)); tto();}
+void push()
+{
+    IP++;
+    DP++;
+    *DP=(CELL)*IP;
+}
 
-//变量存入和取出
-void invar() {((Word*)*DP)->num = *(DP-1);DP-=2;}
-void outvar() {*DP = ((Word*)*DP)->num;}
+
+void dup()
+{
+    DP++;
+    *DP=*(DP-1);
+}
+
+
+void swap()
+{
+    CELL t=*DP;
+    *DP=*(DP-1);
+    *(DP-1)=t;
+}
+
+
+void over()
+{
+    *(DP+1)=*(DP-1);DP++;
+}
+
+
+void drop()
+{
+    DP--;
+}
+
+
+void tor()
+{
+    RP++;
+    *RP=*DP;
+    DP--;
+}
+
+
+void rto()
+{
+    DP++;
+    *DP=*RP;
+    RP--;
+}
+
+
+void rat()
+{
+    DP++;
+    *DP=*RP;
+}
+
+
+void tot()
+{
+    TP++;
+    *TP=*DP;
+    DP--;
+}
+
+
+void tto()
+{
+    DP++;
+    *DP=*TP;
+    TP--;
+}
+
+
+void tat()
+{
+    DP++;
+    *DP=*TP;
+}
+
+
+void add()
+{
+    *(DP-1)=*(DP-1)+(*DP);
+    DP--;
+}
+
+
+void sub()
+{
+    *(DP-1)=*(DP-1)-(*DP);
+    DP--;
+}
+
+
+void mul()
+{
+    *(DP-1)=*(DP-1)*(*DP);
+    DP--;
+}
+
+
+void divv()
+{
+    *(DP-1)=*(DP-1)/(*DP);
+    DP--;
+}
+
+
+void ret()
+{
+    IP=(Word**)*RP;
+    RP--;
+}
+
+
+void iff()
+{
+    if(*DP==0)
+    {
+        IP = IP + (CELL)(*(IP+1));
+    }
+    else
+    {
+        IP++;
+    }
+    DP--;
+}
+
+
+void elsee()
+{
+    IP = IP + (CELL)(*(IP+1));
+}
+
+
+void then()
+{
+    ;
+}
+
+
+void forr()
+{
+    if(*DP<1)
+    {
+        IP = IP + (CELL)(*(IP+1)); 
+        DP--;
+    }
+    else
+    {
+        IP++; 
+        (*DP)--; 
+        tot();
+    }
+}
+
+
+void next() 
+{
+    IP = IP - (CELL)(*(IP+1)); 
+    tto();
+}
+
+
+void invar()
+{
+    ((Word*)*DP)->num = *(DP-1);
+    DP-=2;
+}
+
+
+void outvar() 
+{
+    *DP = ((Word*)*DP)->num;
+}
