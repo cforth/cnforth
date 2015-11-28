@@ -39,6 +39,8 @@ Word *variable(char*s, CELL num, Word *list);
 
 
 //核心字
+void showDS();
+void popDS();
 void bye();
 void push();
 void dup();

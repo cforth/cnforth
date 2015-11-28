@@ -61,6 +61,26 @@ Word *variable(char*s, CELL num, Word *dict)
 }
 
 
+void showDS()
+{
+    printf("DS> ");
+    CELL *i=DS;
+    for (;i<=DP ;i++ )
+    {
+        printf("%ld ",*i);
+    }
+    printf("\n");
+}
+
+
+void popDS()
+{
+    
+    printf("%ld\n", *DP);
+    DP--;
+}
+
+
 void bye()
 {
     exit(0);

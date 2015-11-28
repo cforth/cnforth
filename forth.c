@@ -13,19 +13,6 @@ Word *dict_head; //Forth的字典入口指针
 Word *pushh;     //push字指针
 
 
-//打印数据栈
-void showDS()
-{
-    printf("DS> ");
-    CELL *i=DS;
-    for (;i<=DP ;i++ )
-    {
-        printf("%ld ",*i);
-    }
-    printf("\n\n");
-}
-
-
 //判断字符是否为空白字符
 int is_blankchar(char c)
 {
@@ -236,7 +223,7 @@ void compile(char *s)
 
         if(!find_Word(w, dict_head) )
         {
-            printf("\n[%s]?\n",w);
+            printf("[%s]?\n",w);
             init();
             return;
         }
@@ -271,7 +258,7 @@ void compile(char *s)
     else_p = NULL;
     for_p = NULL;
     
-    showDS();
+    if(DEBUG) showDS();
 }
 
 
@@ -284,6 +271,8 @@ int main()
     //初始化字典
     pushh = code("push",push,dict_head);
     dict_head = code("bye",bye,pushh);
+    dict_head = code(".s",showDS,dict_head);
+    dict_head = code(".",popDS,dict_head);
     dict_head = code("dup",dup,dict_head);
     dict_head = code("swap",swap,dict_head);
     dict_head = code("over",over,dict_head);
