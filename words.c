@@ -20,7 +20,7 @@ Word *code(char*s, fnP  fp, Word *dict)
 void dolist()
 {
     RP++;
-    *RP=(int)IP;
+    *RP=(CELL)IP;
     IP=(*IP)->wplist-1;
     PRINT("[DEBUG]进入dolist\n");
 }
@@ -41,7 +41,7 @@ Word *colon(char*s, Word **list, int n, Word *dict)
     return w;
 }
 
-Word *variable(char*s, int num, Word *dict)
+Word *variable(char*s, CELL num, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->next=dict;
@@ -60,9 +60,9 @@ Word *variable(char*s, int num, Word *dict)
 
 //STACK OPERATE 
 void bye()     {exit(0);}//结束程序
-void push(){IP++;DP++;*DP=(int)*IP;}
+void push(){IP++;DP++;*DP=(CELL)*IP;}
 void dup(){DP++;*DP=*(DP-1);}
-void swap(){int t=*DP; *DP=*(DP-1); *(DP-1)=t;}
+void swap(){CELL t=*DP; *DP=*(DP-1); *(DP-1)=t;}
 void over(){*(DP+1)=*(DP-1);DP++;}
 void drop(){DP--;}
 //RS
@@ -83,14 +83,14 @@ void divv(){ *(DP-1)=*(DP-1)/(*DP); DP--;}
 void ret()    {IP=(Word**)*RP; RP--;}
 
 //if else then语句
-void iff() {if(*DP==0){IP = IP + (int)(*(IP+1));}else{IP++;} DP--;}
-void elsee() {IP = IP + (int)(*(IP+1));}
+void iff() {if(*DP==0){IP = IP + (CELL)(*(IP+1));}else{IP++;} DP--;}
+void elsee() {IP = IP + (CELL)(*(IP+1));}
 void then() {;}
 
 
 //for next 循环
-void forr() {if(*DP<1){IP = IP + (int)(*(IP+1)); DP--;}else{IP++; (*DP)--; tot();}}
-void next() {IP = IP - (int)(*(IP+1)); tto();}
+void forr() {if(*DP<1){IP = IP + (CELL)(*(IP+1)); DP--;}else{IP++; (*DP)--; tot();}}
+void next() {IP = IP - (CELL)(*(IP+1)); tto();}
 
 //变量存入和取出
 void invar() {((Word*)*DP)->num = *(DP-1);DP-=2;}

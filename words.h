@@ -1,4 +1,5 @@
-#define    STACK_LEN     100
+#define     CELL        long
+#define     STACK_LEN   100
 
 #define DEBUG 1
 #if DEBUG
@@ -16,18 +17,18 @@ typedef struct Word
     char *name;
     fnP fn;                //核心字
     struct Word **wplist;//word类型指针数组(指针的指针),扩展字用
-    int num;              //变量字中保存值
+    CELL num;              //变量字中保存值
 } Word;
 
 
-int DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];//(data return temp)stack
-int *DP, *RP, *TP;//stack pointer
+CELL DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];//(data return temp)stack
+CELL *DP, *RP, *TP;//stack pointer
 Word  **IP;//Word类型指针数组(指针的指针)
 
 Word *code(char*s, fnP  fp, Word *dict);
 void dolist();
 Word *colon(char*s, Word **list, int n, Word *dict);
-Word *variable(char*s, int num, Word *list);
+Word *variable(char*s, CELL num, Word *list);
 
 void bye();
 void push();

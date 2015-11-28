@@ -15,10 +15,10 @@ Word *pushh;   //push字指针
 void showDS()
 {
     printf("DS> ");
-    int *i=DS;
+    CELL *i=DS;
     for (;i<=DP ;i++ )
     {
-        printf("%d ",*i);
+        printf("%ld ",*i);
     }
     printf("\n\n");
 }
@@ -57,7 +57,7 @@ int is_num(char *s)
 {
     while (*s != 0)
     {
-        if (!isdigit((int)*s)) return 0;
+        if (!isdigit((CELL)*s)) return 0;
         s++;
     }
     return 1;
@@ -82,7 +82,7 @@ int find_Word(char *w, Word *dict)
                 PRINT("[DEBUG]成功找到数字%s\n",w);
                 *IP_list_p=pushh;      //将push核心字指针存入IP_list_p数组        
                 IP_list_p++;        //数组指针指向下一个位置
-                *IP_list_p=(Word*)atoi(w);    //将int型数强制转换为Word指针类型
+                *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
                 IP_list_p++;
 
                 return 1;
@@ -186,7 +186,7 @@ void explain()
 
 void compile(char *s)
 {
-    int n;
+    CELL n;
     s=ignore_blankchar( s);
     
     char *name=NULL;
@@ -228,7 +228,7 @@ void compile(char *s)
         Word **j=IP_list;
         for (;j<IP_list_p ;j++ )
         {
-            printf("%d ",(int)(*j));       //强制类型转换
+            printf("%ld ",(CELL)(*j));       //强制类型转换
         }
         printf("\n");
     }
@@ -236,7 +236,7 @@ void compile(char *s)
 
     if (name!=NULL) {
         PRINT("[DEBUG]定义扩展字 %s\n", name);
-        n=(int)IP_list_p-(int)IP_list;
+        n=(CELL)IP_list_p-(CELL)IP_list;
         dict_head = colon(name, IP_list, n, dict_head);
     }
     else if (var_name!=NULL) {
