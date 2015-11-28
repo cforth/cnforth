@@ -1,0 +1,8 @@
+: dup2 dup dup ;
+: xxx if dup2 else drop then ;
+: yyy if dup2 then ;
+: zzz for 123 next ;
+$ ttt
+222 ttt !
+ttt @
+

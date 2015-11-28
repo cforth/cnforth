@@ -263,7 +263,7 @@ void compile(char *s)
 
 
 //主程序入口
-int main() 
+int main(int argc, char *argv[]) 
 {
     init();
     dict_head=NULL;
@@ -304,6 +304,33 @@ int main()
     dict_head = code("!", invar,dict_head);
     dict_head = code("@", outvar,dict_head);
 
+    FILE *fp; //文件指针
+    char c;
+    int i = 0;
+    if(argc > 1) 
+    {
+        if((fp = fopen(*++argv, "r")) == NULL)
+        {
+            printf("Can't open %s\n", *argv);
+            return 1;
+        }
+        
+        while((c = getc(fp)) != EOF)
+        {
+            if(c != '\n')
+            {
+                cmdstr[i] = c;
+                i++;
+            }
+            else
+            {
+                cmdstr[i] = '\0';
+                compile(cmdstr);
+                i = 0;
+            }           
+        }
+        fclose(fp);
+    }
 
     while (1)
     {
@@ -311,4 +338,7 @@ int main()
         gets(cmdstr);     //从标准输入获取一行Forth代码字符串
         compile(cmdstr);  //编译执行
     }
+
+    
+    return 0;
 }
