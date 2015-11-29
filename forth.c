@@ -72,39 +72,37 @@ Word** for_p = NULL;
 //根据Forth代码中的当前字的名字，去执行相应的编译操作
 int find_Word(char *w, Word *dict)
 {
-    while (strcmp(dict->name,w))
+    while (dict!=NULL && strcmp(dict->name,w))
     {  
-        dict=dict->next;
-       
-        if(dict==NULL)    //字典链表搜索不到名字后执行
-        {
-            if (!is_num(w))    {
-                    return 0;    //如果不是数字，返回0
-            }
-            else {               //如果是数字
-                PRINT("[DEBUG]成功找到数字%s\n",w);
-                *IP_list_p=pushh;   //将push核心字指针存入IP_list_p数组        
-                IP_list_p++;        //数组指针指向下一个位置
-                *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
-                IP_list_p++;
-
-                return 1;
-            }            
-        }
+        dict=dict->next;   //搜索字典链表
     }
- 
-    if(dict->fn == NULL)  //判断这个字是否是变量字！！
+    
+    if(dict==NULL)    //字典链表搜索不到名字后，去判断是不是数字
     {
-        PRINT("[DEBUG]成功找到%s字\n",w);
+        if (!is_num(w))    
+        {
+                return 0;    //如果不是数字，返回0
+        }
+        else 
+        {               //如果是数字
+            PRINT("[DEBUG]成功找到数字%s\n",w);
+            *IP_list_p=pushh;   //将push核心字指针存入IP_list_p数组        
+            IP_list_p++;        //数组指针指向下一个位置
+            *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
+            IP_list_p++;
+
+            return 1;
+        }            
+    } 
+    
+    if(dict->fn == NULL)  //在字典链表中搜索到名字后的判断，这个字是否是变量字！！
+    {
         *IP_list_p=pushh;
         IP_list_p++;
         *IP_list_p=dict;
         IP_list_p++;
-        
-        return 1;
-    }
-                
-    if(!strcmp("if",w))
+    }                
+    else if(!strcmp("if",w))
     {
         *IP_list_p=dict;
         IP_list_p++;
@@ -150,7 +148,6 @@ int find_Word(char *w, Word *dict)
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
         IP_list_p++;
     }
-
     else 
     {
         *IP_list_p=dict;    
@@ -248,6 +245,7 @@ void compile(char *s)
         dict_head = colon(name, IP_list, n, dict_head);
     }
     else if (var_name!=NULL) {
+        PRINT("[DEBUG]定义变量字 %s\n", var_name);
         dict_head = variable(var_name, 0, dict_head);
     }
     else
