@@ -10,10 +10,11 @@ c_forth 开发分支
 
 ## 编译环境
 
-1. Windows(32位) + Cygwin + gcc 4.9.3 ;
+1. Windows(32位) + Cygwin + gcc 4.9.3
 
-2. Windows(64位) + Cygwin + gcc 4.9.3。
+2. Windows(64位) + Cygwin + gcc 4.9.3
 
+3. Linux(32位) + gcc 4.9.2
 
 ## 特性支持
 
