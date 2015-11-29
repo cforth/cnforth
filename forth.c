@@ -333,7 +333,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf(">>>");
-        gets(cmdstr);     //从标准输入获取一行Forth代码字符串
+        fgets(cmdstr, BUFF_LEN - 1, stdin);     //从标准输入获取一行Forth代码字符串
         compile(cmdstr);  //编译执行
     }
 
