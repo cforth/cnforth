@@ -13,14 +13,14 @@
 typedef void(*fnP)();  
 
 
-//用结构体定义Forth中的基础字，利用链表实现字典
+//用结构体定义Forth中的基础词，利用链表实现词典
 typedef struct Word
 {
-    struct Word *next;     //指向字典中下个字的指针
-    char *name;            //字的名字
-    fnP fn;                //字定义，函数指针
-    struct Word **wplist;  //扩展字中用的函数指针列表
-    CELL num;              //变量字中保存数值
+    struct Word *next;     //指向词典中下个词的指针
+    char *name;            //词的名词
+    fnP fn;                //词定义，函数指针
+    struct Word **wplist;  //扩展词中用的函数指针列表
+    CELL num;              //变量词中保存数值
 } Word;
 
 
@@ -31,14 +31,14 @@ CELL *DP, *RP, *TP;
 //指令指针数组(指针的指针)
 Word  **IP;
 
-//核心字、扩展字、变量字的定义函数，执行后加入Forth的字典并返回指向自己的指针
+//核心词、扩展词、变量词的定义函数，执行后加入Forth的词典并返回指向自己的指针
 Word *code(char*s, fnP  fp, Word *dict);
-void dolist();     //用于创建扩展字中的定义
+void dolist();     //用于创建扩展词中的定义
 Word *colon(char*s, Word **list, int n, Word *dict);
 Word *variable(char*s, CELL num, Word *list);
 
 
-//核心字
+//核心词
 void showDS();
 void popDS();
 void bye();

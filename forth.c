@@ -9,8 +9,8 @@ char cmdstr[BUFF_LEN];       //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
 Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Word *dict_head; //Forth的字典入口指针
-Word *pushh;     //push字指针
+Word *dict_head; //Forth的词典入口指针
+Word *pushh;     //push词指针
 
 
 //判断字符是否为空白字符
@@ -63,21 +63,21 @@ int is_num(char *s)
 }
 
 
-//定义if字、else字、for字定义时的临时位置指针
+//定义if词、else词、for词定义时的临时位置指针
 Word** if_p = NULL;
 Word** else_p = NULL;
 Word** for_p = NULL;
 
 
-//根据Forth代码中的当前字的名字，去执行相应的编译操作
+//根据Forth代码中的当前词的名字，去执行相应的编译操作
 int find_Word(char *w, Word *dict)
 {
     while (dict!=NULL && strcmp(dict->name,w))
     {  
-        dict=dict->next;   //搜索字典链表
+        dict=dict->next;   //搜索词典链表
     }
     
-    if(dict==NULL)    //字典链表搜索不到名字后，去判断是不是数字
+    if(dict==NULL)    //词典链表搜索不到名字后，去判断是不是数字
     {
         if (!is_num(w))    
         {
@@ -86,7 +86,7 @@ int find_Word(char *w, Word *dict)
         else 
         {               //如果是数字
             PRINT("[DEBUG]成功找到数字%s\n",w);
-            *IP_list_p=pushh;   //将push核心字指针存入IP_list_p数组        
+            *IP_list_p=pushh;   //将push核心词指针存入IP_list_p数组        
             IP_list_p++;        //数组指针指向下一个位置
             *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
             IP_list_p++;
@@ -95,7 +95,7 @@ int find_Word(char *w, Word *dict)
         }            
     } 
     
-    if(dict->fn == NULL)  //在字典链表中搜索到名字后的判断，这个字是否是变量字！！
+    if(dict->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
     {
         *IP_list_p=pushh;
         IP_list_p++;
@@ -114,7 +114,7 @@ int find_Word(char *w, Word *dict)
         *IP_list_p=dict;  
         IP_list_p++;
         else_p = IP_list_p;
-        *if_p = (Word*)(else_p - if_p + 1);  //+1的意思是越过else字和后面的then偏移量位置
+        *if_p = (Word*)(else_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
         IP_list_p++;
     }
     else if(!strcmp("then",w))
@@ -154,7 +154,7 @@ int find_Word(char *w, Word *dict)
         IP_list_p++;
     }
     
-    PRINT("[DEBUG]成功找到%s字\n",w);
+    PRINT("[DEBUG]成功找到%s词\n",w);
     return 1;
 }
 
@@ -191,43 +191,42 @@ void explain()
 //将一行Forth代码字符串编译为指令列表
 void compile(char *s)
 {
-    CELL n;
-    s=ignore_blankchar( s);
+    s=ignore_blankchar(s);
     
-    char *name=NULL;
-    char *var_name=NULL;
-    if (*s==':')
+    char define_word;
+    char *define_name;
+    //如果第一个词是扩展定义词或是变量定义词，则保存后面一个词为define_name
+    if (*s == ':' || *s == '$')
     {
+        define_word = *s;
         s++;
-        name=ignore_blankchar(s);
-        s=name;
+        define_name=ignore_blankchar(s);
+        s=define_name;
         s=split_Word(s);
     }
-    else if (*s=='$')  //变量定义方式 $ var_name 无法一行定义多个变量
+    else
     {
-        s++;
-        var_name=ignore_blankchar(s);
-        s=var_name;
-        s=split_Word(s);        
+        define_word = '\0';
+        define_name = NULL;
     }
     
-    char *w;
+    //在Forth词典中寻找每一个词的定义，转换IP指针列表中的指针
+    char *one_word;
     while (*s!=0)
     {
         s=ignore_blankchar(s);
-        w=s;
+        one_word=s;
         s=split_Word(s);
 
-        if(!find_Word(w, dict_head) )
+        if(!find_Word(one_word, dict_head) )
         {
-            printf("[%s]?\n",w);
+            printf("[%s]?\n",one_word);
             init();
             return;
         }
     }
-    //*IP_list_p=0;
-    
-    
+  
+    //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
         Word **j=IP_list;
@@ -238,21 +237,23 @@ void compile(char *s)
         printf("\n");
     }
 
-
-    if (name!=NULL) {
-        PRINT("[DEBUG]定义扩展字 %s\n", name);
-        n=(CELL)IP_list_p-(CELL)IP_list;
-        dict_head = colon(name, IP_list, n, dict_head);
+    //若有定义词则把扩展词或变量词加入Forth词典，若无则执行解释模式
+    if(define_word == ':')
+    {
+        PRINT("[DEBUG]定义扩展词 %s\n", define_name);
+        dict_head = colon(define_name, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
     }
-    else if (var_name!=NULL) {
-        PRINT("[DEBUG]定义变量字 %s\n", var_name);
-        dict_head = variable(var_name, 0, dict_head);
+    else if(define_word == '$')
+    {
+        PRINT("[DEBUG]定义变量词 %s\n", define_name);
+        dict_head = variable(define_name, 0, dict_head);
     }
     else
-        explain();  //进入解释模式
+        explain(); 
     
-    IP_list_p=IP_list;//临时区复原
-    if_p = NULL;   //复原if和else和for指针
+    //复原临时区、if、else和for指针
+    IP_list_p=IP_list;
+    if_p = NULL; 
     else_p = NULL;
     for_p = NULL;
     
@@ -266,7 +267,7 @@ int main(int argc, char *argv[])
     init();
     dict_head=NULL;
     
-    //初始化字典
+    //初始化词典
     pushh = code("push",push,dict_head);
     dict_head = code("bye",bye,pushh);
     dict_head = code(".s",showDS,dict_head);
