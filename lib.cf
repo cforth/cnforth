@@ -1,8 +1,5 @@
-: dup2 dup dup ;
-: xxx if dup2 else drop then ;
-: yyy if dup2 then ;
-: zzz for 123 next ;
-$ ttt
-222 ttt !
-ttt @
-
+: over2 over over ;
+: fib_ for over2 + next ;
+: fib  0 1 >r swap r> swap fib_ .s ;
+: test_forth 6 fib + + + + + + + 33 - if bye else 1234567890 dup then ;
+test_forth .s
