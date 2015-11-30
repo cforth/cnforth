@@ -37,6 +37,8 @@ void dolist();     //用于创建扩展词中的定义
 Word *colon(char*s, Word **list, int n, Word *dict);
 Word *variable(char*s, CELL num, Word *list);
 
+//清空三个栈
+void empty_stack();
 
 //核心词
 void showDS();

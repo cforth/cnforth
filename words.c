@@ -61,6 +61,17 @@ Word *variable(char*s, CELL num, Word *dict)
 }
 
 
+void empty_stack()
+{
+    DP=DS-1;
+    //*DP=0;
+    RP=RS-1;
+    //*RP=0;
+    TP=TS-1;
+    //*TP=0;
+}
+
+
 void showDS()
 {
     printf("DS> ");

@@ -159,20 +159,6 @@ int find_Word(char *w, Word *dict)
 }
 
 
-//重置数据栈指针、返回栈指针、临时栈指针、指令列表的指针
-void init()
-{
-    DP=DS-1;
-    //*DP=0;
-    RP=RS-1;
-    //*RP=0;
-    TP=TS-1;
-    //*TP=0;
-    IP_list_p=IP_list;
-
-}
-
-
 //对指令列表进行解释执行
 void explain()
 {
@@ -221,7 +207,8 @@ void compile(char *s)
         if(!find_Word(one_word, dict_head) )
         {
             printf("[%s]?\n",one_word);
-            init();
+            empty_stack();
+            IP_list_p=IP_list;
             return;
         }
     }
@@ -264,7 +251,8 @@ void compile(char *s)
 //主程序入口
 int main(int argc, char *argv[]) 
 {
-    init();
+    empty_stack();
+    IP_list_p=IP_list;
     dict_head=NULL;
     
     //初始化词典
