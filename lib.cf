@@ -4,4 +4,4 @@
 : test_forth 6 fib + + + + + + + 33 - if bye else 1234567890 dup then ;
 ." Fib List Test: Print 8 Fib list numbers "
 test_forth .s
-." Test OK!!! "
+." Test OK!!! "    

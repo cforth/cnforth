@@ -177,33 +177,17 @@ void explain()
 //将一行Forth代码字符串编译为指令列表
 void compile(char *s)
 {
-    s=ignore_blankchar(s);
-    
-    char define_word;
+    char *define_word;
     char *define_name;
-    //如果第一个词是扩展定义词或是变量定义词，则保存后面一个词为define_name
-    if (*s == ':' || *s == '$')
-    {
-        define_word = *s;
-        s++;
-        define_name=ignore_blankchar(s);
-        s=define_name;
-        s=split_Word(s);
-    }
-    else
-    {
-        define_word = '\0';
-        define_name = NULL;
-    }
-    
-    //在Forth词典中寻找每一个词的定义，转换IP指针列表中的指针
     char *one_word;
-    while (*s!=0)
+       
+    while (*ignore_blankchar(s)!=0)
     {
-        s=ignore_blankchar(s);
-        one_word=s;
-        s=split_Word(s);
-        
+        s=ignore_blankchar(s);  //删除字符串头部空格
+        one_word=s;             //将字符串指针赋给one_word
+        s=split_Word(s);        //将字符串头部第一个词后的空格换成'\0'，再返回第二个词头的指针
+                                //如此一来，one_word其实就只是指向包含了第一个词的字符串
+
         if(!strcmp(".\"",one_word))  //如果是." str " 则打印其中的字符串str
         {
             s=ignore_blankchar(s);
@@ -221,6 +205,17 @@ void compile(char *s)
             printf("\n");
             if(!strcmp("\"",one_word)) continue;   //忽略"
         }
+        else if (!strcmp(":",one_word) || !strcmp("$",one_word)) //如果是扩展定义词或是变量定义词
+        {
+            define_word = one_word;
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            define_name=one_word;  //保存后面一个词为define_name
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+        }
             
         if(!find_Word(one_word, dict_head) ) //在Forth词典中搜索
         {
@@ -230,7 +225,7 @@ void compile(char *s)
             return;
         }
     }
-  
+
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
@@ -243,12 +238,12 @@ void compile(char *s)
     }
 
     //若有定义词则把扩展词或变量词加入Forth词典，若无则执行解释模式
-    if(define_word == ':')
+    if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name);
         dict_head = colon(define_name, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
     }
-    else if(define_word == '$')
+    else if(!strcmp("$",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name);
         dict_head = variable(define_name, 0, dict_head);
