@@ -10,11 +10,15 @@ c_forth 开发分支
 
 ## 编译环境
 
-1. Windows(32位) + Cygwin + gcc 4.9.3
+1. Windows(32位/64位) + Cygwin + gcc 4.9.3
 
-2. Windows(64位) + Cygwin + gcc 4.9.3
+2. Linux(32位) + gcc 4.9.2
 
-3. Linux(32位) + gcc 4.9.2
+## 安装
+
+```bash
+make forth
+```
 
 ## 特性支持
 
@@ -22,13 +26,13 @@ c_forth 开发分支
 
 2. 定义和使用扩展字;
 
-3. if else then 控制语句（包含if then）;
+3. `if else then` 控制语句（包含`if then`）;
 
-4. for next 循环语句;
+4. `for next` 循环语句;
 
-5. $字定义变量，!存入，@取出;
+5. `$`字定义变量，`!`存入，`@`取出;
 
-6. 从外部读取forth代码（./forth lib.cf）;
+6. 从外部读取forth代码（`./forth lib.cf`）;
 
 7. 递归定义扩展字（Hack中）。
 
