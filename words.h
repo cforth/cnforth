@@ -1,7 +1,7 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
 #define     STACK_LEN   100   //定义栈的深度
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
     #define PRINT(fmt, args...) printf(fmt,##args)
 #else

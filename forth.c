@@ -203,8 +203,26 @@ void compile(char *s)
         s=ignore_blankchar(s);
         one_word=s;
         s=split_Word(s);
-
-        if(!find_Word(one_word, dict_head) )
+        
+        if(!strcmp(".\"",one_word))  //如果是." str " 则打印其中的字符串str
+        {
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+                
+            while(strcmp("\"",one_word))
+            {
+                printf("%s ", one_word);
+                
+                s=ignore_blankchar(s);
+                one_word=s;
+                s=split_Word(s);   
+            } 
+            printf("\n");
+            if(!strcmp("\"",one_word)) continue;   //忽略"
+        }
+            
+        if(!find_Word(one_word, dict_head) ) //在Forth词典中搜索
         {
             printf("[%s]?\n",one_word);
             empty_stack();
