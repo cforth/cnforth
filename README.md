@@ -1,92 +1,37 @@
-Forth编程语言（C语言实现）
+c_forth 0.1版
 ====================
 
-
-######作者:Chai Fei
 ######E-mail:cforth@cfxyz.com
 --------------------
 
+## 简介
 
-###2012-8-27
-增加了list模块，把链表数据结构模块独立出来。
-测试中，未完成。
+[c_forth](https://github.com/cforth/c_forth)项目原先只是一个用C语言写的模拟forth系统，不是一个真正的forth系统。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点，我开始写真正的forth系统。目前这个c_forth是从ear-cforth克隆过来，并且自己加上了控制语句、循环语句与变量等。我正在努力的写自己的forth系统。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！!
 
+## 编译环境
 
+1. Windows(32位/64位) + Cygwin + gcc 4.9.3
 
-###2012-8-24
-给str_lex模块增加了删除列表中指定节点的操作函数。
+2. Linux(32位) + gcc 4.9.2
 
+## 安装
 
+```bash
+make forth
+```
 
-###2012-8-23
-给str_lex模块增加了销毁列表的操作函数。
+## 特性支持
 
+1. 核心字;
 
+2. 定义和使用扩展字;
 
-###2012-8-22
-增加了str_lex模块，在测试中，未完成。
-使用队列保存经过词法分析后的forth词。
+3. `if else then` 控制语句（包含`if then`）;
 
+4. `for next` 循环语句;
 
+5. `$`字定义变量，`!`存入，`@`取出;
 
-###2012-8-21
-增加了dict字典模块，在测试中，未完成。
+6. 从外部读取forth代码（`./forth lib.cf`）;
 
-
-
-###2012-8-20
-使用strtok_r函数替代了strtok函数。
-
-
-
-###2012-8-19
-修补了gets_input函数的数组溢出漏洞。
-gets_input函数指定了最大存储字符数。
-
-
-
-###2012-8-9
-增加了error_msg核心字
-打印出堆栈错误信息。
-可以在code_words.h中设置DEBUG为0来关闭错误提示。
-
-
-
-###2012-7-18
-增加了negate和bool功能
-tab字符被认为是空格
-增加了注释模式，忽略‘（’与‘）’之间的词。
-
-
-
-###2012-7-10
-使用有限自动机原理重写了解释器模块
-将bye加入核心字
-
-
-
-###2012-7-10
-使用有限自动机原理重写了isNum，作为实验
-
-
-
-###2012-7-6
-将cforth.h独立了出来
-
-
-
-###2012-7-3
-增加了DEBUG模式
-DEBUG模式开启时，打印出堆栈操作的错误信息
-
-
-
-###2012-7-2
-取消了stack_error，使用clean_stack替代
-
-
-
-###2012-7-1
-重新构造了cforth的核心字模块
-使核心字模块与前端处理模块能分开独立编译
-
+--------------------

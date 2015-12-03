@@ -1,0 +1,7 @@
+: over2 over over ;
+: fib_ for over2 + next ;
+: fib  0 1 >r swap r> swap fib_ .s ;
+: test_forth 6 fib + + + + + + + 33 - if bye else 1234567890 dup then ;
+." Fib List Test: Print 8 Fib list numbers "
+test_forth .s
+." Test OK!!! "    

@@ -1,14 +1,12 @@
 CC := gcc
 CFLAGS := -Wall
-forth: forth.o code_words.o dict.o
+forth: forth.o words.o
 	$(CC) $(CFLAGS) $^ -o $@
-forth.o: forth.c forth.h code_words.h dict.h
+forth.o: forth.c forth.h words.h
 	$(CC) $(CFLAGS) -c forth.c
-code_words.o: code_words.c code_words.h
-	$(CC) $(CFLAGS) -c code_words.c
-dict.o: dict.c dict.h
-	$(CC) $(CFLAGS) -c dict.c
+words.o: words.c words.h
+	$(CC) $(CFLAGS) -c words.c
 clean:
 	@echo "cleanning project"
-	-rm -f forth *.o
+	-rm -f *.o
 	@echo "clean completed"
