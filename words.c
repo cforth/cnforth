@@ -5,7 +5,7 @@
 #include "words.h"
 
 
-Word *code(char*s, fnP  fp, Word *dict)
+Word *code(char*name, fnP  fp, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->next=dict;
@@ -13,7 +13,7 @@ Word *code(char*s, fnP  fp, Word *dict)
     w->fn=fp;
     w->wplist=NULL;
 
-    w->name=s;
+    w->name=name;
 
     return w;
 }
@@ -28,34 +28,40 @@ void dolist()
 }
 
 
-Word *colon(char*s, Word **list, int n, Word *dict)
+Word *colon(char*name, char*str, Word **list, int n, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->next=dict;
     dict=w;
     w->fn=dolist;
 
-    w->name=(char*)malloc(strlen(s)+1);
-    strcpy(w->name,s);
+    w->name=(char*)malloc(strlen(name)+1);
+    strcpy(w->name,name);
 
     w->wplist=(Word**)malloc(n);
     memcpy(w->wplist,list, n);
+    
+    w->str=(char*)malloc(strlen(str)+1);
+    strcpy(w->str,str);
     
     return w;
 }
 
 
-Word *variable(char*s, CELL num, Word *dict)
+Word *variable(char*name, char*str, CELL num, Word *dict)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->next=dict;
     dict=w;
     w->fn=NULL;
     
-    w->name=(char*)malloc(strlen(s)+1);
-    strcpy(w->name,s);
+    w->name=(char*)malloc(strlen(name)+1);
+    strcpy(w->name,name);
        
     w->num = num;
+    
+    w->str=(char*)malloc(strlen(str)+1);
+    strcpy(w->str,str);
     
     return w;
 }

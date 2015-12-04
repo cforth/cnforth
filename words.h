@@ -18,9 +18,10 @@ typedef struct Word
 {
     struct Word *next;     //指向词典中下个词的指针
     char *name;            //词的名词
-    fnP fn;                //词定义，函数指针
+    fnP fn;                //核心词定义，函数指针
     struct Word **wplist;  //扩展词中用的函数指针列表
     CELL num;              //变量词中保存数值
+    char *str;             //保存扩展词的字符串定义
 } Word;
 
 
@@ -32,10 +33,10 @@ CELL *DP, *RP, *TP;
 Word  **IP;
 
 //核心词、扩展词、变量词的定义函数，执行后加入Forth的词典并返回指向自己的指针
-Word *code(char*s, fnP  fp, Word *dict);
+Word *code(char*name, fnP  fp, Word *dict);
 void dolist();     //用于创建扩展词中的定义
-Word *colon(char*s, Word **list, int n, Word *dict);
-Word *variable(char*s, CELL num, Word *list);
+Word *colon(char*name, char*str, Word **list, int n, Word *dict);
+Word *variable(char*name,  char*str, CELL num, Word *list);
 
 //清空三个栈
 void empty_stack();

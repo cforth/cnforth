@@ -63,6 +63,30 @@ int is_num(char *s)
 }
 
 
+<<<<<<< HEAD
+=======
+//查看扩展词的定义
+int see(char *w, Word *dict)
+{
+    while (dict!=NULL && strcmp(dict->name,w))
+    {  
+        dict=dict->next;   //搜索词典链表
+    }
+    
+    if(dict == NULL)
+    {
+        printf("%s : Can't find!\n",w);
+        return 0;
+    }
+    else
+    {
+        printf("%s : %s\n",w, dict->str);
+        return 1;
+    }
+}
+
+
+>>>>>>> dev
 //定义if词、else词、for词定义时的临时位置指针
 Word** if_p = NULL;
 Word** else_p = NULL;
@@ -81,7 +105,11 @@ int find_Word(char *w, Word *dict)
     {
         if (!is_num(w))    
         {
+<<<<<<< HEAD
                 return 0;    //如果不是数字，返回0
+=======
+            return 0;    //如果不是数字，返回0
+>>>>>>> dev
         }
         else 
         {               //如果是数字
@@ -178,6 +206,10 @@ void explain()
 void compile(char *s)
 {
     char *define_word;
+<<<<<<< HEAD
+=======
+    char *define_str;
+>>>>>>> dev
     char *define_name;
     char *one_word;
        
@@ -213,9 +245,27 @@ void compile(char *s)
             s=split_Word(s); 
             define_name=one_word;  //保存后面一个词为define_name
             s=ignore_blankchar(s);
+<<<<<<< HEAD
             one_word=s;
             s=split_Word(s); 
         }
+=======
+            
+            define_str = (char*)malloc(strlen(s)+1);
+            strcpy(define_str, s); //保存扩展字的定义
+            
+            one_word=s;
+            s=split_Word(s); 
+        }
+        else if (!strcmp("see",one_word)) //如果是see则打印扩展词的定义
+        {
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            see(one_word, dict_head);
+            return;
+        }
+>>>>>>> dev
             
         if(!find_Word(one_word, dict_head) ) //在Forth词典中搜索
         {
@@ -241,12 +291,20 @@ void compile(char *s)
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name);
+<<<<<<< HEAD
         dict_head = colon(define_name, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
+=======
+        dict_head = colon(define_name, define_str, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
+>>>>>>> dev
     }
     else if(!strcmp("$",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name);
+<<<<<<< HEAD
         dict_head = variable(define_name, 0, dict_head);
+=======
+        dict_head = variable(define_name, define_str, 0, dict_head);
+>>>>>>> dev
     }
     else
         explain(); 
