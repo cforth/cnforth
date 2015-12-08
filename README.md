@@ -34,6 +34,6 @@ make forth
 
 6. 从外部读取forth代码（`./forth lib.cf`）;
 
-7. 递归定义扩展字（Hack中）。
+7. 递归定义扩展字（myself）。
 
 --------------------
