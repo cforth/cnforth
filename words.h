@@ -43,6 +43,7 @@ Word  **IP;
 //核心词、扩展词、变量词的定义函数，返回指向自己的指针
 Word *code(char*name, fnP  fp);
 void dolist();     //用于创建扩展词中的定义
+void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
 Word *colon(char*name, char*str, Word **list, int n);
 Word *variable(char*name,  char*str, CELL num);
 
@@ -92,3 +93,6 @@ void next();
 //变量存入和取出
 void invar();
 void outvar();
+
+//递归词,是个空的占位符
+void myself();

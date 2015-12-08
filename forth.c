@@ -191,7 +191,7 @@ void explain()
 
 
 //将一行Forth代码字符串编译为指令列表
-void compile(char *s)
+void compile(char *s, Dict *dict)
 {
     char *define_word;
     char *define_str;
@@ -270,7 +270,20 @@ void compile(char *s)
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name);
-        dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, (CELL)IP_list_p - (CELL)IP_list));
+        int n = (CELL)IP_list_p - (CELL)IP_list;
+        dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, n));
+        //下面这段代码用于支持递归词myself!!
+        Word *myself_p = dict_search_name(dict, "myself");
+        Word *colon_p = dict_search_name(dict, define_name);
+        Word **j=IP_list;
+        for (;j<IP_list_p ;j++ )
+        {
+            if(*j == myself_p)
+            {
+                *j = colon_p;
+            }
+        }
+        change_colon(colon_p, IP_list, n); //修改colon词，用于递归定义
     }
     else if(!strcmp("$",define_word))
     {
@@ -332,6 +345,7 @@ int main(int argc, char *argv[])
     
     dict_ins_next(forth_dict, code("!", invar));
     dict_ins_next(forth_dict, code("@", outvar));
+    dict_ins_next(forth_dict, code("myself", myself));
 
     FILE *fp; //文件指针
     char c;
@@ -354,7 +368,7 @@ int main(int argc, char *argv[])
             else
             {
                 cmdstr[i] = '\0';
-                compile(cmdstr);
+                compile(cmdstr, forth_dict);
                 i = 0;
             }           
         }
@@ -365,7 +379,7 @@ int main(int argc, char *argv[])
     {
         printf(">>>");
         fgets(cmdstr, BUFF_LEN - 1, stdin);     //从标准输入获取一行Forth代码字符串
-        compile(cmdstr);  //编译执行
+        compile(cmdstr, forth_dict);  //编译执行
     }
 
     

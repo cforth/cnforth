@@ -57,6 +57,14 @@ void dolist()
 }
 
 
+void change_colon(Word *c, Word **list, int n)
+{
+    free(c->wplist);
+    c->wplist = (Word**)malloc(n);
+    memcpy(c->wplist,list, n);
+}
+
+
 Word *colon(char*name, char*str, Word **list, int n)
 {
     Word *w=(Word*)malloc(sizeof(Word));
@@ -304,4 +312,10 @@ void invar()
 void outvar() 
 {
     *DP = ((Word*)*DP)->num;
+}
+
+
+void myself()
+{
+    ;
 }

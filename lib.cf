@@ -10,3 +10,8 @@ see fib_
 ." Fib List Test: Print 8 Fib list numbers "
 test_forth .s
 ." Test OK!!! "    
+
+$ n
+: n-- n @ 1 - n ! ;
+: factorial n @ 1 - if n @ dup 1 - n ! myself * else 1 then ; 
+6 n ! factorial .s
