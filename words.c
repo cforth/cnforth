@@ -24,14 +24,26 @@ int dict_ins_next(Dict *dict, Word *word)
     return 0;
 }
 
+
+Word *dict_search_name(Dict *dict, char *name)
+{
+    Word *w = dict->head;
+    while (w != NULL && strcmp(w->name,name))
+    {  
+        w=w->next;
+    }
+    
+    return w;
+}
+
+
 Word *code(char*name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=fp;
-    w->wplist=NULL;
-    
+    w->wplist=NULL;   
     w->name=name;
-    printf("%s\n",w->name);
+
     return w;
 }
 

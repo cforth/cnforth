@@ -1,7 +1,7 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
 #define     STACK_LEN   100   //定义栈的深度
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
     #define PRINT(fmt, args...) printf(fmt,##args)
 #else
@@ -46,8 +46,10 @@ void dolist();     //用于创建扩展词中的定义
 Word *colon(char*name, char*str, Word **list, int n);
 Word *variable(char*name,  char*str, CELL num);
 
+//词典接口定义
 Dict *dict_init();  //初始化一个词典
-int dict_ins_next(Dict *dict, Word *word);  //将核心词或者扩展词插入词典
+int dict_ins_next(Dict *dict, Word *word);        //将核心词或者扩展词插入词典
+Word *dict_search_name(Dict *dict, char *name);   //搜索词典
 
 //清空三个栈
 void empty_stack();

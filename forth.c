@@ -9,10 +9,7 @@ char cmdstr[BUFF_LEN];       //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
 Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Dict *forth_dict;
-
-//Word *dict_head; //Forth的词典入口指针
-Word *pushh;     //push词指针
+Dict *forth_dict;  //Forth的词典
 
 
 //判断字符是否为空白字符
@@ -66,21 +63,19 @@ int is_num(char *s)
 
 
 //查看扩展词的定义
-int see(char *w, Word *dict)
+int see(char *name, Dict *dict)
 {
-    while (dict!=NULL && strcmp(dict->name,w))
-    {  
-        dict=dict->next;   //搜索词典链表
-    }
+    Word *word_p;
+    word_p = dict_search_name(dict, name);
     
-    if(dict == NULL)
+    if(word_p == NULL)
     {
-        printf("%s : Can't find!\n",w);
+        printf("%s : Can't find!\n",name);
         return 0;
     }
     else
     {
-        printf("%s : %s\n",w, dict->str);
+        printf("%s : %s\n",name, word_p->str);
         return 1;
     }
 }
@@ -93,56 +88,54 @@ Word** for_p = NULL;
 
 
 //根据Forth代码中的当前词的名字，去执行相应的编译操作
-int find_Word(char *w, Word *dict)
+int find_Word(char *name, Dict *dict)
 {
-    while (dict!=NULL && strcmp(dict->name,w))
-    {  
-        dict=dict->next;   //搜索词典链表
-    }
+    Word *word_p;
+    word_p = dict_search_name(dict, name);
     
-    if(dict==NULL)    //词典链表搜索不到名字后，去判断是不是数字
+    if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
     {
-        if (!is_num(w))    
+        if (!is_num(name))    
         {
             return 0;    //如果不是数字，返回0
         }
         else 
         {               //如果是数字
-            PRINT("[DEBUG]成功找到数字%s\n",w);
-            *IP_list_p=pushh;   //将push核心词指针存入IP_list_p数组        
+            PRINT("[DEBUG]成功找到数字%s\n",name);
+            *IP_list_p=dict_search_name(dict, "push");   //将push核心词指针存入IP_list_p数组        
             IP_list_p++;        //数组指针指向下一个位置
-            *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
+            *IP_list_p=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
             IP_list_p++;
 
             return 1;
         }            
     } 
     
-    if(dict->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
+    if(word_p->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
     {
-        *IP_list_p=pushh;
+        *IP_list_p=dict_search_name(dict, "push");
         IP_list_p++;
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
     }                
-    else if(!strcmp("if",w))
+    else if(!strcmp("if",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
         if_p = IP_list_p;
         IP_list_p++;
     }
-    else if(!strcmp("else",w)) 
+    else if(!strcmp("else",name)) 
     {
-        *IP_list_p=dict;  
+        *IP_list_p=word_p;  
         IP_list_p++;
         else_p = IP_list_p;
         *if_p = (Word*)(else_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
         IP_list_p++;
     }
-    else if(!strcmp("then",w))
+    else if(!strcmp("then",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         if(else_p == NULL)
         {
             else_p = IP_list_p;
@@ -155,17 +148,17 @@ int find_Word(char *w, Word *dict)
         
         IP_list_p++;
     }
-    else if(!strcmp("for",w))
+    else if(!strcmp("for",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
         for_p = IP_list_p;
         IP_list_p++;
         
     }
-    else if(!strcmp("next",w))
+    else if(!strcmp("next",name))
     {
-        *IP_list_p=dict;  
+        *IP_list_p=word_p;  
         IP_list_p++;
         *for_p = (Word*)(IP_list_p - for_p + 1); 
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
@@ -173,11 +166,11 @@ int find_Word(char *w, Word *dict)
     }
     else 
     {
-        *IP_list_p=dict;    
+        *IP_list_p=word_p;    
         IP_list_p++;
     }
     
-    PRINT("[DEBUG]成功找到%s词\n",w);
+    PRINT("[DEBUG]成功找到%s词\n",name);
     return 1;
 }
 
@@ -249,11 +242,11 @@ void compile(char *s)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            see(one_word, forth_dict->head);
+            see(one_word, forth_dict);
             return;
         }
             
-        if(!find_Word(one_word, forth_dict->head) ) //在Forth词典中搜索
+        if(!find_Word(one_word, forth_dict) ) //在Forth词典中搜索
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -302,14 +295,10 @@ int main(int argc, char *argv[])
 {
     empty_stack();
     IP_list_p=IP_list;
-    printf("1\n");
-forth_dict = dict_init();
-    printf("2\n");
-    //dict_head=NULL;
+    forth_dict = dict_init();
     
     //初始化词典
-    pushh = code("push",push);
-    dict_ins_next(forth_dict, pushh);
+    dict_ins_next(forth_dict, code("push",push));
     dict_ins_next(forth_dict, code("bye",bye));
     dict_ins_next(forth_dict, code(".s",showDS));
     dict_ins_next(forth_dict, code(".",popDS));
