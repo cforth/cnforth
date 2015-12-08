@@ -9,7 +9,9 @@ char cmdstr[BUFF_LEN];       //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
 Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Word *dict_head; //Forth的词典入口指针
+Dict *forth_dict;
+
+//Word *dict_head; //Forth的词典入口指针
 Word *pushh;     //push词指针
 
 
@@ -247,11 +249,11 @@ void compile(char *s)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            see(one_word, dict_head);
+            see(one_word, forth_dict->head);
             return;
         }
             
-        if(!find_Word(one_word, dict_head) ) //在Forth词典中搜索
+        if(!find_Word(one_word, forth_dict->head) ) //在Forth词典中搜索
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -275,12 +277,12 @@ void compile(char *s)
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name);
-        dict_head = colon(define_name, define_str, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
+        dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, (CELL)IP_list_p - (CELL)IP_list));
     }
     else if(!strcmp("$",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name);
-        dict_head = variable(define_name, define_str, 0, dict_head);
+        dict_ins_next(forth_dict, variable(define_name, define_str, 0));
     }
     else
         explain(); 
@@ -300,43 +302,47 @@ int main(int argc, char *argv[])
 {
     empty_stack();
     IP_list_p=IP_list;
-    dict_head=NULL;
+    printf("1\n");
+forth_dict = dict_init();
+    printf("2\n");
+    //dict_head=NULL;
     
     //初始化词典
-    pushh = code("push",push,dict_head);
-    dict_head = code("bye",bye,pushh);
-    dict_head = code(".s",showDS,dict_head);
-    dict_head = code(".",popDS,dict_head);
-    dict_head = code("dup",dup,dict_head);
-    dict_head = code("swap",swap,dict_head);
-    dict_head = code("over",over,dict_head);
-    dict_head = code("drop",drop,dict_head);
+    pushh = code("push",push);
+    dict_ins_next(forth_dict, pushh);
+    dict_ins_next(forth_dict, code("bye",bye));
+    dict_ins_next(forth_dict, code(".s",showDS));
+    dict_ins_next(forth_dict, code(".",popDS));
+    dict_ins_next(forth_dict, code("dup",dup));
+    dict_ins_next(forth_dict, code("swap",swap));
+    dict_ins_next(forth_dict, code("over",over));
+    dict_ins_next(forth_dict, code("drop",drop));
     
-    dict_head = code(">r",tor,dict_head);
-    dict_head = code("r>",rto,dict_head);
-    dict_head = code("r@",rat,dict_head);
+    dict_ins_next(forth_dict, code(">r",tor));
+    dict_ins_next(forth_dict, code("r>",rto));
+    dict_ins_next(forth_dict, code("r@",rat));
 
-    dict_head = code(">t",tot,dict_head);
-    dict_head = code("t>",tto,dict_head);
-    dict_head = code("t@",tat,dict_head);
+    dict_ins_next(forth_dict, code(">t",tot));
+    dict_ins_next(forth_dict, code("t>",tto));
+    dict_ins_next(forth_dict, code("t@",tat));
 
-    dict_head = code("+",add,dict_head);
-    dict_head = code("-",sub,dict_head);
-    dict_head = code("*",mul,dict_head);
-    dict_head = code("/",divv,dict_head);
+    dict_ins_next(forth_dict, code("+",add));
+    dict_ins_next(forth_dict, code("-",sub));
+    dict_ins_next(forth_dict, code("*",mul));
+    dict_ins_next(forth_dict, code("/",divv));
 
 
-    dict_head = code("ret",ret,dict_head);
-    dict_head = code(";",ret,dict_head);
-    dict_head = code("dolist",dolist,dict_head);
-    dict_head = code("if",iff,dict_head);
-    dict_head = code("else",elsee,dict_head);
-    dict_head = code("then",then,dict_head);
-    dict_head = code("for",forr,dict_head);
-    dict_head = code("next",next,dict_head);
+    dict_ins_next(forth_dict, code("ret",ret));
+    dict_ins_next(forth_dict, code(";",ret));
+    dict_ins_next(forth_dict, code("dolist",dolist));
+    dict_ins_next(forth_dict, code("if",iff));
+    dict_ins_next(forth_dict, code("else",elsee));
+    dict_ins_next(forth_dict, code("then",then));
+    dict_ins_next(forth_dict, code("for",forr));
+    dict_ins_next(forth_dict, code("next",next));
     
-    dict_head = code("!", invar,dict_head);
-    dict_head = code("@", outvar,dict_head);
+    dict_ins_next(forth_dict, code("!", invar));
+    dict_ins_next(forth_dict, code("@", outvar));
 
     FILE *fp; //文件指针
     char c;

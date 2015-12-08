@@ -1,7 +1,7 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
 #define     STACK_LEN   100   //定义栈的深度
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
     #define PRINT(fmt, args...) printf(fmt,##args)
 #else
@@ -25,6 +25,14 @@ typedef struct Word
 } Word;
 
 
+//定义字典结构
+typedef struct Dict
+{
+    int size;
+    Word *head;
+} Dict;
+
+
 //数据栈、返回栈、临时栈
 CELL DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];
 CELL *DP, *RP, *TP;
@@ -32,11 +40,14 @@ CELL *DP, *RP, *TP;
 //指令指针数组(指针的指针)
 Word  **IP;
 
-//核心词、扩展词、变量词的定义函数，执行后加入Forth的词典并返回指向自己的指针
-Word *code(char*name, fnP  fp, Word *dict);
+//核心词、扩展词、变量词的定义函数，返回指向自己的指针
+Word *code(char*name, fnP  fp);
 void dolist();     //用于创建扩展词中的定义
-Word *colon(char*name, char*str, Word **list, int n, Word *dict);
-Word *variable(char*name,  char*str, CELL num, Word *list);
+Word *colon(char*name, char*str, Word **list, int n);
+Word *variable(char*name,  char*str, CELL num);
+
+Dict *dict_init();  //初始化一个词典
+int dict_ins_next(Dict *dict, Word *word);  //将核心词或者扩展词插入词典
 
 //清空三个栈
 void empty_stack();

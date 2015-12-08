@@ -5,16 +5,33 @@
 #include "words.h"
 
 
-Word *code(char*name, fnP  fp, Word *dict)
+Dict *dict_init()
+{
+    Dict *dict=(Dict*)malloc(sizeof(Dict));
+    dict->size = 0;
+    dict->head = NULL;
+    
+    return dict;
+}
+
+
+int dict_ins_next(Dict *dict, Word *word)
+{
+    word->next = dict->head;
+    dict->head = word;
+    dict->size++;
+    
+    return 0;
+}
+
+Word *code(char*name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=fp;
     w->wplist=NULL;
-
+    
     w->name=name;
-
+    printf("%s\n",w->name);
     return w;
 }
 
@@ -28,11 +45,9 @@ void dolist()
 }
 
 
-Word *colon(char*name, char*str, Word **list, int n, Word *dict)
+Word *colon(char*name, char*str, Word **list, int n)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=dolist;
 
     w->name=(char*)malloc(strlen(name)+1);
@@ -48,11 +63,9 @@ Word *colon(char*name, char*str, Word **list, int n, Word *dict)
 }
 
 
-Word *variable(char*name, char*str, CELL num, Word *dict)
+Word *variable(char*name, char*str, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=NULL;
     
     w->name=(char*)malloc(strlen(name)+1);
