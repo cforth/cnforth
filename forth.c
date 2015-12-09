@@ -9,8 +9,7 @@ char cmdstr[BUFF_LEN];       //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
 Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Word *dict_head; //Forth的词典入口指针
-Word *pushh;     //push词指针
+Dict *forth_dict;  //Forth的词典
 
 
 //判断字符是否为空白字符
@@ -64,21 +63,19 @@ int is_num(char *s)
 
 
 //查看扩展词的定义
-int see(char *w, Word *dict)
+int see(char *name, Dict *dict)
 {
-    while (dict!=NULL && strcmp(dict->name,w))
-    {  
-        dict=dict->next;   //搜索词典链表
-    }
+    Word *word_p;
+    word_p = dict_search_name(dict, name);
     
-    if(dict == NULL)
+    if(word_p == NULL)
     {
-        printf("%s : Can't find!\n",w);
+        printf("%s : Can't find!\n",name);
         return 0;
     }
     else
     {
-        printf("%s : %s\n",w, dict->str);
+        printf("%s : %s\n",name, word_p->str);
         return 1;
     }
 }
@@ -91,56 +88,54 @@ Word** for_p = NULL;
 
 
 //根据Forth代码中的当前词的名字，去执行相应的编译操作
-int find_Word(char *w, Word *dict)
+int find_Word(char *name, Dict *dict)
 {
-    while (dict!=NULL && strcmp(dict->name,w))
-    {  
-        dict=dict->next;   //搜索词典链表
-    }
+    Word *word_p;
+    word_p = dict_search_name(dict, name);
     
-    if(dict==NULL)    //词典链表搜索不到名字后，去判断是不是数字
+    if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
     {
-        if (!is_num(w))    
+        if (!is_num(name))    
         {
             return 0;    //如果不是数字，返回0
         }
         else 
         {               //如果是数字
-            PRINT("[DEBUG]成功找到数字%s\n",w);
-            *IP_list_p=pushh;   //将push核心词指针存入IP_list_p数组        
+            PRINT("[DEBUG]成功找到数字%s\n",name);
+            *IP_list_p=dict_search_name(dict, "push");   //将push核心词指针存入IP_list_p数组        
             IP_list_p++;        //数组指针指向下一个位置
-            *IP_list_p=(Word*)(CELL)(atoi(w));    //将CELL型数强制转换为Word指针类型
+            *IP_list_p=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
             IP_list_p++;
 
             return 1;
         }            
     } 
     
-    if(dict->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
+    if(word_p->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
     {
-        *IP_list_p=pushh;
+        *IP_list_p=dict_search_name(dict, "push");
         IP_list_p++;
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
     }                
-    else if(!strcmp("if",w))
+    else if(!strcmp("if",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
         if_p = IP_list_p;
         IP_list_p++;
     }
-    else if(!strcmp("else",w)) 
+    else if(!strcmp("else",name)) 
     {
-        *IP_list_p=dict;  
+        *IP_list_p=word_p;  
         IP_list_p++;
         else_p = IP_list_p;
         *if_p = (Word*)(else_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
         IP_list_p++;
     }
-    else if(!strcmp("then",w))
+    else if(!strcmp("then",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         if(else_p == NULL)
         {
             else_p = IP_list_p;
@@ -153,17 +148,17 @@ int find_Word(char *w, Word *dict)
         
         IP_list_p++;
     }
-    else if(!strcmp("for",w))
+    else if(!strcmp("for",name))
     {
-        *IP_list_p=dict;
+        *IP_list_p=word_p;
         IP_list_p++;
         for_p = IP_list_p;
         IP_list_p++;
         
     }
-    else if(!strcmp("next",w))
+    else if(!strcmp("next",name))
     {
-        *IP_list_p=dict;  
+        *IP_list_p=word_p;  
         IP_list_p++;
         *for_p = (Word*)(IP_list_p - for_p + 1); 
         *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
@@ -171,11 +166,11 @@ int find_Word(char *w, Word *dict)
     }
     else 
     {
-        *IP_list_p=dict;    
+        *IP_list_p=word_p;    
         IP_list_p++;
     }
     
-    PRINT("[DEBUG]成功找到%s词\n",w);
+    PRINT("[DEBUG]成功找到%s词\n",name);
     return 1;
 }
 
@@ -196,7 +191,7 @@ void explain()
 
 
 //将一行Forth代码字符串编译为指令列表
-void compile(char *s)
+void compile(char *s, Dict *dict)
 {
     char *define_word;
     char *define_str;
@@ -247,11 +242,11 @@ void compile(char *s)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            see(one_word, dict_head);
+            see(one_word, forth_dict);
             return;
         }
             
-        if(!find_Word(one_word, dict_head) ) //在Forth词典中搜索
+        if(!find_Word(one_word, forth_dict) ) //在Forth词典中搜索
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -263,10 +258,10 @@ void compile(char *s)
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
-        Word **j=IP_list;
-        for (;j<IP_list_p ;j++ )
+        Word **p=IP_list;
+        for (;p<IP_list_p ;p++ )
         {
-            printf("%ld ",(CELL)(*j));       //强制类型转换
+            printf("%ld ",(CELL)(*p));       //强制类型转换
         }
         printf("\n");
     }
@@ -275,12 +270,25 @@ void compile(char *s)
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name);
-        dict_head = colon(define_name, define_str, IP_list, (CELL)IP_list_p - (CELL)IP_list, dict_head);
+        int n = (CELL)IP_list_p - (CELL)IP_list;
+        dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, n));
+        //下面这段代码用于支持递归词myself!!
+        Word *myself_p = dict_search_name(dict, "myself");
+        Word *colon_p = dict_search_name(dict, define_name);
+        Word **p=IP_list;
+        for (;p<IP_list_p ;p++ )
+        {
+            if(*p == myself_p)
+            {
+                *p = colon_p;
+                change_colon(colon_p, IP_list, n); //修改colon词，用于递归定义
+            }
+        }
     }
     else if(!strcmp("$",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name);
-        dict_head = variable(define_name, define_str, 0, dict_head);
+        dict_ins_next(forth_dict, variable(define_name, define_str, 0));
     }
     else
         explain(); 
@@ -300,43 +308,44 @@ int main(int argc, char *argv[])
 {
     empty_stack();
     IP_list_p=IP_list;
-    dict_head=NULL;
+    forth_dict = dict_init();
     
     //初始化词典
-    pushh = code("push",push,dict_head);
-    dict_head = code("bye",bye,pushh);
-    dict_head = code(".s",showDS,dict_head);
-    dict_head = code(".",popDS,dict_head);
-    dict_head = code("dup",dup,dict_head);
-    dict_head = code("swap",swap,dict_head);
-    dict_head = code("over",over,dict_head);
-    dict_head = code("drop",drop,dict_head);
+    dict_ins_next(forth_dict, code("push",push));
+    dict_ins_next(forth_dict, code("bye",bye));
+    dict_ins_next(forth_dict, code(".s",showDS));
+    dict_ins_next(forth_dict, code(".",popDS));
+    dict_ins_next(forth_dict, code("dup",dup));
+    dict_ins_next(forth_dict, code("swap",swap));
+    dict_ins_next(forth_dict, code("over",over));
+    dict_ins_next(forth_dict, code("drop",drop));
     
-    dict_head = code(">r",tor,dict_head);
-    dict_head = code("r>",rto,dict_head);
-    dict_head = code("r@",rat,dict_head);
+    dict_ins_next(forth_dict, code(">r",tor));
+    dict_ins_next(forth_dict, code("r>",rto));
+    dict_ins_next(forth_dict, code("r@",rat));
 
-    dict_head = code(">t",tot,dict_head);
-    dict_head = code("t>",tto,dict_head);
-    dict_head = code("t@",tat,dict_head);
+    dict_ins_next(forth_dict, code(">t",tot));
+    dict_ins_next(forth_dict, code("t>",tto));
+    dict_ins_next(forth_dict, code("t@",tat));
 
-    dict_head = code("+",add,dict_head);
-    dict_head = code("-",sub,dict_head);
-    dict_head = code("*",mul,dict_head);
-    dict_head = code("/",divv,dict_head);
+    dict_ins_next(forth_dict, code("+",add));
+    dict_ins_next(forth_dict, code("-",sub));
+    dict_ins_next(forth_dict, code("*",mul));
+    dict_ins_next(forth_dict, code("/",divv));
 
 
-    dict_head = code("ret",ret,dict_head);
-    dict_head = code(";",ret,dict_head);
-    dict_head = code("dolist",dolist,dict_head);
-    dict_head = code("if",iff,dict_head);
-    dict_head = code("else",elsee,dict_head);
-    dict_head = code("then",then,dict_head);
-    dict_head = code("for",forr,dict_head);
-    dict_head = code("next",next,dict_head);
+    dict_ins_next(forth_dict, code("ret",ret));
+    dict_ins_next(forth_dict, code(";",ret));
+    dict_ins_next(forth_dict, code("dolist",dolist));
+    dict_ins_next(forth_dict, code("if",iff));
+    dict_ins_next(forth_dict, code("else",elsee));
+    dict_ins_next(forth_dict, code("then",then));
+    dict_ins_next(forth_dict, code("for",forr));
+    dict_ins_next(forth_dict, code("next",next));
     
-    dict_head = code("!", invar,dict_head);
-    dict_head = code("@", outvar,dict_head);
+    dict_ins_next(forth_dict, code("!", invar));
+    dict_ins_next(forth_dict, code("@", outvar));
+    dict_ins_next(forth_dict, code("myself", myself));
 
     FILE *fp; //文件指针
     char c;
@@ -359,7 +368,7 @@ int main(int argc, char *argv[])
             else
             {
                 cmdstr[i] = '\0';
-                compile(cmdstr);
+                compile(cmdstr, forth_dict);
                 i = 0;
             }           
         }
@@ -370,7 +379,7 @@ int main(int argc, char *argv[])
     {
         printf(">>>");
         fgets(cmdstr, BUFF_LEN - 1, stdin);     //从标准输入获取一行Forth代码字符串
-        compile(cmdstr);  //编译执行
+        compile(cmdstr, forth_dict);  //编译执行
     }
 
     

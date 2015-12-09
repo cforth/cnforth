@@ -5,14 +5,43 @@
 #include "words.h"
 
 
-Word *code(char*name, fnP  fp, Word *dict)
+Dict *dict_init()
+{
+    Dict *dict=(Dict*)malloc(sizeof(Dict));
+    dict->size = 0;
+    dict->head = NULL;
+    
+    return dict;
+}
+
+
+int dict_ins_next(Dict *dict, Word *word)
+{
+    word->next = dict->head;
+    dict->head = word;
+    dict->size++;
+    
+    return 0;
+}
+
+
+Word *dict_search_name(Dict *dict, char *name)
+{
+    Word *w = dict->head;
+    while (w != NULL && strcmp(w->name,name))
+    {  
+        w=w->next;
+    }
+    
+    return w;
+}
+
+
+Word *code(char*name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=fp;
-    w->wplist=NULL;
-
+    w->wplist=NULL;   
     w->name=name;
 
     return w;
@@ -28,11 +57,17 @@ void dolist()
 }
 
 
-Word *colon(char*name, char*str, Word **list, int n, Word *dict)
+void change_colon(Word *c, Word **list, int n)
+{
+    free(c->wplist);
+    c->wplist = (Word**)malloc(n);
+    memcpy(c->wplist,list, n);
+}
+
+
+Word *colon(char*name, char*str, Word **list, int n)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=dolist;
 
     w->name=(char*)malloc(strlen(name)+1);
@@ -48,11 +83,9 @@ Word *colon(char*name, char*str, Word **list, int n, Word *dict)
 }
 
 
-Word *variable(char*name, char*str, CELL num, Word *dict)
+Word *variable(char*name, char*str, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->next=dict;
-    dict=w;
     w->fn=NULL;
     
     w->name=(char*)malloc(strlen(name)+1);
@@ -279,4 +312,10 @@ void invar()
 void outvar() 
 {
     *DP = ((Word*)*DP)->num;
+}
+
+
+void myself()
+{
+    ;
 }

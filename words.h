@@ -25,6 +25,14 @@ typedef struct Word
 } Word;
 
 
+//定义字典结构
+typedef struct Dict
+{
+    int size;
+    Word *head;
+} Dict;
+
+
 //数据栈、返回栈、临时栈
 CELL DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];
 CELL *DP, *RP, *TP;
@@ -32,11 +40,17 @@ CELL *DP, *RP, *TP;
 //指令指针数组(指针的指针)
 Word  **IP;
 
-//核心词、扩展词、变量词的定义函数，执行后加入Forth的词典并返回指向自己的指针
-Word *code(char*name, fnP  fp, Word *dict);
+//核心词、扩展词、变量词的定义函数，返回指向自己的指针
+Word *code(char*name, fnP  fp);
 void dolist();     //用于创建扩展词中的定义
-Word *colon(char*name, char*str, Word **list, int n, Word *dict);
-Word *variable(char*name,  char*str, CELL num, Word *list);
+void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
+Word *colon(char*name, char*str, Word **list, int n);
+Word *variable(char*name,  char*str, CELL num);
+
+//词典接口定义
+Dict *dict_init();  //初始化一个词典
+int dict_ins_next(Dict *dict, Word *word);        //将核心词或者扩展词插入词典
+Word *dict_search_name(Dict *dict, char *name);   //搜索词典
 
 //清空三个栈
 void empty_stack();
@@ -79,3 +93,6 @@ void next();
 //变量存入和取出
 void invar();
 void outvar();
+
+//递归词,是个空的占位符
+void myself();
