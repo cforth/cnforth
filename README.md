@@ -1,4 +1,4 @@
-c_forth 开发分支
+c_forth 0.1版
 ====================
 
 ######E-mail:cforth@cfxyz.com
@@ -6,7 +6,7 @@ c_forth 开发分支
 
 ## 简介
 
-[c_forth](https://github.com/cforth/c_forth)项目原先只是一个用C语言写的模拟forth系统，不是一个真正的forth系统。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点，我开始写真正的forth系统。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！!
+[c_forth](https://github.com/cforth/c_forth)项目是一个用C语言实现的玩具版Forth编程语言。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！!
 
 ## 编译环境
 
