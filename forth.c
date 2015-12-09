@@ -258,10 +258,10 @@ void compile(char *s, Dict *dict)
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
-        Word **j=IP_list;
-        for (;j<IP_list_p ;j++ )
+        Word **p=IP_list;
+        for (;p<IP_list_p ;p++ )
         {
-            printf("%ld ",(CELL)(*j));       //强制类型转换
+            printf("%ld ",(CELL)(*p));       //强制类型转换
         }
         printf("\n");
     }
@@ -275,15 +275,15 @@ void compile(char *s, Dict *dict)
         //下面这段代码用于支持递归词myself!!
         Word *myself_p = dict_search_name(dict, "myself");
         Word *colon_p = dict_search_name(dict, define_name);
-        Word **j=IP_list;
-        for (;j<IP_list_p ;j++ )
+        Word **p=IP_list;
+        for (;p<IP_list_p ;p++ )
         {
-            if(*j == myself_p)
+            if(*p == myself_p)
             {
-                *j = colon_p;
+                *p = colon_p;
+                change_colon(colon_p, IP_list, n); //修改colon词，用于递归定义
             }
         }
-        change_colon(colon_p, IP_list, n); //修改colon词，用于递归定义
     }
     else if(!strcmp("$",define_word))
     {

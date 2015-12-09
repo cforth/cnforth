@@ -14,4 +14,5 @@ test_forth .s
 $ n
 : n-- n @ 1 - n ! ;
 : factorial n @ 1 - if n @ dup 1 - n ! myself * else 1 then ; 
+see factorial
 6 n ! factorial .s
