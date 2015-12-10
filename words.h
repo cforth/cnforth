@@ -77,6 +77,10 @@ void add();
 void sub();
 void mul();
 void divv();
+//大于小于等于
+void morethan();
+void lessthan();
+void equal();
 
 //;
 void ret();

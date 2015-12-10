@@ -246,6 +246,48 @@ void divv()
 }
 
 
+void morethan()
+{
+    if(*(DP-1) > *DP)
+    {
+        DP--;
+        *DP = 1;
+    }
+    else{
+        DP--;
+        *DP = 0;
+    }
+}
+
+
+void lessthan()
+{
+    if(*(DP-1) < *DP)
+    {
+        DP--;
+        *DP = 1;
+    }
+    else{
+        DP--;
+        *DP = 0;
+    }
+}
+
+
+void equal()
+{
+    if(*(DP-1) == *DP)
+    {
+        DP--;
+        *DP = 1;
+    }
+    else{
+        DP--;
+        *DP = 0;
+    }
+}
+
+
 void ret()
 {
     IP=(Word**)*RP;

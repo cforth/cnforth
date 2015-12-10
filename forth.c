@@ -332,7 +332,10 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("-",sub));
     dict_ins_next(forth_dict, code("*",mul));
     dict_ins_next(forth_dict, code("/",divv));
-
+    
+    dict_ins_next(forth_dict, code(">",morethan));
+    dict_ins_next(forth_dict, code("<",lessthan));
+    dict_ins_next(forth_dict, code("==",equal));
 
     dict_ins_next(forth_dict, code("ret",ret));
     dict_ins_next(forth_dict, code(";",ret));

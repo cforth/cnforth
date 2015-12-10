@@ -9,18 +9,6 @@ c_forth 0.1版
 
 [c_forth](https://github.com/cforth/c_forth)项目是一个用C语言实现的玩具版Forth编程语言。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！!
 
-## 编译环境
-
-1. Windows(32位/64位) + Cygwin + gcc 4.9.3
-
-2. Linux(32位) + gcc 4.9.2
-
-## 安装
-
-```bash
-make forth
-```
-
 ## 特性支持
 
 1. 核心词;
@@ -37,7 +25,33 @@ make forth
 
 7. 递归定义扩展词（`myself`）。
 
---------------------
+## 编译环境
+
+1. Windows(32位/64位) + Cygwin + gcc 4.9.3
+
+2. Linux(32位) + gcc 4.9.2
+
+## 安装
+
+```bash
+make forth
+```
+
+## 使用
+
+求8的阶乘，使用递归实现：
+
+```bash
+./forth
+
+>>> $ n
+>>> : n@ n @ ;
+>>> : n-- n@ 1 - n ! ;
+>>> : factorial n@ 1 - if n@ n-- myself * else 1 then ; 
+>>> 8 n ! factorial .
+
+40320
+```
 
 ## 2015-12-9
 

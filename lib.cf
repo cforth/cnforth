@@ -1,18 +1,21 @@
-$ var
-5 var !
-var @ .
-: over2 over over ;
-: fib_ for over2 + next ;
-: fib  0 1 >r swap r> swap fib_ .s ;
-: test_forth 6 fib + + + + + + + 33 - if bye else 1234567890 dup then ;
-see fib
-see fib_
+: test_ok   1 ;
+: test_fail bye ;
+: test == if test_ok else test_fail then ;
+
 ." Fib List Test: Print 8 Fib list numbers "
-test_forth .s
-." Test OK!!! "    
+: dup2 over over ;
+: fib_ for dup2 + next ;
+: fib  0 1 >r swap r> swap fib_ .s ;
+: test_fib 6 fib + + + + + + + 33 test ;
+test_fib .s drop
+." Test OK!!! "  
 
 $ n
-: n-- n @ 1 - n ! ;
-: factorial n @ 1 - if n @ dup 1 - n ! myself * else 1 then ; 
+: n@ n @ ;
+: n-- n@ 1 - n ! ;
+: factorial n@ 1 - if n@ n-- myself * else 1 then .s ; 
 see factorial
-6 n ! factorial .s
+." Factorial Test: Us recursive to Print Eight's Factorial "
+: test_fact 8 n ! factorial 40320 test ;
+test_fact .s drop
+." Test OK!!! "  
