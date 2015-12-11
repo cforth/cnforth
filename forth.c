@@ -222,7 +222,7 @@ void compile(char *s, Dict *dict)
             printf("\n");
             if(!strcmp("\"",one_word)) continue;   //忽略"
         }
-        else if (!strcmp(":",one_word) || !strcmp("$",one_word)) //如果是扩展定义词或是变量定义词
+        else if (!strcmp(":",one_word) || !strcmp("variable",one_word)) //如果是扩展定义词或是变量定义词
         {
             define_word = one_word;
             s=ignore_blankchar(s);
@@ -285,7 +285,7 @@ void compile(char *s, Dict *dict)
             }
         }
     }
-    else if(!strcmp("$",define_word))
+    else if(!strcmp("variable",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name);
         dict_ins_next(forth_dict, variable(define_name, define_str, 0));

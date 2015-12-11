@@ -19,7 +19,7 @@ c_forth 0.1版
 
 4. `for next` 循环语句;
 
-5. `$`定义变量，`!`存入，`@`取出;
+5. `variable`定义变量，`!`存入，`@`取出;
 
 6. 从外部读取forth代码（`./forth lib.cf`）;
 
@@ -44,7 +44,7 @@ make forth
 ```bash
 ./forth
 
->>> $ n
+>>> variable n
 >>> : n@ n @ ;
 >>> : n-- n@ 1 - n ! ;
 >>> : factorial n@ 1 - if n@ n-- myself * else 1 then ; 

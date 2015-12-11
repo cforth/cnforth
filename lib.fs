@@ -10,7 +10,7 @@
 test_fib .s drop
 ." Test OK!!! "  
 
-$ n
+variable n
 : n@ n @ ;
 : n-- n@ 1 - n ! ;
 : factorial n@ 1 - if n@ n-- myself * else 1 then .s ; 
