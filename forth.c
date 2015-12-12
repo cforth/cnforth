@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf(">>>");
-        fgets(cmdstr, BUFF_LEN - 1, stdin);     //从标准输入获取一行Forth代码字符串
+        gets(cmdstr);     //从标准输入获取一行Forth代码字符串
         compile(cmdstr, forth_dict);  //编译执行
     }
 
