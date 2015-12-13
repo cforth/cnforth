@@ -3,7 +3,7 @@
 
 #define DEBUG 0
 #if DEBUG
-    #define PRINT(fmt, args...) printf(fmt,##args)
+    #define PRINT(fmt, args...) printf(fmt,##args);
 #else
     #define PRINT(fmt, args...)
 #endif
@@ -100,3 +100,7 @@ void outvar();
 
 //递归词,是个空的占位符
 void myself();
+
+//将数据栈顶的数字作为字符打印
+void putChar();
+void putCr();

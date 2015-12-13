@@ -53,7 +53,7 @@ void dolist()
     RP++;
     *RP=(CELL)IP;
     IP=(*IP)->wplist-1;
-    PRINT("[DEBUG]进入dolist\n");
+    PRINT("[DEBUG]进入dolist\n")
 }
 
 
@@ -360,4 +360,17 @@ void outvar()
 void myself()
 {
     ;
+}
+
+
+void putChar()
+{
+    putchar((char)(*DP));
+    DP--;
+}
+
+
+void putCr()
+{
+    putchar('\n');
 }

@@ -101,7 +101,7 @@ int find_Word(char *name, Dict *dict)
         }
         else 
         {               //如果是数字
-            PRINT("[DEBUG]成功找到数字%s\n",name);
+            PRINT("[DEBUG]成功找到数字%s\n",name)
             *IP_list_p=dict_search_name(dict, "push");   //将push核心词指针存入IP_list_p数组        
             IP_list_p++;        //数组指针指向下一个位置
             *IP_list_p=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
@@ -170,7 +170,7 @@ int find_Word(char *name, Dict *dict)
         IP_list_p++;
     }
     
-    PRINT("[DEBUG]成功找到%s词\n",name);
+    PRINT("[DEBUG]成功找到%s词\n",name)
     return 1;
 }
 
@@ -182,7 +182,7 @@ void explain()
     
     while(IP != IP_list_p)
     {
-        PRINT("[DEBUG]解释执行> %s\n", (*IP)->name);
+        PRINT("[DEBUG]解释执行> %s\n", (*IP)->name)
         
         (*IP)->fn();
         ++IP;
@@ -204,23 +204,21 @@ void compile(char *s, Dict *dict)
         one_word=s;             //将字符串指针赋给one_word
         s=split_Word(s);        //将字符串头部第一个词后的空格换成'\0'，再返回第二个词头的指针
                                 //如此一来，one_word其实就只是指向包含了第一个词的字符串
-
-        if(!strcmp(".\"",one_word))  //如果是." str " 则打印其中的字符串str
+        
+        if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
             s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-                
-            while(strcmp("\"",one_word))
+            char *c = s;
+            char tempstr[100]; 
+            while(*c != '\"')
             {
-                printf("%s ", one_word);
-                
-                s=ignore_blankchar(s);
-                one_word=s;
-                s=split_Word(s);   
-            } 
-            printf("\n");
-            if(!strcmp("\"",one_word)) continue;   //忽略"
+                sprintf(tempstr, "%ld", (CELL)(*c));
+                find_Word(tempstr, forth_dict);
+                find_Word(".c", forth_dict);
+                c++;
+            }
+            c++;
+            s = c;
         }
         else if (!strcmp(":",one_word) || !strcmp("variable",one_word)) //如果是扩展定义词或是变量定义词
         {
@@ -233,9 +231,6 @@ void compile(char *s, Dict *dict)
             
             define_str = (char*)malloc(strlen(s)+1);
             strcpy(define_str, s); //保存扩展字的定义
-            
-            one_word=s;
-            s=split_Word(s); 
         }
         else if (!strcmp("see",one_word)) //如果是see则打印扩展词的定义
         {
@@ -245,8 +240,7 @@ void compile(char *s, Dict *dict)
             see(one_word, forth_dict);
             return;
         }
-            
-        if(!find_Word(one_word, forth_dict) ) //在Forth词典中搜索
+        else if(!find_Word(one_word, forth_dict) ) //在Forth词典中搜索
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -269,7 +263,7 @@ void compile(char *s, Dict *dict)
     //若有定义词则把扩展词或变量词加入Forth词典，若无则执行解释模式
     if(!strcmp(":",define_word))
     {
-        PRINT("[DEBUG]定义扩展词 %s\n", define_name);
+        PRINT("[DEBUG]定义扩展词 %s\n", define_name)
         int n = (CELL)IP_list_p - (CELL)IP_list;
         dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, n));
         //下面这段代码用于支持递归词myself!!
@@ -287,7 +281,7 @@ void compile(char *s, Dict *dict)
     }
     else if(!strcmp("variable",define_word))
     {
-        PRINT("[DEBUG]定义变量词 %s\n", define_name);
+        PRINT("[DEBUG]定义变量词 %s\n", define_name)
         dict_ins_next(forth_dict, variable(define_name, define_str, 0));
     }
     else
@@ -349,6 +343,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("!", invar));
     dict_ins_next(forth_dict, code("@", outvar));
     dict_ins_next(forth_dict, code("myself", myself));
+    dict_ins_next(forth_dict, code(".c", putChar));
+    dict_ins_next(forth_dict, code("cr", putCr));
 
     FILE *fp; //文件指针
     char c;
