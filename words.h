@@ -56,6 +56,13 @@ Word *dict_search_name(Dict *dict, char *name);   //搜索词典
 void empty_stack();
 
 //核心词
+void putCr();    //cr
+void depth();    //depth
+void add();      //+
+void sub();      //-
+void mul();      //*
+void divv();     ///
+
 void showDS();
 void popDS();
 void bye();
@@ -72,11 +79,7 @@ void rat();
 void tot();
 void tto();
 void tat();
-//加减乘除
-void add();
-void sub();
-void mul();
-void divv();
+
 //大于小于等于
 void morethan();
 void lessthan();
@@ -103,4 +106,3 @@ void myself();
 
 //将数据栈顶的数字作为字符打印
 void putChar();
-void putCr();

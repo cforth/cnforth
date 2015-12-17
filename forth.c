@@ -305,6 +305,8 @@ int main(int argc, char *argv[])
     forth_dict = dict_init();
     
     //初始化词典
+    dict_ins_next(forth_dict, code("cr", putCr));
+    dict_ins_next(forth_dict, code("depth", depth));
     dict_ins_next(forth_dict, code("push",push));
     dict_ins_next(forth_dict, code("bye",bye));
     dict_ins_next(forth_dict, code(".s",showDS));
@@ -344,7 +346,6 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("@", outvar));
     dict_ins_next(forth_dict, code("myself", myself));
     dict_ins_next(forth_dict, code(".c", putChar));
-    dict_ins_next(forth_dict, code("cr", putCr));
 
     FILE *fp; //文件指针
     char c;

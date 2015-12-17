@@ -111,6 +111,20 @@ void empty_stack()
 }
 
 
+void putCr()
+{
+    putchar('\n');
+}
+
+
+void depth()
+{
+    CELL d = DP - DS + 1;
+    DP++;
+    *DP = d; 
+}
+
+
 void showDS()
 {
     printf("DS> ");
@@ -367,10 +381,4 @@ void putChar()
 {
     putchar((char)(*DP));
     DP--;
-}
-
-
-void putCr()
-{
-    putchar('\n');
 }
