@@ -377,7 +377,7 @@ void myself()
 }
 
 
-void putChar()
+void emit()
 {
     putchar((char)(*DP));
     DP--;

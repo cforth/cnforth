@@ -105,4 +105,4 @@ void outvar();
 void myself();
 
 //将数据栈顶的数字作为字符打印
-void putChar();
+void emit();

@@ -175,7 +175,7 @@ void compile(char *s, Dict *dict)
             {
                 sprintf(tempstr, "%ld", (CELL)(*c));
                 find_Word(tempstr, forth_dict);
-                find_Word(".c", forth_dict);
+                find_Word("emit", forth_dict);
                 c++;
             }
             c++;
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("!", invar));
     dict_ins_next(forth_dict, code("@", outvar));
     dict_ins_next(forth_dict, code("myself", myself));
-    dict_ins_next(forth_dict, code(".c", putChar));
+    dict_ins_next(forth_dict, code("emit", emit));
 
     FILE *fp; //文件指针
     char c;
