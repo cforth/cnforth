@@ -21,7 +21,7 @@ c_forth 0.1版
 
 5. `variable`定义变量，`!`存入，`@`取出;
 
-6. 从外部读取forth代码（`./forth lib.cf`）;
+6. 从外部读取forth代码（`./forth lib.fs`）;
 
 7. 递归定义扩展词（`myself`）。
 
@@ -47,8 +47,8 @@ make forth
 >>> variable n
 >>> : n@ n @ ;
 >>> : n-- n@ 1 - n ! ;
->>> : factorial n@ 1 - if n@ n-- myself * else 1 then ; 
->>> 8 n ! factorial .
+>>> : factorial n@ 0 > if n@ n-- myself * else 1 then .s ; 
+>>> 8 n ! factorial
 
 40320
 ```
