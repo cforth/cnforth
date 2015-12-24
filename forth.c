@@ -254,7 +254,7 @@ void compile(char *s, Dict *dict)
     else_p = NULL;
     for_p = NULL;
     
-    if(DEBUG) showDS();
+    if(DEBUG) showds();
 }
 
 
@@ -266,47 +266,49 @@ int main(int argc, char *argv[])
     forth_dict = dict_init();
     
     //初始化词典
-    dict_ins_next(forth_dict, code("cr", putCr));
-    dict_ins_next(forth_dict, code("depth", depth));
+    dict_ins_next(forth_dict, code("dolist",dolist));
     dict_ins_next(forth_dict, code("push",push));
+    dict_ins_next(forth_dict, code(".",popds));
     dict_ins_next(forth_dict, code("bye",bye));
-    dict_ins_next(forth_dict, code(".s",showDS));
-    dict_ins_next(forth_dict, code(".",popDS));
-    dict_ins_next(forth_dict, code("dup",dup));
-    dict_ins_next(forth_dict, code("swap",swap));
-    dict_ins_next(forth_dict, code("over",over));
-    dict_ins_next(forth_dict, code("drop",drop));
     
-    dict_ins_next(forth_dict, code(">r",tor));
-    dict_ins_next(forth_dict, code("r>",rto));
-    dict_ins_next(forth_dict, code("r@",rat));
-
-    dict_ins_next(forth_dict, code(">t",tot));
-    dict_ins_next(forth_dict, code("t>",tto));
-    dict_ins_next(forth_dict, code("t@",tat));
-
+    dict_ins_next(forth_dict, code("ret",ret));
+    dict_ins_next(forth_dict, code(";",ret));
+    dict_ins_next(forth_dict, code("cr", putcr));
+    
+    dict_ins_next(forth_dict, code("depth",depth));
     dict_ins_next(forth_dict, code("+",add));
     dict_ins_next(forth_dict, code("-",sub));
     dict_ins_next(forth_dict, code("*",mul));
     dict_ins_next(forth_dict, code("/",divv));
+
+    dict_ins_next(forth_dict, code("dup",dup));
+    dict_ins_next(forth_dict, code("swap",swap));
+    dict_ins_next(forth_dict, code("over",over));
+    dict_ins_next(forth_dict, code("drop",drop));
+    dict_ins_next(forth_dict, code(".s",showds));
+
+    dict_ins_next(forth_dict, code("!", invar));
+    dict_ins_next(forth_dict, code("@", outvar));
     
+    dict_ins_next(forth_dict, code("=",equal));
     dict_ins_next(forth_dict, code(">",morethan));
     dict_ins_next(forth_dict, code("<",lessthan));
-    dict_ins_next(forth_dict, code("==",equal));
 
-    dict_ins_next(forth_dict, code("ret",ret));
-    dict_ins_next(forth_dict, code(";",ret));
-    dict_ins_next(forth_dict, code("dolist",dolist));
     dict_ins_next(forth_dict, code("if",iff));
     dict_ins_next(forth_dict, code("else",elsee));
     dict_ins_next(forth_dict, code("then",then));
     dict_ins_next(forth_dict, code("for",forr));
     dict_ins_next(forth_dict, code("next",next));
     
-    dict_ins_next(forth_dict, code("!", invar));
-    dict_ins_next(forth_dict, code("@", outvar));
-    dict_ins_next(forth_dict, code("myself", myself));
+    dict_ins_next(forth_dict, code(">r",tor));
+    dict_ins_next(forth_dict, code("r>",rto));
+    dict_ins_next(forth_dict, code("r@",rat));
+    dict_ins_next(forth_dict, code(">t",tot));
+    dict_ins_next(forth_dict, code("t>",tto));
+    dict_ins_next(forth_dict, code("t@",tat));
+
     dict_ins_next(forth_dict, code("emit", emit));
+    dict_ins_next(forth_dict, code("myself", myself));
 
     FILE *fp; //文件指针
     char c;

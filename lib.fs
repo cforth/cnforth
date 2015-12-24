@@ -1,6 +1,6 @@
 : test_ok   ." test OK!" cr ;
 : test_fail ." test Fail!" cr  ;
-: test == if test_ok else test_fail then ;
+: test = if test_ok else test_fail then ;
 
 ." Fib List Test: Print 8 Fib list numbers " cr
 : dup2 over over ;

@@ -48,61 +48,54 @@ Word *colon(char*name, char*str, Word **list, int n);
 Word *variable(char*name,  char*str, CELL num);
 
 //词典接口定义
-Dict *dict_init();  //初始化一个词典
-int dict_ins_next(Dict *dict, Word *word);        //将核心词或者扩展词插入词典
-Word *dict_search_name(Dict *dict, char *name);   //搜索词典
+Dict *dict_init();
+int dict_ins_next(Dict *dict, Word *word);
+Word *dict_search_name(Dict *dict, char *name);
 
 //清空三个栈
 void empty_stack();
 
 //核心词
-void putCr();    //cr
-void depth();    //depth
-void add();      //+
-void sub();      //-
-void mul();      //*
-void divv();     ///
+void push();     // push
+void popds();    // .
+void bye();      // bye
 
-void showDS();
-void popDS();
-void bye();
-void push();
-void dup();
-void swap();
-void over();
-void drop();
-//RS
-void tor();
-void rto();
-void rat();
-//TS
-void tot();
-void tto();
-void tat();
+void ret();       // ;
+void putcr();    // cr
 
-//大于小于等于
-void morethan();
-void lessthan();
-void equal();
+void depth();    // depth
+void add();      // +
+void sub();      // -
+void mul();      // *
+void divv();     // /
 
-//;
-void ret();
+void dup();      // dup
+void swap();     // swap
+void over();     // over
+void drop();     // drop
+void showds();   // .s
 
-//if else then语句
-void iff();
-void elsee();
-void then();
+void invar();     // !
+void outvar();    // @
 
-//for next 循环
-void forr();
-void next();
+void equal();     // =
+void morethan();  // >
+void lessthan();  // <
 
-//变量存入和取出
-void invar();
-void outvar();
+void iff();       // if
+void elsee();     // else
+void then();      // then
 
-//递归词,是个空的占位符
-void myself();
+void forr();      // for
+void next();      // next
 
-//将数据栈顶的数字作为字符打印
-void emit();
+void tor();      // >r
+void rto();      // r>
+void rat();      // r@
+void tot();      // >t
+void tto();      // t>
+void tat();      // t@
+
+void emit();      // emit
+
+void myself();    // myself

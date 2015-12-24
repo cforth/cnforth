@@ -111,35 +111,17 @@ void empty_stack()
 }
 
 
-void putCr()
+//核心词
+void push()
 {
-    putchar('\n');
-}
-
-
-void depth()
-{
-    CELL d = DP - DS + 1;
+    IP++;
     DP++;
-    *DP = d; 
+    *DP=(CELL)*IP;
 }
 
 
-void showDS()
+void popds()
 {
-    printf("DS> ");
-    CELL *i=DS;
-    for (;i<=DP ;i++ )
-    {
-        printf("%ld ",*i);
-    }
-    printf("\n");
-}
-
-
-void popDS()
-{
-    
     printf("%ld\n", *DP);
     DP--;
 }
@@ -151,84 +133,24 @@ void bye()
 }
 
 
-void push()
+void ret()
 {
-    IP++;
-    DP++;
-    *DP=(CELL)*IP;
-}
-
-
-void dup()
-{
-    DP++;
-    *DP=*(DP-1);
-}
-
-
-void swap()
-{
-    CELL t=*DP;
-    *DP=*(DP-1);
-    *(DP-1)=t;
-}
-
-
-void over()
-{
-    *(DP+1)=*(DP-1);DP++;
-}
-
-
-void drop()
-{
-    DP--;
-}
-
-
-void tor()
-{
-    RP++;
-    *RP=*DP;
-    DP--;
-}
-
-
-void rto()
-{
-    DP++;
-    *DP=*RP;
+    IP=(Word**)*RP;
     RP--;
 }
 
 
-void rat()
+void putcr()
 {
-    DP++;
-    *DP=*RP;
+    putchar('\n');
 }
 
 
-void tot()
+void depth()
 {
-    TP++;
-    *TP=*DP;
-    DP--;
-}
-
-
-void tto()
-{
+    CELL d = DP - DS + 1;
     DP++;
-    *DP=*TP;
-    TP--;
-}
-
-
-void tat()
-{
-    DP++;
-    *DP=*TP;
+    *DP = d; 
 }
 
 
@@ -260,6 +182,72 @@ void divv()
 }
 
 
+void dup()
+{
+    DP++;
+    *DP=*(DP-1);
+}
+
+
+void swap()
+{
+    CELL t=*DP;
+    *DP=*(DP-1);
+    *(DP-1)=t;
+}
+
+
+void over()
+{
+    *(DP+1)=*(DP-1);DP++;
+}
+
+
+void drop()
+{
+    DP--;
+}
+
+
+void showds()
+{
+    printf("DS> ");
+    CELL *i=DS;
+    for (;i<=DP ;i++ )
+    {
+        printf("%ld ",*i);
+    }
+    printf("\n");
+}
+
+
+void invar()
+{
+    ((Word*)*DP)->num = *(DP-1);
+    DP-=2;
+}
+
+
+void outvar() 
+{
+    *DP = ((Word*)*DP)->num;
+}
+
+
+void equal()
+{
+    if(*(DP-1) == *DP)
+    {
+        DP--;
+        *DP = 1;
+    }
+    else{
+        DP--;
+        *DP = 0;
+    }
+}
+
+
 void morethan()
 {
     if(*(DP-1) > *DP)
@@ -285,27 +273,6 @@ void lessthan()
         DP--;
         *DP = 0;
     }
-}
-
-
-void equal()
-{
-    if(*(DP-1) == *DP)
-    {
-        DP--;
-        *DP = 1;
-    }
-    else{
-        DP--;
-        *DP = 0;
-    }
-}
-
-
-void ret()
-{
-    IP=(Word**)*RP;
-    RP--;
 }
 
 
@@ -358,22 +325,49 @@ void next()
 }
 
 
-void invar()
+void tor()
 {
-    ((Word*)*DP)->num = *(DP-1);
-    DP-=2;
+    RP++;
+    *RP=*DP;
+    DP--;
 }
 
 
-void outvar() 
+void rto()
 {
-    *DP = ((Word*)*DP)->num;
+    DP++;
+    *DP=*RP;
+    RP--;
 }
 
 
-void myself()
+void rat()
 {
-    ;
+    DP++;
+    *DP=*RP;
+}
+
+
+void tot()
+{
+    TP++;
+    *TP=*DP;
+    DP--;
+}
+
+
+void tto()
+{
+    DP++;
+    *DP=*TP;
+    TP--;
+}
+
+
+void tat()
+{
+    DP++;
+    *DP=*TP;
 }
 
 
@@ -381,4 +375,10 @@ void emit()
 {
     putchar((char)(*DP));
     DP--;
+}
+
+
+void myself()
+{
+    ;
 }
