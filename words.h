@@ -17,7 +17,7 @@ typedef void(*fnP)();
 typedef struct Word
 {
     struct Word *next;     //指向词典中下个词的指针
-    char *name;            //词的名词
+    char *name;            //词的名字
     fnP fn;                //核心词定义，函数指针
     struct Word **wplist;  //扩展词中用的函数指针列表
     CELL num;              //变量词中保存数值

@@ -13,13 +13,21 @@ Dict *forth_dict;  //Forth的词典
 //判断字符串是否为数字
 int is_num(char *s)
 {
-    while (*s != 0)
+    if((CELL)*s == '-' || isdigit((CELL)*s))
     {
-        if (!isdigit((CELL)*s)) 
-            return 0;
         s++;
+        while (*s != 0)
+        {
+            if (!isdigit((CELL)*s)) 
+                return 0;
+            s++;
+        }
+        return 1;
     }
-    return 1;
+    else
+    {
+        return 0;
+    }
 }
 
 

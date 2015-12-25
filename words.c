@@ -258,7 +258,7 @@ void equal()
     if(*(DP-1) == *DP)
     {
         DP--;
-        *DP = 1;
+        *DP = -1;
     }
     else{
         DP--;
@@ -272,7 +272,7 @@ void morethan()
     if(*(DP-1) > *DP)
     {
         DP--;
-        *DP = 1;
+        *DP = -1;
     }
     else{
         DP--;
@@ -286,7 +286,7 @@ void lessthan()
     if(*(DP-1) < *DP)
     {
         DP--;
-        *DP = 1;
+        *DP = -1;
     }
     else{
         DP--;
