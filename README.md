@@ -17,7 +17,7 @@ c_forth 0.1版
 
 3. `if else then` 控制语句（包含`if then`）;
 
-4. `for next` 循环语句;
+4. `do loop` 循环语句;
 
 5. `variable`定义变量，`!`存入，`@`取出;
 
