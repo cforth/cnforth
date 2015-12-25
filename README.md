@@ -15,9 +15,9 @@ c_forth 0.1版
 
 2. 定义和使用扩展词;
 
-3. `if else then` 控制语句（包含`if then`）;
+3. `if else then` 控制语句（支持嵌套）;
 
-4. `do loop` 循环语句;
+4. `do loop` 循环语句（支持嵌套）;
 
 5. `variable`定义变量，`!`存入，`@`取出;
 

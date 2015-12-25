@@ -50,12 +50,6 @@ int see(char *name, Dict *dict)
 }
 
 
-//定义if词、else词、for词定义时的临时位置指针
-Word** if_p = NULL;
-Word** else_p = NULL;
-Word** for_p = NULL;
-
-
 //根据Forth代码中的当前词的名字，去执行相应的编译操作
 int find_Word(char *name, Dict *dict)
 {
@@ -78,7 +72,7 @@ int find_Word(char *name, Dict *dict)
 
             return 1;
         }            
-    } 
+    }
     
     if(word_p->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
     {
@@ -91,37 +85,31 @@ int find_Word(char *name, Dict *dict)
     {
         *IP_list_p=word_p;
         IP_list_p++;
-        if_p = IP_list_p;
+        rs_push((CELL)IP_list_p);
         IP_list_p++;
     }
     else if(!strcmp("else",name)) 
     {
         *IP_list_p=word_p;  
         IP_list_p++;
-        else_p = IP_list_p;
-        *if_p = (Word*)(else_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
+        Word** else_p = IP_list_p;
+        Word** if_p = (Word**)(rs_pop());
+        rs_push((CELL)else_p);
+        *if_p = (Word*)(IP_list_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
         IP_list_p++;
     }
     else if(!strcmp("then",name))
     {
         *IP_list_p=word_p;
-        if(else_p == NULL)
-        {
-            else_p = IP_list_p;
-            *if_p = (Word*)(else_p - if_p + 1); 
-        }
-        else
-        {
-            *else_p = (Word*)(IP_list_p - else_p + 1);
-        }
-        
+        Word** branch_p = (Word**)(rs_pop());
+        *branch_p = (Word*)(IP_list_p - branch_p + 1); 
         IP_list_p++;
     }
     else if(!strcmp("do",name))
     {
         *IP_list_p=word_p;
         IP_list_p++;
-        for_p = IP_list_p;
+        rs_push((CELL)IP_list_p);
         IP_list_p++;
         
     }
@@ -129,8 +117,9 @@ int find_Word(char *name, Dict *dict)
     {
         *IP_list_p=word_p;  
         IP_list_p++;
-        *for_p = (Word*)(IP_list_p - for_p + 1); 
-        *IP_list_p = (Word*)(IP_list_p - for_p + 1); 
+        Word** do_p = (Word**)(rs_pop());
+        *do_p = (Word*)(IP_list_p - do_p + 1); 
+        *IP_list_p = (Word*)(IP_list_p - do_p + 1); 
         IP_list_p++;
     }
     else 
@@ -159,8 +148,8 @@ void explain()
 }
 
 
-//将一行Forth代码字符串编译为指令列表
-void compile(char *s, Dict *dict)
+//Forth文本解释器
+void interpret(char *s, Dict *dict)
 {
     char *define_word;
     char *define_str;
@@ -224,7 +213,7 @@ void compile(char *s, Dict *dict)
         Word **p=IP_list;
         for (;p<IP_list_p ;p++ )
         {
-            printf("%ld ",(CELL)(*p));       //强制类型转换
+            printf("%ld ",(CELL)(*p));
         }
         printf("\n");
     }
@@ -256,12 +245,9 @@ void compile(char *s, Dict *dict)
     else
         explain(); 
     
-    //复原临时区、if、else和for指针
+    //复原IP列表指针
     IP_list_p=IP_list;
-    if_p = NULL; 
-    else_p = NULL;
-    for_p = NULL;
-    
+  
     if(DEBUG) showds();
 }
 
@@ -341,7 +327,7 @@ int main(int argc, char *argv[])
             else
             {
                 cmdstr[i] = '\0';
-                compile(cmdstr, forth_dict);
+                interpret(cmdstr, forth_dict);
                 i = 0;
             }           
         }
@@ -350,9 +336,9 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        printf(">>>");
-        gets(cmdstr);     //从标准输入获取一行Forth代码字符串
-        compile(cmdstr, forth_dict);  //编译执行
+        printf(">>> ");
+        gets(cmdstr);
+        interpret(cmdstr, forth_dict);
     }
 
     

@@ -110,6 +110,34 @@ void empty_stack()
     //*TP=0;
 }
 
+//Forth栈操作词
+void ds_push(CELL n)
+{
+    DP++;
+    *DP=n;
+}
+
+
+void rs_push(CELL n)
+{
+    RP++;
+    *RP=n;
+}
+
+
+CELL ds_pop()
+{
+    DP--;
+    return *(DP+1); 
+}
+
+
+CELL rs_pop()
+{
+    RP--;
+    return *(RP+1); 
+}
+
 
 //核心词
 void push()

@@ -55,6 +55,12 @@ Word *dict_search_name(Dict *dict, char *name);
 //清空三个栈
 void empty_stack();
 
+//Forth栈操作词
+void ds_push(CELL n);
+void rs_push(CELL n);
+CELL ds_pop();
+CELL rs_pop();
+
 //核心词
 void push();     // push
 void popds();    // .
