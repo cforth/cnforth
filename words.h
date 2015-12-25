@@ -74,6 +74,8 @@ void swap();     // swap
 void over();     // over
 void drop();     // drop
 void showds();   // .s
+void pick();     // pick
+void roll();     // roll
 
 void invar();     // !
 void outvar();    // @
@@ -86,8 +88,8 @@ void iff();       // if
 void elsee();     // else
 void then();      // then
 
-void forr();      // for
-void next();      // next
+void doo();       // do
+void loop();      // loop
 
 void tor();      // >r
 void rto();      // r>

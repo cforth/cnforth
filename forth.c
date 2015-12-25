@@ -109,7 +109,7 @@ int find_Word(char *name, Dict *dict)
         
         IP_list_p++;
     }
-    else if(!strcmp("for",name))
+    else if(!strcmp("do",name))
     {
         *IP_list_p=word_p;
         IP_list_p++;
@@ -117,7 +117,7 @@ int find_Word(char *name, Dict *dict)
         IP_list_p++;
         
     }
-    else if(!strcmp("next",name))
+    else if(!strcmp("loop",name))
     {
         *IP_list_p=word_p;  
         IP_list_p++;
@@ -286,7 +286,9 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("over",over));
     dict_ins_next(forth_dict, code("drop",drop));
     dict_ins_next(forth_dict, code(".s",showds));
-
+    dict_ins_next(forth_dict, code("pick",pick));
+    dict_ins_next(forth_dict, code("roll",roll));
+    
     dict_ins_next(forth_dict, code("!", invar));
     dict_ins_next(forth_dict, code("@", outvar));
     
@@ -297,8 +299,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("if",iff));
     dict_ins_next(forth_dict, code("else",elsee));
     dict_ins_next(forth_dict, code("then",then));
-    dict_ins_next(forth_dict, code("for",forr));
-    dict_ins_next(forth_dict, code("next",next));
+    dict_ins_next(forth_dict, code("do",doo));
+    dict_ins_next(forth_dict, code("loop",loop));
     
     dict_ins_next(forth_dict, code(">r",tor));
     dict_ins_next(forth_dict, code("r>",rto));

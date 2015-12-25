@@ -221,6 +221,25 @@ void showds()
 }
 
 
+void pick()
+{
+    CELL k = *DP;
+    *DP = *(DP-k);
+}
+
+
+void roll()
+{
+    CELL k = *DP;
+    CELL dk = *(DP-k);
+    for(; k>1; k--) {
+        *(DP-k) = *(DP-k+1);
+    }
+    DP--;
+    *DP = dk;
+}
+
+
 void invar()
 {
     ((Word*)*DP)->num = *(DP-1);
@@ -302,26 +321,29 @@ void then()
 }
 
 
-void forr()
+void doo()
 {
-    if(*DP<1)
+    if(*(DP-1) <= *DP)
     {
         IP = IP + (CELL)(*(IP+1)); 
+        DP--;
         DP--;
     }
     else
     {
-        IP++; 
-        (*DP)--; 
-        tot();
+        IP++;
+        (*DP)++;
+        tor();
+        tor();
     }
 }
 
 
-void next() 
+void loop() 
 {
     IP = IP - (CELL)(*(IP+1)); 
-    tto();
+    rto();
+    rto();
 }
 
 

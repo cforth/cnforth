@@ -1,12 +1,14 @@
+: 2dup over over ;
+: 2drop drop drop ;
+
 : test_ok   ." test OK!" cr ;
 : test_fail ." test Fail!" cr  ;
 : test = if test_ok else test_fail then ;
 
 ." Fib List Test: Print 8 Fib list numbers " cr
-: dup2 over over ;
-: fib_ for dup2 + next ;
-: fib  0 1 >r swap r> swap fib_ .s ;
-: test_fib 6 fib + + + + + + + 33 test ;
+: fib_ do  .s 2dup + loop ;
+: fib  0 1 4 roll 4 roll fib_ .s ;
+: test_fib 6 0 fib + + + + + + + 33 test ;
 test_fib .s
 
 variable n
