@@ -161,17 +161,15 @@ void interpret(char *s, Dict *dict)
         if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
             s=ignore_blankchar(s);
-            char *c = s;
             char tempstr[100]; 
-            while(*c != '\"')
+            while(*s != '\"')
             {
-                sprintf(tempstr, "%ld", (CELL)(*c));
+                sprintf(tempstr, "%ld", (CELL)(*s));
                 find_Word(tempstr, forth_dict);
                 find_Word("emit", forth_dict);
-                c++;
+                s++;
             }
-            c++;
-            s = c;
+            s++;
         }
         else if (!strcmp(":",one_word) || !strcmp("variable",one_word)) //如果是扩展定义词或是变量定义词
         {
@@ -184,6 +182,15 @@ void interpret(char *s, Dict *dict)
             
             define_str = (char*)malloc(strlen(s)+1);
             strcpy(define_str, s); //保存扩展字的定义
+        }
+        else if(!strcmp("(",one_word))  //如果是注释，则忽略注释
+        {
+            s=ignore_blankchar(s);
+            while(*s != ')')
+            {
+                s++;
+            }
+            s++;
         }
         else if (!strcmp("see",one_word)) //如果是see则打印扩展词的定义
         {

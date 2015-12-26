@@ -11,9 +11,9 @@
 : tuck swap over ;
 : 3dup 3 pick 3 pick 3 pick ;
 
-: mod 2dup / * - ;
-: /mod 2dup / >r mod r> ;
-: negate 0 swap - ;
+: mod ( n1 n2 -- mod ) 2dup / * - ;
+: /mod ( n1 n2 -- mod div ) 2dup / >r mod r> ;
+: negate ( n -- -n ) 0 swap - ;
 : abs dup 0 < if negate then ;
 : max 2dup > if drop else nip then ;
 : min 2dup < if drop else nip then ;
@@ -42,6 +42,6 @@ test_fact .s
 ." Matrix: Test nested statements " cr
 : star 42 emit ;
 : space 32 emit ;
-: matrix swap 0 do dup >r 0 do star space loop cr r> loop cr ;
+: matrix swap 0 do dup >r 0 do star space loop cr r> loop drop cr ;
 5 4 matrix
  
