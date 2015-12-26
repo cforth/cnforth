@@ -30,11 +30,18 @@
 : test_fib 6 0 fib + + + + + + + 33 test ;
 test_fib .s
 
+." Factorial Test: Us recursive to Print Eight's Factorial " cr
 variable n
 : n@ n @ ;
 : n-- n@ 1 - n ! ;
 : factorial n@ 0 > if n@ n-- myself * else 1 then .s ; 
 see factorial
-." Factorial Test: Us recursive to Print Eight's Factorial " cr
 : test_fact 8 n ! factorial 40320 test ;
 test_fact .s
+
+." Matrix: Test nested statements " cr
+: star 42 emit ;
+: space 32 emit ;
+: matrix swap 0 do dup >r 0 do star space loop cr r> loop cr ;
+5 4 matrix
+ 
