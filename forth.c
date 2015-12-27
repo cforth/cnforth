@@ -46,7 +46,7 @@ int see(char *name, Dict *dict)
 
 
 //根据Forth代码中的当前词的名字，去执行相应的编译操作
-int find_Word(char *name, Dict *dict)
+int compile(char *name, Dict *dict)
 {
     Word *word_p;
     word_p = dict_search_name(dict, name);
@@ -123,12 +123,12 @@ int find_Word(char *name, Dict *dict)
         IP_list_p++;
     }
     
-    PRINT("[DEBUG]成功找到%s词\n",name)
+    PRINT("[DEBUG]成功编译%s词\n",name)
     return 1;
 }
 
 
-//对指令列表进行解释执行
+//指令列表执行
 void explain()
 {
     IP=IP_list;
@@ -165,8 +165,8 @@ void interpret(char *s, Dict *dict)
             while(*s != '\"')
             {
                 sprintf(tempstr, "%ld", (CELL)(*s));
-                find_Word(tempstr, forth_dict);
-                find_Word("emit", forth_dict);
+                compile(tempstr, forth_dict);
+                compile("emit", forth_dict);
                 s++;
             }
             s++;
@@ -200,7 +200,7 @@ void interpret(char *s, Dict *dict)
             see(one_word, forth_dict);
             return;
         }
-        else if(!find_Word(one_word, forth_dict) ) //在Forth词典中搜索
+        else if(!compile(one_word, forth_dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -220,7 +220,7 @@ void interpret(char *s, Dict *dict)
         printf("\n");
     }
 
-    //若有定义词则把扩展词或变量词加入Forth词典，若无则执行解释模式
+    //若有定义词则把扩展词或变量词加入Forth词典，若无则执行指令列表
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name)
