@@ -8,7 +8,6 @@ char cmdstr[BUFF_LEN];       //输入缓存区
 Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
 Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
 
-Dict *forth_dict;  //Forth的词典
 
 //判断字符串是否为数字
 int is_num(char *s)
@@ -165,8 +164,8 @@ void interpret(char *s, Dict *dict)
             while(*s != '\"')
             {
                 sprintf(tempstr, "%ld", (CELL)(*s));
-                compile(tempstr, forth_dict);
-                compile("emit", forth_dict);
+                compile(tempstr, dict);
+                compile("emit", dict);
                 s++;
             }
             s++;
@@ -197,10 +196,10 @@ void interpret(char *s, Dict *dict)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            see(one_word, forth_dict);
+            see(one_word, dict);
             return;
         }
-        else if(!compile(one_word, forth_dict) ) //编译词
+        else if(!compile(one_word, dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
             empty_stack();
@@ -225,7 +224,7 @@ void interpret(char *s, Dict *dict)
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name)
         int n = (CELL)IP_list_p - (CELL)IP_list;
-        dict_ins_next(forth_dict, colon(define_name, define_str, IP_list, n));
+        dict_ins_next(dict, colon(define_name, define_str, IP_list, n));
         //下面这段代码用于支持递归词myself!!
         Word *myself_p = dict_search_name(dict, "myself");
         Word *colon_p = dict_search_name(dict, define_name);
@@ -242,7 +241,7 @@ void interpret(char *s, Dict *dict)
     else if(!strcmp("variable",define_word))
     {
         PRINT("[DEBUG]定义变量词 %s\n", define_name)
-        dict_ins_next(forth_dict, variable(define_name, define_str, 0));
+        dict_ins_next(dict, variable(define_name, define_str, 0));
     }
     else
         explain(); 
@@ -259,7 +258,7 @@ int main(int argc, char *argv[])
 {
     empty_stack();
     IP_list_p=IP_list;
-    forth_dict = dict_init();
+    Dict *forth_dict= dict_init();
     
     //初始化词典
     dict_ins_next(forth_dict, code("dolist",dolist));
