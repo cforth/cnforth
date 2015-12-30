@@ -4,10 +4,6 @@
 #include <ctype.h>
 #include "forth.h"
 
-char cmdstr[BUFF_LEN];       //输入缓存区
-Word *IP_list[BUFF_LEN/4];   //Word类型指针数组，长度为BUFF_LEN/4
-Word **IP_list_p=IP_list;    //Word类型指针，指向IP_list[0]
-
 
 //判断字符串是否为数字
 int is_num(char *s)
@@ -59,10 +55,10 @@ int compile(char *name, Dict *dict)
         else 
         {               //如果是数字
             PRINT("[DEBUG]成功找到数字%s\n",name)
-            *IP_list_p=dict_search_name(dict, "push");   //将push核心词指针存入IP_list_p数组        
-            IP_list_p++;        //数组指针指向下一个位置
-            *IP_list_p=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
-            IP_list_p++;
+            *IP=dict_search_name(dict, "push");   //将push核心词指针存入IP数组        
+            IP++;        //数组指针指向下一个位置
+            *IP=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
+            IP++;
 
             return 1;
         }            
@@ -70,56 +66,56 @@ int compile(char *name, Dict *dict)
     
     if(word_p->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
     {
-        *IP_list_p=dict_search_name(dict, "push");
-        IP_list_p++;
-        *IP_list_p=word_p;
-        IP_list_p++;
+        *IP=dict_search_name(dict, "push");
+        IP++;
+        *IP=word_p;
+        IP++;
     }                
     else if(!strcmp("if",name))
     {
-        *IP_list_p=word_p;
-        IP_list_p++;
-        rs_push((CELL)IP_list_p);
-        IP_list_p++;
+        *IP=word_p;
+        IP++;
+        rs_push((CELL)IP);
+        IP++;
     }
     else if(!strcmp("else",name)) 
     {
-        *IP_list_p=word_p;  
-        IP_list_p++;
-        Word** else_p = IP_list_p;
+        *IP=word_p;  
+        IP++;
+        Word** else_p = IP;
         Word** if_p = (Word**)(rs_pop());
         rs_push((CELL)else_p);
-        *if_p = (Word*)(IP_list_p - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
-        IP_list_p++;
+        *if_p = (Word*)(IP - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
+        IP++;
     }
     else if(!strcmp("then",name))
     {
-        *IP_list_p=word_p;
+        *IP=word_p;
         Word** branch_p = (Word**)(rs_pop());
-        *branch_p = (Word*)(IP_list_p - branch_p + 1); 
-        IP_list_p++;
+        *branch_p = (Word*)(IP - branch_p + 1); 
+        IP++;
     }
     else if(!strcmp("do",name))
     {
-        *IP_list_p=word_p;
-        IP_list_p++;
-        rs_push((CELL)IP_list_p);
-        IP_list_p++;
+        *IP=word_p;
+        IP++;
+        rs_push((CELL)IP);
+        IP++;
         
     }
     else if(!strcmp("loop",name))
     {
-        *IP_list_p=word_p;  
-        IP_list_p++;
+        *IP=word_p;  
+        IP++;
         Word** do_p = (Word**)(rs_pop());
-        *do_p = (Word*)(IP_list_p - do_p + 1); 
-        *IP_list_p = (Word*)(IP_list_p - do_p + 1); 
-        IP_list_p++;
+        *do_p = (Word*)(IP - do_p + 1); 
+        *IP = (Word*)(IP - do_p + 1); 
+        IP++;
     }
     else 
     {
-        *IP_list_p=word_p;    
-        IP_list_p++;
+        *IP=word_p;    
+        IP++;
     }
     
     PRINT("[DEBUG]成功编译%s词\n",name)
@@ -130,9 +126,10 @@ int compile(char *name, Dict *dict)
 //指令列表执行
 void explain()
 {
+    Word  **IP_end = IP;
     IP=IP_list;
     
-    while(IP != IP_list_p)
+    while(IP != IP_end)
     {
         PRINT("[DEBUG]解释执行> %s\n", (*IP)->name)
         
@@ -203,7 +200,7 @@ void interpret(char *s, Dict *dict)
         {
             printf("[%s]?\n",one_word);
             empty_stack();
-            IP_list_p=IP_list;
+            IP=IP_list;
             return;
         }
     }
@@ -212,7 +209,7 @@ void interpret(char *s, Dict *dict)
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
         Word **p=IP_list;
-        for (;p<IP_list_p ;p++ )
+        for (;p<IP ;p++ )
         {
             printf("%ld ",(CELL)(*p));
         }
@@ -223,13 +220,13 @@ void interpret(char *s, Dict *dict)
     if(!strcmp(":",define_word))
     {
         PRINT("[DEBUG]定义扩展词 %s\n", define_name)
-        int n = (CELL)IP_list_p - (CELL)IP_list;
+        int n = (CELL)IP - (CELL)IP_list;
         dict_ins_next(dict, colon(define_name, define_str, IP_list, n));
         //下面这段代码用于支持递归词myself!!
         Word *myself_p = dict_search_name(dict, "myself");
         Word *colon_p = dict_search_name(dict, define_name);
         Word **p=IP_list;
-        for (;p<IP_list_p ;p++ )
+        for (;p<IP ;p++ )
         {
             if(*p == myself_p)
             {
@@ -247,7 +244,7 @@ void interpret(char *s, Dict *dict)
         explain(); 
     
     //复原IP列表指针
-    IP_list_p=IP_list;
+    IP=IP_list;
   
     if(DEBUG) showds();
 }
@@ -256,8 +253,9 @@ void interpret(char *s, Dict *dict)
 //主程序入口
 int main(int argc, char *argv[]) 
 {
+    char cmdstr[BUFF_LEN];  //输入缓存区
     empty_stack();
-    IP_list_p=IP_list;
+    IP=IP_list;
     Dict *forth_dict= dict_init();
     
     //初始化词典

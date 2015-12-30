@@ -1,5 +1,6 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
 #define     STACK_LEN   100   //定义栈的深度
+#define     BUFF_LEN    1024
 
 #define DEBUG 0
 #if DEBUG
@@ -37,8 +38,8 @@ typedef struct Dict
 CELL DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];
 CELL *DP, *RP, *TP;
 
-//指令指针数组(指针的指针)
-Word  **IP;
+Word *IP_list[BUFF_LEN/4];   //指令列表，长度为BUFF_LEN/4   
+Word  **IP;                  //指令列表指针(指针的指针)
 
 //核心词、扩展词、变量词的定义函数，返回指向自己的指针
 Word *code(char*name, fnP  fp);
