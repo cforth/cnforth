@@ -286,6 +286,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("@", outvar));
     
     dict_ins_next(forth_dict, code("=",equal));
+    dict_ins_next(forth_dict, code("<>",noequal));
     dict_ins_next(forth_dict, code(">",morethan));
     dict_ins_next(forth_dict, code("<",lessthan));
 

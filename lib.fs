@@ -17,6 +17,7 @@
 : abs dup 0 < if negate then ;
 : max 2dup > if drop else nip then ;
 : min 2dup < if drop else nip then ;
+: max2 ( n1 n2 n3 -- max1 max2 ) 2dup min >r dup r> <> if swap then 3 roll max ;
 
 ." System Words successfully loaded! " cr
 

@@ -295,6 +295,20 @@ void equal()
 }
 
 
+void noequal()
+{
+    if(*(DP-1) != *DP)
+    {
+        DP--;
+        *DP = -1;
+    }
+    else{
+        DP--;
+        *DP = 0;
+    }
+}
+
+
 void morethan()
 {
     if(*(DP-1) > *DP)

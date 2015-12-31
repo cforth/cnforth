@@ -88,6 +88,7 @@ void invar();     // !
 void outvar();    // @
 
 void equal();     // =
+void noequal();  // <>
 void morethan();  // >
 void lessthan();  // <
 
