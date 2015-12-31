@@ -15,9 +15,9 @@
 : /mod ( n1 n2 -- mod div ) 2dup / >r mod r> ;
 : negate ( n -- -n ) 0 swap - ;
 : abs dup 0 < if negate then ;
-: max 2dup > if drop else nip then ;
-: min 2dup < if drop else nip then ;
-: max2 ( n1 n2 n3 -- max1 max2 ) 2dup min >r dup r> <> if swap then 3 roll max ;
+: max 2dup < if swap then drop ;
+: min 2dup > if swap then drop ;
+: max2 ( n1 n2 n3 -- max1 max2 ) 2dup max >r min max r> ;
 
 ." System Words successfully loaded! " cr
 
