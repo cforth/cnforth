@@ -124,10 +124,10 @@ int compile(char *name, Dict *dict)
 
 
 //指令列表执行
-void explain()
+void explain(Word  **IP_head)
 {
     Word  **IP_end = IP;
-    IP=IP_list;
+    IP=IP_head;
     
     while(IP != IP_end)
     {
@@ -142,10 +142,10 @@ void explain()
 //Forth文本解释器
 void interpret(char *s, Dict *dict)
 {
-    char *define_word;
     char *define_str;
     char *define_name;
     char *one_word;
+    Word  **IP_head = IP_list;
        
     while (*ignore_blankchar(s)!=0)
     {
@@ -167,9 +167,11 @@ void interpret(char *s, Dict *dict)
             }
             s++;
         }
-        else if (!strcmp(":",one_word) || !strcmp("variable",one_word)) //如果是扩展定义词或是变量定义词
+        else if (!strcmp(":",one_word))
         {
-            define_word = one_word;
+            explain(IP_head);
+            IP_head = IP;
+            
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
@@ -178,6 +180,40 @@ void interpret(char *s, Dict *dict)
             
             define_str = (char*)malloc(strlen(s)+1);
             strcpy(define_str, s); //保存扩展字的定义
+        }
+        else if(!strcmp(";",one_word))   //在词典中定义扩展词
+        {
+            compile(one_word, dict);
+            PRINT("[DEBUG]定义扩展词 %s\n", define_name)
+            int n = (CELL)IP - (CELL)IP_head;
+            dict_ins_next(dict, colon(define_name, define_str, IP_head, n));
+            //下面这段代码用于支持递归词myself!!
+            Word *myself_p = dict_search_name(dict, "myself");
+            Word *colon_p = dict_search_name(dict, define_name);
+            Word **p=IP_head;
+            for (;p<IP ;p++ )
+            {
+                if(*p == myself_p)
+                {
+                    *p = colon_p;
+                    change_colon(colon_p, IP_head, n); //修改colon词，用于递归定义
+                }
+            }
+            
+            IP_head = IP;
+        }
+        else if (!strcmp("variable",one_word))
+        {
+            explain(IP_head);
+            IP_head = IP;
+            
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            
+            PRINT("[DEBUG]定义变量词 %s\n", one_word)
+            dict_ins_next(dict, variable(one_word, 0));
+            IP_head = IP;
         }
         else if(!strcmp("(",one_word))  //如果是注释，则忽略注释
         {
@@ -190,11 +226,14 @@ void interpret(char *s, Dict *dict)
         }
         else if (!strcmp("see",one_word)) //如果是see则打印扩展词的定义
         {
+            explain(IP_head);
+            IP_head = IP;
+            
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
             see(one_word, dict);
-            return;
+            IP_head = IP;
         }
         else if(!compile(one_word, dict) ) //编译词
         {
@@ -204,6 +243,8 @@ void interpret(char *s, Dict *dict)
             return;
         }
     }
+    explain(IP_head);  
+    IP=IP_list;        //复原IP列表指针
 
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
@@ -216,36 +257,7 @@ void interpret(char *s, Dict *dict)
         printf("\n");
     }
 
-    //若有定义词则把扩展词或变量词加入Forth词典，若无则执行指令列表
-    if(!strcmp(":",define_word))
-    {
-        PRINT("[DEBUG]定义扩展词 %s\n", define_name)
-        int n = (CELL)IP - (CELL)IP_list;
-        dict_ins_next(dict, colon(define_name, define_str, IP_list, n));
-        //下面这段代码用于支持递归词myself!!
-        Word *myself_p = dict_search_name(dict, "myself");
-        Word *colon_p = dict_search_name(dict, define_name);
-        Word **p=IP_list;
-        for (;p<IP ;p++ )
-        {
-            if(*p == myself_p)
-            {
-                *p = colon_p;
-                change_colon(colon_p, IP_list, n); //修改colon词，用于递归定义
-            }
-        }
-    }
-    else if(!strcmp("variable",define_word))
-    {
-        PRINT("[DEBUG]定义变量词 %s\n", define_name)
-        dict_ins_next(dict, variable(define_name, define_str, 0));
-    }
-    else
-        explain(); 
-    
-    //复原IP列表指针
-    IP=IP_list;
-  
+
     if(DEBUG) showds();
 }
 

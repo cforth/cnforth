@@ -83,7 +83,7 @@ Word *colon(char*name, char*str, Word **list, int n)
 }
 
 
-Word *variable(char*name, char*str, CELL num)
+Word *variable(char*name, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=NULL;
@@ -92,9 +92,6 @@ Word *variable(char*name, char*str, CELL num)
     strcpy(w->name,name);
        
     w->num = num;
-    
-    w->str=(char*)malloc(strlen(str)+1);
-    strcpy(w->str,str);
     
     return w;
 }

@@ -46,7 +46,7 @@ Word *code(char*name, fnP  fp);
 void dolist();     //用于创建扩展词中的定义
 void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
 Word *colon(char*name, char*str, Word **list, int n);
-Word *variable(char*name,  char*str, CELL num);
+Word *variable(char*name, CELL num);
 
 //词典接口定义
 Dict *dict_init();
