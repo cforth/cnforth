@@ -142,12 +142,12 @@ void explain(Word  **IP_head)
 //Forth文本解释器
 void interpret(char *s, Dict *dict)
 {
-    char *define_str;
     char *define_name;
+    char define_str[BUFF_LEN];
     char *one_word;
     Word  **IP_head = IP_list;
        
-    while (*ignore_blankchar(s)!=0)
+    while (*ignore_blankchar(s) != '\0')
     {
         s=ignore_blankchar(s);  //删除字符串头部空格
         one_word=s;             //将字符串指针赋给one_word
@@ -157,7 +157,7 @@ void interpret(char *s, Dict *dict)
         if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
             s=ignore_blankchar(s);
-            char tempstr[100]; 
+            char tempstr[BUFF_LEN]; 
             while(*s != '\"')
             {
                 sprintf(tempstr, "%ld", (CELL)(*s));
@@ -178,8 +178,13 @@ void interpret(char *s, Dict *dict)
             define_name=one_word;  //保存后面一个词为define_name
             s=ignore_blankchar(s);
             
-            define_str = (char*)malloc(strlen(s)+1);
-            strcpy(define_str, s); //保存扩展字的定义
+            char *c;
+            int i;
+            for(c = s, i = 0; *c != ';'; c++, i++)
+            {
+                define_str[i] = *c;   //保存扩展字的定义
+            }
+            define_str[i] = '\0';
         }
         else if(!strcmp(";",one_word))   //在词典中定义扩展词
         {
