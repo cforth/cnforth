@@ -37,12 +37,54 @@ Word *dict_search_name(Dict *dict, char *name)
 }
 
 
+void destroy_word(Word *word)
+{
+    free(word->name);
+    free(word->wplist);
+    free(word->str);
+}
+
+int dict_rem_name(Dict *dict, char *name)
+{
+    Word *w = dict->head;
+    Word *w_before;
+    Word *w_after;
+    while (w != NULL && strcmp(w->name,name))
+    {   
+        w_before = w;
+        w=w->next;
+        w_after = (w != NULL) ? w->next : NULL;
+    }
+    
+    if(w != NULL && w != dict->head)
+    {
+        w_before->next = w_after;
+        destroy_word(w);
+        free(w);
+        return 1;
+    }
+    else if(w == dict->head)
+    {
+        w_after = (w != NULL) ? w->next : NULL;
+        dict->head = w_after;
+        destroy_word(w);
+        free(w);
+        return 1;
+    }
+    return 0;
+}
+
+
 Word *code(char*name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=fp;
     w->wplist=NULL;   
     w->name=name;
+    
+    char *str = "( Core Word )";
+    w->str=(char*)malloc(strlen(str)+1);
+    strcpy(w->str,str);
 
     return w;
 }
@@ -83,6 +125,25 @@ Word *colon(char*name, char*str, Word **list, int n)
 }
 
 
+Word *constant(char*name, Word **list)
+{
+    Word *w=(Word*)malloc(sizeof(Word));
+    w->fn=dolist;
+    
+    w->name=(char*)malloc(strlen(name)+1);
+    strcpy(w->name,name);
+    
+    w->wplist=(Word**)malloc(sizeof(CELL)*3);
+    memcpy(w->wplist,list, sizeof(CELL)*3);
+    
+    char *str = "( Constant )";
+    w->str=(char*)malloc(strlen(str)+1);
+    strcpy(w->str,str);
+    
+    return w;
+}
+
+
 Word *variable(char*name, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
@@ -92,6 +153,10 @@ Word *variable(char*name, CELL num)
     strcpy(w->name,name);
        
     w->num = num;
+    
+    char *str = "( Variable )";
+    w->str=(char*)malloc(strlen(str)+1);
+    strcpy(w->str,str);
     
     return w;
 }

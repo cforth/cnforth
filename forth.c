@@ -29,12 +29,12 @@ int see(char *name, Dict *dict)
     
     if(word_p == NULL)
     {
-        printf("%s : Can't find!\n",name);
+        printf("%s :\n\tCan't find!\n",name);
         return 0;
     }
     else
     {
-        printf("%s : %s\n",name, word_p->str);
+        printf("%s :\n\t%s ;\n",name, word_p->str);
         return 1;
     }
 }
@@ -146,6 +146,7 @@ void interpret(char *s, Dict *dict)
     char define_str[BUFF_LEN];
     char *one_word;
     Word  **IP_head = IP_list;
+    IP=IP_list;
        
     while (*ignore_blankchar(s) != '\0')
     {
@@ -176,6 +177,7 @@ void interpret(char *s, Dict *dict)
             one_word=s;
             s=split_Word(s); 
             define_name=one_word;  //保存后面一个词为define_name
+            PRINT("[DEBUG]定义扩展词 %s\n", define_name)
             s=ignore_blankchar(s);
             
             char *c;
@@ -189,7 +191,6 @@ void interpret(char *s, Dict *dict)
         else if(!strcmp(";",one_word))   //在词典中定义扩展词
         {
             compile(one_word, dict);
-            PRINT("[DEBUG]定义扩展词 %s\n", define_name)
             int n = (CELL)IP - (CELL)IP_head;
             dict_ins_next(dict, colon(define_name, define_str, IP_head, n));
             //下面这段代码用于支持递归词myself!!
@@ -220,6 +221,23 @@ void interpret(char *s, Dict *dict)
             dict_ins_next(dict, variable(one_word, 0));
             IP_head = IP;
         }
+        else if (!strcmp("constant",one_word))
+        {
+            explain(IP_head);
+            IP_head = IP;
+            
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            
+            PRINT("[DEBUG]定义常数词 %s\n", one_word)
+            Word *constant_IP_list[3];
+            constant_IP_list[0] = dict_search_name(dict, "push");
+            constant_IP_list[1] = (Word *)(ds_pop());
+            constant_IP_list[2] = dict_search_name(dict, "ret");
+            dict_ins_next(dict, constant(one_word, constant_IP_list));
+            IP_head = IP;
+        }
         else if(!strcmp("(",one_word))  //如果是注释，则忽略注释
         {
             s=ignore_blankchar(s);
@@ -240,6 +258,17 @@ void interpret(char *s, Dict *dict)
             see(one_word, dict);
             IP_head = IP;
         }
+        else if (!strcmp("forget",one_word)) //删除在词典中词的最近一次定义
+        {
+            explain(IP_head);
+            IP_head = IP;
+            
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            dict_rem_name(dict, one_word);
+            IP_head = IP;
+        }
         else if(!compile(one_word, dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
@@ -248,8 +277,7 @@ void interpret(char *s, Dict *dict)
             return;
         }
     }
-    explain(IP_head);  
-    IP=IP_list;        //复原IP列表指针
+    explain(IP_head);
 
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
@@ -260,10 +288,8 @@ void interpret(char *s, Dict *dict)
             printf("%ld ",(CELL)(*p));
         }
         printf("\n");
+        showds();
     }
-
-
-    if(DEBUG) showds();
 }
 
 

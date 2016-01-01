@@ -46,12 +46,14 @@ Word *code(char*name, fnP  fp);
 void dolist();     //用于创建扩展词中的定义
 void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
 Word *colon(char*name, char*str, Word **list, int n);
+Word *constant(char*name, Word **list);
 Word *variable(char*name, CELL num);
 
 //词典接口定义
 Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
+int dict_rem_name(Dict *dict, char *name);
 
 //清空三个栈
 void empty_stack();
