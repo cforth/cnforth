@@ -19,11 +19,13 @@ c_forth 0.1版
 
 4. `do loop` 循环语句（支持嵌套）;
 
-5. `variable`定义变量，`!`存入，`@`取出;
+5. 变量和常量（`variable` `constant`）;
 
 6. 从外部读取forth代码（`./forth lib.fs`）;
 
-7. 递归定义扩展词（`myself`）。
+7. 递归定义扩展词（`myself`）;
+
+8. 实现的核心词和扩展词符合F83 Forth标准，具体参见[Wiki](https://github.com/cforth/c_forth/wiki/c_forth%E6%94%AF%E6%8C%81%E7%9A%84%E7%89%B9%E6%80%A7)。
 
 ## 编译环境
 
