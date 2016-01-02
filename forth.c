@@ -98,7 +98,8 @@ void interpret(char *s, Dict *dict)
             || !strcmp("else",one_word) 
             || !strcmp("then",one_word)
             || !strcmp("do",one_word)
-            || !strcmp("loop",one_word))
+            || !strcmp("loop",one_word)
+            || !strcmp("words",one_word))
         {
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
@@ -124,7 +125,7 @@ void interpret(char *s, Dict *dict)
         }
         else if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
-            PRINT("[DEBUG]编译字符串\n", one_word)
+            PRINT("[DEBUG]编译字符串\n")
             s=ignore_blankchar(s);
             char tempstr[BUFF_LEN]; 
             while(*s != '\"')
@@ -261,6 +262,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("forget",forget));
     dict_ins_next(forth_dict, code("variable",var));
     dict_ins_next(forth_dict, code("constant",cons));
+    dict_ins_next(forth_dict, code("words",words));
     
     FILE *fp; //文件指针
     char c;

@@ -45,4 +45,5 @@ test_fact .s
 : space 32 emit ;
 : matrix swap 0 do dup >r 0 do star space loop cr r> loop drop cr ;
 5 4 matrix
- 
+
+words

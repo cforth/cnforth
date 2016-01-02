@@ -61,6 +61,7 @@ int dict_rem_name(Dict *dict, char *name)
         w_before->next = w_after;
         destroy_word(w);
         free(w);
+        dict->size--;
         return 1;
     }
     else if(w == dict->head)
@@ -69,6 +70,7 @@ int dict_rem_name(Dict *dict, char *name)
         dict->head = w_after;
         destroy_word(w);
         free(w);
+        dict->size--;
         return 1;
     }
     return 0;
@@ -563,4 +565,16 @@ void cons()
     constant_IP_list[1] = (Word *)(ds_pop());
     constant_IP_list[2] = dict_search_name(forth_dict, "ret");
     dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
+}
+
+
+void words()
+{
+    Word *w = forth_dict->head;
+    while (w != NULL)
+    {  
+        printf("%s ", w->name);
+        w=w->next;
+    }
+    printf("\n");
 }

@@ -30,7 +30,7 @@ typedef struct Word
 //定义字典结构
 typedef struct Dict
 {
-    int size;
+    CELL size;
     Word *head;
 } Dict;
 
@@ -121,3 +121,4 @@ void see();        // see
 void forget();     // forget
 void var();        // variable
 void cons();       // constant
+void words();      // words
