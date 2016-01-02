@@ -84,6 +84,7 @@ void interpret(char *s, Dict *dict)
     char *define_name;
     char define_str[BUFF_LEN];
     char *one_word;
+    Word *immediate;
     Word  **IP_head = IP_list;
     IP=IP_list;
        
@@ -100,33 +101,30 @@ void interpret(char *s, Dict *dict)
             || !strcmp("loop",one_word))
         {
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
-            Word *immediate = dict_search_name(forth_dict, one_word);
+            immediate = dict_search_name(forth_dict, one_word);
             immediate->fn();
         }
-        else if (!strcmp("see",one_word)
-            || !strcmp("forget",one_word))
+        else if (!strcmp("constant",one_word)
+            || !strcmp("variable",one_word)
+            || !strcmp("forget",one_word)
+            || !strcmp("see",one_word))
         {
             explain(IP_head);
             IP_head = IP;
             
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
-            Word *immediate = dict_search_name(dict, one_word);
-            
+            immediate = dict_search_name(forth_dict, one_word);
             s=ignore_blankchar(s);
             one_word=s;
-            s=split_Word(s); 
-            
-            Word *next_word_p = dict_search_name(dict, one_word);
-            if(next_word_p == NULL)
-                ds_push(0);
-            else
-                ds_push((CELL)next_word_p);
-
+            s=split_Word(s);
+            strcpy(next_word, one_word);
             immediate->fn();
+            
             IP_head = IP;
         }
         else if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
+            PRINT("[DEBUG]编译字符串\n", one_word)
             s=ignore_blankchar(s);
             char tempstr[BUFF_LEN]; 
             while(*s != '\"')
@@ -138,7 +136,7 @@ void interpret(char *s, Dict *dict)
             }
             s++;
         }
-        else if (!strcmp(":",one_word))
+        else if (!strcmp(":",one_word))  //进入扩展词定义模式
         {
             explain(IP_head);
             IP_head = IP;
@@ -146,7 +144,7 @@ void interpret(char *s, Dict *dict)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            define_name=one_word;  //保存后面一个词为define_name
+            define_name=one_word;
             PRINT("[DEBUG]定义扩展词 %s\n", define_name)
             s=ignore_blankchar(s);
             
@@ -154,17 +152,17 @@ void interpret(char *s, Dict *dict)
             int i;
             for(c = s, i = 0; *c != ';'; c++, i++)
             {
-                define_str[i] = *c;   //保存扩展字的定义
+                define_str[i] = *c;
             }
             define_str[i] = '\0';
         }
-        else if(!strcmp(";",one_word))   //在词典中定义扩展词
+        else if(!strcmp(";",one_word))   //结束扩展词定义模式
         {
             compile(one_word, dict);
             int n = (CELL)IP - (CELL)IP_head;
             dict_ins_next(dict, colon(define_name, define_str, IP_head, n));
 
-            Word *myself_p = dict_search_name(dict, "myself");  //下面这段代码用于支持递归词myself!!
+            Word *myself_p = dict_search_name(dict, "myself");  //支持递归词myself
             Word *colon_p = dict_search_name(dict, define_name);
             Word **p=IP_head;
             for (;p<IP ;p++ )
@@ -172,43 +170,13 @@ void interpret(char *s, Dict *dict)
                 if(*p == myself_p)
                 {
                     *p = colon_p;
-                    change_colon(colon_p, IP_head, n); //修改colon词，用于递归定义
+                    change_colon(colon_p, IP_head, n);
                 }
             }
             
             IP_head = IP;
         }
-        else if (!strcmp("variable",one_word))
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-            
-            PRINT("[DEBUG]定义变量词 %s\n", one_word)
-            dict_ins_next(dict, variable(one_word, 0));
-            IP_head = IP;
-        }
-        else if (!strcmp("constant",one_word))
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-            
-            PRINT("[DEBUG]定义常数词 %s\n", one_word)
-            Word *constant_IP_list[3];
-            constant_IP_list[0] = dict_search_name(dict, "push");
-            constant_IP_list[1] = (Word *)(ds_pop());
-            constant_IP_list[2] = dict_search_name(dict, "ret");
-            dict_ins_next(dict, constant(one_word, constant_IP_list));
-            IP_head = IP;
-        }
-        else if(!strcmp("(",one_word))  //如果是注释，则忽略注释
+        else if(!strcmp("(",one_word))  //注释模式
         {
             s=ignore_blankchar(s);
             while(*s != ')')
@@ -254,17 +222,14 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("push",push));
     dict_ins_next(forth_dict, code(".",popds));
     dict_ins_next(forth_dict, code("bye",bye));
-    
     dict_ins_next(forth_dict, code("ret",ret));
     dict_ins_next(forth_dict, code(";",ret));
     dict_ins_next(forth_dict, code("cr", putcr));
-    
     dict_ins_next(forth_dict, code("depth",depth));
     dict_ins_next(forth_dict, code("+",add));
     dict_ins_next(forth_dict, code("-",sub));
     dict_ins_next(forth_dict, code("*",mul));
     dict_ins_next(forth_dict, code("/",divv));
-
     dict_ins_next(forth_dict, code("dup",dup));
     dict_ins_next(forth_dict, code("swap",swap));
     dict_ins_next(forth_dict, code("over",over));
@@ -272,30 +237,21 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code(".s",showds));
     dict_ins_next(forth_dict, code("pick",pick));
     dict_ins_next(forth_dict, code("roll",roll));
-    
     dict_ins_next(forth_dict, code("!", invar));
     dict_ins_next(forth_dict, code("@", outvar));
-    
     dict_ins_next(forth_dict, code("=",equal));
     dict_ins_next(forth_dict, code("<>",noequal));
     dict_ins_next(forth_dict, code(">",morethan));
     dict_ins_next(forth_dict, code("<",lessthan));
-
     dict_ins_next(forth_dict, code("?branch",if_branch));
     dict_ins_next(forth_dict, code("branch",branch));
     dict_ins_next(forth_dict, code("(do)",__do));
     dict_ins_next(forth_dict, code("(loop)",__loop));
-    
     dict_ins_next(forth_dict, code(">r",tor));
     dict_ins_next(forth_dict, code("r>",rto));
     dict_ins_next(forth_dict, code("r@",rat));
-    dict_ins_next(forth_dict, code(">t",tot));
-    dict_ins_next(forth_dict, code("t>",tto));
-    dict_ins_next(forth_dict, code("t@",tat));
-
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("myself", myself));
-    
     dict_ins_next(forth_dict, code("if",_if));
     dict_ins_next(forth_dict, code("else",_else));
     dict_ins_next(forth_dict, code("then",_then));
@@ -303,6 +259,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("loop",_loop));
     dict_ins_next(forth_dict, code("see",see));
     dict_ins_next(forth_dict, code("forget",forget));
+    dict_ins_next(forth_dict, code("variable",var));
+    dict_ins_next(forth_dict, code("constant",cons));
     
     FILE *fp; //文件指针
     char c;

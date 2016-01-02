@@ -44,12 +44,12 @@ void destroy_word(Word *word)
     free(word->str);
 }
 
-void dict_rem_word(Dict *dict, Word *word)
+int dict_rem_name(Dict *dict, char *name)
 {
     Word *w = dict->head;
     Word *w_before;
     Word *w_after;
-    while (w != NULL && w != word)
+    while (w != NULL && strcmp(w->name,name))
     {   
         w_before = w;
         w=w->next;
@@ -61,7 +61,7 @@ void dict_rem_word(Dict *dict, Word *word)
         w_before->next = w_after;
         destroy_word(w);
         free(w);
-        return;
+        return 1;
     }
     else if(w == dict->head)
     {
@@ -69,8 +69,9 @@ void dict_rem_word(Dict *dict, Word *word)
         dict->head = w_after;
         destroy_word(w);
         free(w);
-        return;
+        return 1;
     }
+    return 0;
 }
 
 
@@ -167,8 +168,6 @@ void empty_stack()
     //*DP=0;
     RP=RS-1;
     //*RP=0;
-    TP=TS-1;
-    //*TP=0;
 }
 
 //Forth栈操作词
@@ -467,29 +466,6 @@ void rat()
 }
 
 
-void tot()
-{
-    TP++;
-    *TP=*DP;
-    DP--;
-}
-
-
-void tto()
-{
-    DP++;
-    *DP=*TP;
-    TP--;
-}
-
-
-void tat()
-{
-    DP++;
-    *DP=*TP;
-}
-
-
 void emit()
 {
     putchar((char)(*DP));
@@ -555,11 +531,11 @@ void _loop()
 
 void see()
 {
-    Word *word_p = (Word *)(ds_pop());
+    Word *word_p = dict_search_name(forth_dict, next_word);
     
-    if(word_p == 0)
+    if(word_p == NULL)
     {
-        printf("\tCan't find!\n");
+        printf("%s :\n\tCan't find!\n", next_word);
     }
     else
     {
@@ -570,6 +546,21 @@ void see()
 
 void forget()
 {
-    Word *word_p = (Word *)(ds_pop());
-    dict_rem_word(forth_dict, word_p);
+    dict_rem_name(forth_dict, next_word);
+}
+
+
+void var()
+{
+    dict_ins_next(forth_dict, variable(next_word, 0));
+}
+
+
+void cons()
+{
+    Word *constant_IP_list[3];
+    constant_IP_list[0] = dict_search_name(forth_dict, "push");
+    constant_IP_list[1] = (Word *)(ds_pop());
+    constant_IP_list[2] = dict_search_name(forth_dict, "ret");
+    dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
 }
