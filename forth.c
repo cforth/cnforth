@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "forth.h"
-
-
+    
 //判断字符串是否为数字
 int is_num(char *s)
 {
@@ -18,25 +17,6 @@ int is_num(char *s)
         s++;
     }
     return 1;
-}
-
-
-//查看扩展词的定义
-int see(char *name, Dict *dict)
-{
-    Word *word_p;
-    word_p = dict_search_name(dict, name);
-    
-    if(word_p == NULL)
-    {
-        printf("%s :\n\tCan't find!\n",name);
-        return 0;
-    }
-    else
-    {
-        printf("%s :\n\t%s ;\n",name, word_p->str);
-        return 1;
-    }
 }
 
 
@@ -69,47 +49,6 @@ int compile(char *name, Dict *dict)
         *IP=dict_search_name(dict, "push");
         IP++;
         *IP=word_p;
-        IP++;
-    }                
-    else if(!strcmp("if",name))
-    {
-        *IP=word_p;
-        IP++;
-        rs_push((CELL)IP);
-        IP++;
-    }
-    else if(!strcmp("else",name)) 
-    {
-        *IP=word_p;  
-        IP++;
-        Word** else_p = IP;
-        Word** if_p = (Word**)(rs_pop());
-        rs_push((CELL)else_p);
-        *if_p = (Word*)(IP - if_p + 1);  //+1的意思是越过else词和后面的then偏移量位置
-        IP++;
-    }
-    else if(!strcmp("then",name))
-    {
-        *IP=word_p;
-        Word** branch_p = (Word**)(rs_pop());
-        *branch_p = (Word*)(IP - branch_p + 1); 
-        IP++;
-    }
-    else if(!strcmp("do",name))
-    {
-        *IP=word_p;
-        IP++;
-        rs_push((CELL)IP);
-        IP++;
-        
-    }
-    else if(!strcmp("loop",name))
-    {
-        *IP=word_p;  
-        IP++;
-        Word** do_p = (Word**)(rs_pop());
-        *do_p = (Word*)(IP - do_p + 1); 
-        *IP = (Word*)(IP - do_p + 1); 
         IP++;
     }
     else 
@@ -153,9 +92,40 @@ void interpret(char *s, Dict *dict)
         s=ignore_blankchar(s);  //删除字符串头部空格
         one_word=s;             //将字符串指针赋给one_word
         s=split_Word(s);        //将字符串头部第一个词后的空格换成'\0'，再返回第二个词头的指针
-                                //如此一来，one_word其实就只是指向包含了第一个词的字符串
         
-        if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
+        if(!strcmp("if",one_word)
+            || !strcmp("else",one_word) 
+            || !strcmp("then",one_word)
+            || !strcmp("do",one_word)
+            || !strcmp("loop",one_word))
+        {
+            PRINT("[DEBUG]执行立即词 %s\n", one_word)
+            Word *immediate = dict_search_name(forth_dict, one_word);
+            immediate->fn();
+        }
+        else if (!strcmp("see",one_word)
+            || !strcmp("forget",one_word))
+        {
+            explain(IP_head);
+            IP_head = IP;
+            
+            PRINT("[DEBUG]执行立即词 %s\n", one_word)
+            Word *immediate = dict_search_name(dict, one_word);
+            
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s); 
+            
+            Word *next_word_p = dict_search_name(dict, one_word);
+            if(next_word_p == NULL)
+                ds_push(0);
+            else
+                ds_push((CELL)next_word_p);
+
+            immediate->fn();
+            IP_head = IP;
+        }
+        else if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
             s=ignore_blankchar(s);
             char tempstr[BUFF_LEN]; 
@@ -193,8 +163,8 @@ void interpret(char *s, Dict *dict)
             compile(one_word, dict);
             int n = (CELL)IP - (CELL)IP_head;
             dict_ins_next(dict, colon(define_name, define_str, IP_head, n));
-            //下面这段代码用于支持递归词myself!!
-            Word *myself_p = dict_search_name(dict, "myself");
+
+            Word *myself_p = dict_search_name(dict, "myself");  //下面这段代码用于支持递归词myself!!
             Word *colon_p = dict_search_name(dict, define_name);
             Word **p=IP_head;
             for (;p<IP ;p++ )
@@ -247,28 +217,6 @@ void interpret(char *s, Dict *dict)
             }
             s++;
         }
-        else if (!strcmp("see",one_word)) //如果是see则打印扩展词的定义
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-            see(one_word, dict);
-            IP_head = IP;
-        }
-        else if (!strcmp("forget",one_word)) //删除在词典中词的最近一次定义
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-            dict_rem_name(dict, one_word);
-            IP_head = IP;
-        }
         else if(!compile(one_word, dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
@@ -299,7 +247,7 @@ int main(int argc, char *argv[])
     char cmdstr[BUFF_LEN];  //输入缓存区
     empty_stack();
     IP=IP_list;
-    Dict *forth_dict= dict_init();
+    forth_dict= dict_init();
     
     //初始化词典
     dict_ins_next(forth_dict, code("dolist",dolist));
@@ -333,11 +281,10 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code(">",morethan));
     dict_ins_next(forth_dict, code("<",lessthan));
 
-    dict_ins_next(forth_dict, code("if",iff));
-    dict_ins_next(forth_dict, code("else",elsee));
-    dict_ins_next(forth_dict, code("then",then));
-    dict_ins_next(forth_dict, code("do",doo));
-    dict_ins_next(forth_dict, code("loop",loop));
+    dict_ins_next(forth_dict, code("?branch",if_branch));
+    dict_ins_next(forth_dict, code("branch",branch));
+    dict_ins_next(forth_dict, code("(do)",__do));
+    dict_ins_next(forth_dict, code("(loop)",__loop));
     
     dict_ins_next(forth_dict, code(">r",tor));
     dict_ins_next(forth_dict, code("r>",rto));
@@ -348,7 +295,15 @@ int main(int argc, char *argv[])
 
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("myself", myself));
-
+    
+    dict_ins_next(forth_dict, code("if",_if));
+    dict_ins_next(forth_dict, code("else",_else));
+    dict_ins_next(forth_dict, code("then",_then));
+    dict_ins_next(forth_dict, code("do",_do));
+    dict_ins_next(forth_dict, code("loop",_loop));
+    dict_ins_next(forth_dict, code("see",see));
+    dict_ins_next(forth_dict, code("forget",forget));
+    
     FILE *fp; //文件指针
     char c;
     int i = 0;

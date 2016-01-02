@@ -33,6 +33,7 @@ typedef struct Dict
     Word *head;
 } Dict;
 
+Dict *forth_dict;  //Forth词典指针
 
 //数据栈、返回栈、临时栈
 CELL DS[STACK_LEN], RS[STACK_LEN], TS[STACK_LEN];
@@ -53,7 +54,6 @@ Word *variable(char*name, CELL num);
 Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
-int dict_rem_name(Dict *dict, char *name);
 
 //清空三个栈
 void empty_stack();
@@ -90,16 +90,15 @@ void invar();     // !
 void outvar();    // @
 
 void equal();     // =
-void noequal();  // <>
+void noequal();   // <>
 void morethan();  // >
 void lessthan();  // <
 
-void iff();       // if
-void elsee();     // else
-void then();      // then
+void if_branch();  // ?branch
+void branch();     // branch
 
-void doo();       // do
-void loop();      // loop
+void __do();       // (do)
+void __loop();     // (loop)
 
 void tor();      // >r
 void rto();      // r>
@@ -111,3 +110,11 @@ void tat();      // t@
 void emit();      // emit
 
 void myself();    // myself
+
+void _if();        // if
+void _else();      // else
+void _then();      // then
+void _do();        // do
+void _loop();      // loop
+void see();        // see
+void forget();     // forget

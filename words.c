@@ -44,12 +44,12 @@ void destroy_word(Word *word)
     free(word->str);
 }
 
-int dict_rem_name(Dict *dict, char *name)
+void dict_rem_word(Dict *dict, Word *word)
 {
     Word *w = dict->head;
     Word *w_before;
     Word *w_after;
-    while (w != NULL && strcmp(w->name,name))
+    while (w != NULL && w != word)
     {   
         w_before = w;
         w=w->next;
@@ -61,7 +61,7 @@ int dict_rem_name(Dict *dict, char *name)
         w_before->next = w_after;
         destroy_word(w);
         free(w);
-        return 1;
+        return;
     }
     else if(w == dict->head)
     {
@@ -69,9 +69,8 @@ int dict_rem_name(Dict *dict, char *name)
         dict->head = w_after;
         destroy_word(w);
         free(w);
-        return 1;
+        return;
     }
-    return 0;
 }
 
 
@@ -201,7 +200,7 @@ CELL rs_pop()
 }
 
 
-//核心词
+//Forth核心词
 void push()
 {
     IP++;
@@ -399,7 +398,7 @@ void lessthan()
 }
 
 
-void iff()
+void if_branch()
 {
     if(*DP==0)
     {
@@ -413,19 +412,13 @@ void iff()
 }
 
 
-void elsee()
+void branch()
 {
     IP = IP + (CELL)(*(IP+1));
 }
 
 
-void then()
-{
-    ;
-}
-
-
-void doo()
+void __do()
 {
     if(*(DP-1) <= *DP)
     {
@@ -443,7 +436,7 @@ void doo()
 }
 
 
-void loop() 
+void __loop() 
 {
     IP = IP - (CELL)(*(IP+1)); 
     rto();
@@ -507,4 +500,76 @@ void emit()
 void myself()
 {
     ;
+}
+
+
+//Forth立即词
+void _if()
+{
+    *IP = dict_search_name(forth_dict, "?branch");
+    IP++;
+    rs_push((CELL)IP);
+    IP++;
+}
+
+
+void _else()
+{
+    *IP = dict_search_name(forth_dict, "branch");
+    IP++;
+    Word** else_p = IP;
+    Word** if_p = (Word**)(rs_pop());
+    rs_push((CELL)else_p);
+    *if_p = (Word*)(IP - if_p + 1);
+    IP++;
+}
+
+
+void _then()
+{
+    Word** branch_p = (Word**)(rs_pop());
+    *branch_p = (Word*)(IP - branch_p); 
+}
+
+
+void _do()
+{
+    *IP = dict_search_name(forth_dict, "(do)");
+    IP++;
+    rs_push((CELL)IP);
+    IP++;
+    
+}
+
+
+void _loop()
+{
+    *IP = dict_search_name(forth_dict, "(loop)"); 
+    IP++;
+    Word** do_p = (Word**)(rs_pop());
+    *do_p = (Word*)(IP - do_p + 1); 
+    *IP = (Word*)(IP - do_p + 1); 
+    IP++;
+}
+
+
+void see()
+{
+    Word *word_p = (Word *)(ds_pop());
+    
+    if(word_p == 0)
+    {
+        printf("\tCan't find!\n");
+    }
+    else
+    {
+        printf("%s :\n\t%s ;\n", word_p->name, word_p->str);
+    }
+}
+
+
+void forget()
+{
+    Word *word_p = (Word *)(ds_pop());
+    dict_rem_word(forth_dict, word_p);
 }
