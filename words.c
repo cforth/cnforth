@@ -56,6 +56,12 @@ int dict_rem_name(Dict *dict, char *name)
         w_after = (w != NULL) ? w->next : NULL;
     }
     
+    if(w->wplist == NULL)
+    {
+        printf("\tCore Word can't be deleted\n");
+        return 0;
+    }
+    
     if(w != NULL && w != dict->head)
     {
         w_before->next = w_after;
@@ -164,17 +170,27 @@ Word *variable(char*name, CELL num)
 }
 
 
+//Forth栈操作函数
 void empty_stack()
 {
     DP=DS-1;
-    //*DP=0;
     RP=RS-1;
-    //*RP=0;
 }
 
-//Forth栈操作词
+
+void stack_error(int n)
+{
+    switch(n)
+    {
+        case 1: printf("Stack underflow\n"); break;
+        case 2: printf("Stack overflow\n"); break;
+    }
+}
+
+
 void ds_push(CELL n)
 {
+    if(DP == DS+STACK_LEN){stack_error(2); exit(0);}
     DP++;
     *DP=n;
 }
@@ -182,6 +198,7 @@ void ds_push(CELL n)
 
 void rs_push(CELL n)
 {
+    if(RP == RS+STACK_LEN){stack_error(2); exit(0);}
     RP++;
     *RP=n;
 }
@@ -189,6 +206,7 @@ void rs_push(CELL n)
 
 CELL ds_pop()
 {
+    if(DP == DS-1){stack_error(1); exit(0);}
     DP--;
     return *(DP+1); 
 }
@@ -196,6 +214,7 @@ CELL ds_pop()
 
 CELL rs_pop()
 {
+    if(RP == RS-1){stack_error(1); exit(0);}
     RP--;
     return *(RP+1); 
 }
@@ -205,103 +224,69 @@ CELL rs_pop()
 void push()
 {
     IP++;
-    DP++;
-    *DP=(CELL)*IP;
+    ds_push((CELL)*IP);
 }
 
 
 void popds()
 {
-    printf("%ld\n", *DP);
-    DP--;
+    printf("%ld\n", ds_pop());
 }
 
 
 void bye()
 {
-    exit(0);
+    exit(1);
 }
 
 
 void ret()
 {
-    IP=(Word**)*RP;
-    RP--;
-}
-
-
-void putcr()
-{
-    putchar('\n');
+    IP=(Word**)(rs_pop());
 }
 
 
 void depth()
 {
-    CELL d = DP - DS + 1;
-    DP++;
-    *DP = d; 
+    ds_push((CELL)(DP-DS+1));
 }
 
 
 void add()
 {
-    *(DP-1)=*(DP-1)+(*DP);
-    DP--;
+    ds_push(ds_pop() + ds_pop());
 }
 
 
 void sub()
 {
-    *(DP-1)=*(DP-1)-(*DP);
-    DP--;
+    CELL d = ds_pop();
+    ds_push(ds_pop() - d);
 }
 
 
 void mul()
 {
-    *(DP-1)=*(DP-1)*(*DP);
-    DP--;
+    ds_push(ds_pop() * ds_pop());
 }
 
 
 void divv()
 {
-    *(DP-1)=*(DP-1)/(*DP);
-    DP--;
-}
-
-
-void dup()
-{
-    DP++;
-    *DP=*(DP-1);
-}
-
-
-void swap()
-{
-    CELL t=*DP;
-    *DP=*(DP-1);
-    *(DP-1)=t;
-}
-
-
-void over()
-{
-    *(DP+1)=*(DP-1);DP++;
+    CELL d = ds_pop();
+    ds_push(ds_pop() / d);
 }
 
 
 void drop()
 {
-    DP--;
+    ds_pop();
 }
 
 
 void showds()
 {
-    printf("DS> ");
+    printf("<%ld> ", (CELL)(DP-DS+1));
     CELL *i=DS;
     for (;i<=DP ;i++ )
     {
@@ -313,95 +298,96 @@ void showds()
 
 void pick()
 {
-    CELL k = *DP;
-    *DP = *(DP-k);
+    CELL k = ds_pop();
+    if(DP-k+1 <= DS-1){stack_error(1); exit(0);}
+    ds_push(*(DP-k+1));
 }
 
 
 void roll()
 {
-    CELL k = *DP;
-    CELL dk = *(DP-k);
+    CELL k = ds_pop();
+    if(DP-k+1 <= DS-1){stack_error(1); exit(0);}
+    CELL dk = *(DP-k+1);
     for(; k>1; k--) {
-        *(DP-k) = *(DP-k+1);
+        *(DP-k+1) = *(DP-k+2);
     }
-    DP--;
-    *DP = dk;
+    ds_pop();
+    ds_push(dk);
 }
 
 
 void invar()
 {
-    ((Word*)*DP)->num = *(DP-1);
-    DP-=2;
+    Word *p = (Word *)(ds_pop());
+    p->num = ds_pop();
 }
 
 
 void outvar() 
 {
-    *DP = ((Word*)*DP)->num;
+    Word *p = (Word *)(ds_pop());
+    ds_push(p->num);
 }
 
 
 void equal()
 {
-    if(*(DP-1) == *DP)
+    if(ds_pop() == ds_pop())
     {
-        DP--;
-        *DP = -1;
+        ds_push(-1);
     }
-    else{
-        DP--;
-        *DP = 0;
+    else
+    {
+        ds_push(0);
     }
 }
 
 
 void noequal()
 {
-    if(*(DP-1) != *DP)
+    if(ds_pop() != ds_pop())
     {
-        DP--;
-        *DP = -1;
+        ds_push(-1);
     }
-    else{
-        DP--;
-        *DP = 0;
+    else
+    {
+        ds_push(0);
     }
 }
 
 
 void morethan()
 {
-    if(*(DP-1) > *DP)
+    CELL d = ds_pop();
+    if(ds_pop() > d)
     {
-        DP--;
-        *DP = -1;
+        ds_push(-1);
     }
-    else{
-        DP--;
-        *DP = 0;
+    else
+    {
+        ds_push(0);
     }
 }
 
 
 void lessthan()
 {
-    if(*(DP-1) < *DP)
+    CELL d = ds_pop();
+    if(ds_pop() < d)
     {
-        DP--;
-        *DP = -1;
+        ds_push(-1);
     }
-    else{
-        DP--;
-        *DP = 0;
+    else
+    {
+        ds_push(0);
     }
 }
 
 
 void if_branch()
 {
-    if(*DP==0)
+    if(ds_pop() == 0)
     {
         IP = IP + (CELL)(*(IP+1));
     }
@@ -409,7 +395,6 @@ void if_branch()
     {
         IP++;
     }
-    DP--;
 }
 
 
@@ -421,18 +406,18 @@ void branch()
 
 void __do()
 {
-    if(*(DP-1) <= *DP)
+    CELL index = ds_pop();
+    CELL limit = ds_pop();
+    if(limit <= index)
     {
         IP = IP + (CELL)(*(IP+1)); 
-        DP--;
-        DP--;
     }
     else
     {
         IP++;
-        (*DP)++;
-        tor();
-        tor();
+        index++;
+        rs_push(index);
+        rs_push(limit);
     }
 }
 
@@ -440,38 +425,34 @@ void __do()
 void __loop() 
 {
     IP = IP - (CELL)(*(IP+1)); 
-    rto();
-    rto();
+    ds_push(rs_pop());
+    ds_push(rs_pop());
 }
 
 
 void tor()
 {
-    RP++;
-    *RP=*DP;
-    DP--;
+    rs_push(ds_pop());
 }
 
 
 void rto()
 {
-    DP++;
-    *DP=*RP;
-    RP--;
+    ds_push(rs_pop());
 }
 
 
 void rat()
 {
-    DP++;
-    *DP=*RP;
+    CELL d = rs_pop();
+    ds_push(d);
+    rs_push(d);
 }
 
 
 void emit()
 {
-    putchar((char)(*DP));
-    DP--;
+    putchar((char)(ds_pop()));
 }
 
 

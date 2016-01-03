@@ -98,8 +98,7 @@ void interpret(char *s, Dict *dict)
             || !strcmp("else",one_word) 
             || !strcmp("then",one_word)
             || !strcmp("do",one_word)
-            || !strcmp("loop",one_word)
-            || !strcmp("words",one_word))
+            || !strcmp("loop",one_word))
         {
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
@@ -225,15 +224,11 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("bye",bye));
     dict_ins_next(forth_dict, code("ret",ret));
     dict_ins_next(forth_dict, code(";",ret));
-    dict_ins_next(forth_dict, code("cr", putcr));
     dict_ins_next(forth_dict, code("depth",depth));
     dict_ins_next(forth_dict, code("+",add));
     dict_ins_next(forth_dict, code("-",sub));
     dict_ins_next(forth_dict, code("*",mul));
     dict_ins_next(forth_dict, code("/",divv));
-    dict_ins_next(forth_dict, code("dup",dup));
-    dict_ins_next(forth_dict, code("swap",swap));
-    dict_ins_next(forth_dict, code("over",over));
     dict_ins_next(forth_dict, code("drop",drop));
     dict_ins_next(forth_dict, code(".s",showds));
     dict_ins_next(forth_dict, code("pick",pick));

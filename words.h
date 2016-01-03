@@ -58,10 +58,10 @@ Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
 
-//清空三个栈
+//清空栈
 void empty_stack();
 
-//Forth栈操作词
+//Forth栈操作函数
 void ds_push(CELL n);
 void rs_push(CELL n);
 CELL ds_pop();
@@ -73,7 +73,6 @@ void popds();    // .
 void bye();      // bye
 
 void ret();       // ;
-void putcr();    // cr
 
 void depth();    // depth
 void add();      // +
@@ -81,9 +80,6 @@ void sub();      // -
 void mul();      // *
 void divv();     // /
 
-void dup();      // dup
-void swap();     // swap
-void over();     // over
 void drop();     // drop
 void showds();   // .s
 void pick();     // pick

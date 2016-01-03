@@ -1,5 +1,8 @@
-." System Words loading... " cr
-
+( Forth System Words Begin )
+: cr 10 emit ;
+: dup 1 pick ;
+: swap 2 roll ;
+: over 2 pick ;
 : rot 3 roll ;
 : -rot 3 roll 3 roll ;
 : 2dup over over ;
@@ -13,13 +16,28 @@
 
 : mod ( n1 n2 -- mod ) 2dup / * - ;
 : /mod ( n1 n2 -- mod div ) 2dup / >r mod r> ;
-: negate ( n -- -n ) 0 swap - ;
+: negate ( n -- -n ) -1 * ;
 : abs dup 0 < if negate then ;
+: 1+ 1 + ;
+: 1- 1 - ;
+: 2+ 2 + ;
+: 2- 2 - ;
+: 2* 2 * ;
+: 2/ 2 / ;
 : max 2dup < if swap then drop ;
 : min 2dup > if swap then drop ;
 : max2 ( n1 n2 n3 -- max1 max2 ) 2dup max >r min max r> ;
 
-." System Words successfully loaded! " cr
+: 0= 0 = ;
+: 0<> 0 <> ;
+: 0> 0 > ;
+: 0< 0 < ;
+: true -1 ;
+: false 0 ;
+: ?dup dup 0<> if dup then ;
+
+: space 32 emit ;
+( Forth System Words End ) words cr
 
 : test_ok   ." test OK!" cr ;
 : test_fail ." test Fail!" cr  ;
@@ -42,8 +60,5 @@ test_fact .s
 
 ." Matrix: Test nested statements " cr
 : star 42 emit ;
-: space 32 emit ;
 : matrix swap 0 do dup >r 0 do star space loop cr r> loop drop cr ;
 5 4 matrix
-
-words
