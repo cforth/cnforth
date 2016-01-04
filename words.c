@@ -152,13 +152,16 @@ Word *constant(char*name, Word **list)
 }
 
 
-Word *variable(char*name, CELL num)
+Word *variable(char*name, Word **list, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=NULL;
+    w->fn=dolist;
     
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
+    
+    w->wplist=(Word**)malloc(sizeof(CELL)*3);
+    memcpy(w->wplist,list, sizeof(CELL)*3);
        
     w->num = num;
     
@@ -462,6 +465,18 @@ void myself()
 }
 
 
+void words()
+{
+    Word *w = forth_dict->head;
+    while (w != NULL)
+    {  
+        printf("%s ", w->name);
+        w=w->next;
+    }
+    printf("\n");
+}
+
+
 //Forth立即词
 void _if()
 {
@@ -535,7 +550,13 @@ void forget()
 
 void var()
 {
-    dict_ins_next(forth_dict, variable(next_word, 0));
+    Word *variable_IP_list[3] = {NULL, NULL, NULL};
+    dict_ins_next(forth_dict, variable(next_word, variable_IP_list, 0));
+    Word * v = dict_search_name(forth_dict, next_word);
+    variable_IP_list[0] = dict_search_name(forth_dict, "push");
+    variable_IP_list[1] = v;
+    variable_IP_list[2] = dict_search_name(forth_dict, "ret");
+    change_colon(v, variable_IP_list, sizeof(CELL)*3);
 }
 
 
@@ -546,16 +567,4 @@ void cons()
     constant_IP_list[1] = (Word *)(ds_pop());
     constant_IP_list[2] = dict_search_name(forth_dict, "ret");
     dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
-}
-
-
-void words()
-{
-    Word *w = forth_dict->head;
-    while (w != NULL)
-    {  
-        printf("%s ", w->name);
-        w=w->next;
-    }
-    printf("\n");
 }

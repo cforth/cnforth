@@ -51,7 +51,7 @@ void dolist();                //用于创建扩展词中的定义
 void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
 Word *colon(char*name, char*str, Word **list, int n);
 Word *constant(char*name, Word **list);
-Word *variable(char*name, CELL num);
+Word *variable(char*name, Word **list, CELL num);
 
 //Forth词典的接口函数
 Dict *dict_init();
@@ -106,6 +106,7 @@ void rat();      // r@
 void emit();      // emit
 
 void myself();    // myself
+void words();     // words
 
 //Forth核心词中的立即词
 void _if();        // if
@@ -117,4 +118,3 @@ void see();        // see
 void forget();     // forget
 void var();        // variable
 void cons();       // constant
-void words();      // words

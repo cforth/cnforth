@@ -43,14 +43,6 @@ int compile(char *name, Dict *dict)
             return 1;
         }            
     }
-    
-    if(word_p->fn == NULL)  //在词典链表中搜索到名字后的判断，这个词是否是变量词！！
-    {
-        *IP=dict_search_name(dict, "push");
-        IP++;
-        *IP=word_p;
-        IP++;
-    }
     else 
     {
         *IP=word_p;    
@@ -248,6 +240,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("r@",rat));
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("myself", myself));
+    dict_ins_next(forth_dict, code("words",words));
     dict_ins_next(forth_dict, code("if",_if));
     dict_ins_next(forth_dict, code("else",_else));
     dict_ins_next(forth_dict, code("then",_then));
@@ -257,7 +250,6 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("forget",forget));
     dict_ins_next(forth_dict, code("variable",var));
     dict_ins_next(forth_dict, code("constant",cons));
-    dict_ins_next(forth_dict, code("words",words));
     
     FILE *fp; //文件指针
     char c;
