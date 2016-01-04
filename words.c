@@ -83,7 +83,7 @@ int dict_rem_name(Dict *dict, char *name)
 }
 
 
-Word *code(char*name, fnP  fp)
+Word *code(char *name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=fp;
@@ -109,13 +109,12 @@ void dolist()
 
 void change_colon(Word *c, Word **list, int n)
 {
-    free(c->wplist);
     c->wplist = (Word**)malloc(n);
     memcpy(c->wplist,list, n);
 }
 
 
-Word *colon(char*name, char*str, Word **list, int n)
+Word *colon(char *name, char *str)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=dolist;
@@ -123,8 +122,7 @@ Word *colon(char*name, char*str, Word **list, int n)
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
 
-    w->wplist=(Word**)malloc(n);
-    memcpy(w->wplist,list, n);
+    w->wplist=NULL;
     
     w->str=(char*)malloc(strlen(str)+1);
     strcpy(w->str,str);
@@ -133,7 +131,7 @@ Word *colon(char*name, char*str, Word **list, int n)
 }
 
 
-Word *constant(char*name, Word **list)
+Word *constant(char *name, Word **list)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=dolist;
@@ -152,7 +150,7 @@ Word *constant(char*name, Word **list)
 }
 
 
-Word *variable(char*name, Word **list, CELL num)
+Word *variable(char *name, Word **list, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=dolist;
@@ -220,6 +218,20 @@ CELL rs_pop()
     if(RP == RS-1){stack_error(1); exit(0);}
     RP--;
     return *(RP+1); 
+}
+
+
+CELL ds_top()
+{
+    if(DP == DS-1){stack_error(1); exit(0);}
+    return *(DP-1);
+}
+
+
+CELL rs_top()
+{
+    if(RP == RS-1){stack_error(1); exit(0);}
+    return *(RP-1);
 }
 
 
@@ -459,12 +471,6 @@ void emit()
 }
 
 
-void myself()
-{
-    ;
-}
-
-
 void words()
 {
     Word *w = forth_dict->head;
@@ -567,4 +573,11 @@ void cons()
     constant_IP_list[1] = (Word *)(ds_pop());
     constant_IP_list[2] = dict_search_name(forth_dict, "ret");
     dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
+}
+
+
+void myself()
+{
+    *IP = (Word *)(rs_top());
+    IP++;
 }

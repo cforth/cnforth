@@ -90,7 +90,8 @@ void interpret(char *s, Dict *dict)
             || !strcmp("else",one_word) 
             || !strcmp("then",one_word)
             || !strcmp("do",one_word)
-            || !strcmp("loop",one_word))
+            || !strcmp("loop",one_word)
+            || !strcmp("myself",one_word))
         {
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
@@ -147,25 +148,16 @@ void interpret(char *s, Dict *dict)
                 define_str[i] = *c;
             }
             define_str[i] = '\0';
+            
+            Word *colon_p = colon(define_name, define_str);
+            dict_ins_next(dict, colon_p);
+            rs_push((CELL)colon_p);
         }
         else if(!strcmp(";",one_word))   //结束扩展词定义模式
         {
             compile(one_word, dict);
             int n = (CELL)IP - (CELL)IP_head;
-            dict_ins_next(dict, colon(define_name, define_str, IP_head, n));
-
-            Word *myself_p = dict_search_name(dict, "myself");  //支持递归词myself
-            Word *colon_p = dict_search_name(dict, define_name);
-            Word **p=IP_head;
-            for (;p<IP ;p++ )
-            {
-                if(*p == myself_p)
-                {
-                    *p = colon_p;
-                    change_colon(colon_p, IP_head, n);
-                }
-            }
-            
+            change_colon((Word *)(rs_pop()), IP_head, n);
             IP_head = IP;
         }
         else if(!strcmp("(",one_word))  //注释模式

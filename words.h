@@ -48,8 +48,8 @@ char next_word[WIDTH] ;      //用来保存一些立即词需要读取的后面�
 //Forth词的定义函数
 Word *code(char*name, fnP  fp);
 void dolist();                //用于创建扩展词中的定义
-void change_colon(Word *c, Word **list, int n); //修改扩展词中的wplist
-Word *colon(char*name, char*str, Word **list, int n);
+void change_colon(Word *c, Word **list, int n); //创建扩展词中的wplist
+Word *colon(char*name, char*str);
 Word *constant(char*name, Word **list);
 Word *variable(char*name, Word **list, CELL num);
 
@@ -66,6 +66,8 @@ void ds_push(CELL n);
 void rs_push(CELL n);
 CELL ds_pop();
 CELL rs_pop();
+CELL ds_top();
+CELL rs_top();
 
 //Forth核心词
 void push();     // push
