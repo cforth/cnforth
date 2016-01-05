@@ -270,10 +270,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("constant",cons));
     dict_ins_next(forth_dict, code("myself", myself));
     
-    if(argc > 1) 
-    {
+    for(; argc > 1; argc--)
         load_file(*++argv);
-    }
 
     while (1)
     {

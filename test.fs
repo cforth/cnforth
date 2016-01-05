@@ -21,3 +21,10 @@ test_fact .s
 : star 42 emit ;
 : matrix swap 0 do dup >r 0 do star space loop cr r> loop drop cr ;
 5 4 matrix
+
+." Hanoi Tower: level 3" cr
+: 4dup 4 pick 4 pick 4 pick 4 pick ;
+: 4drop drop drop drop drop ;
+: move dup 1 = if 4 pick emit space 2 pick emit cr else 4dup 1- >r swap r> myself 4 pick emit space 2 pick emit cr 4dup 1- >r >r swap r> r> myself then 4drop ;
+: hanoi ( level -- ) 65 66 67 4 roll move cr ;
+3 hanoi
