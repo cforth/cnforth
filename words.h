@@ -23,7 +23,6 @@ typedef struct Word
     fnP fn;                //核心词定义，函数指针
     struct Word **wplist;  //扩展词中用的函数指针列表
     CELL num;              //变量词中保存数值
-    char *str;             //保存扩展词的字符串定义
 } Word;
 
 
@@ -49,7 +48,7 @@ char next_word[WIDTH] ;      //用来保存一些立即词需要读取的后面�
 Word *code(char*name, fnP  fp);
 void dolist();                //用于创建扩展词中的定义
 void change_colon(Word *c, Word **list, int n); //创建扩展词中的wplist
-Word *colon(char*name, char*str);
+Word *colon(char*name);
 Word *constant(char*name, Word **list);
 Word *variable(char*name, Word **list, CELL num);
 

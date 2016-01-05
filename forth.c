@@ -73,8 +73,6 @@ void explain(Word  **IP_head)
 //Forth文本解释器
 void interpret(char *s, Dict *dict)
 {
-    char *define_name;
-    char define_str[BUFF_LEN];
     char *one_word;
     Word *immediate;
     Word  **IP_head = IP_list;
@@ -137,19 +135,10 @@ void interpret(char *s, Dict *dict)
             s=ignore_blankchar(s);
             one_word=s;
             s=split_Word(s); 
-            define_name=one_word;
-            PRINT("[DEBUG]定义扩展词 %s\n", define_name)
+            PRINT("[DEBUG]定义扩展词 %s\n", one_word)
             s=ignore_blankchar(s);
             
-            char *c;
-            int i;
-            for(c = s, i = 0; *c != ';'; c++, i++)
-            {
-                define_str[i] = *c;
-            }
-            define_str[i] = '\0';
-            
-            Word *colon_p = colon(define_name, define_str);
+            Word *colon_p = colon(one_word);
             dict_ins_next(dict, colon_p);
             rs_push((CELL)colon_p);
         }
@@ -231,7 +220,6 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("r>",rto));
     dict_ins_next(forth_dict, code("r@",rat));
     dict_ins_next(forth_dict, code("emit", emit));
-    dict_ins_next(forth_dict, code("myself", myself));
     dict_ins_next(forth_dict, code("words",words));
     dict_ins_next(forth_dict, code("if",_if));
     dict_ins_next(forth_dict, code("else",_else));
@@ -242,6 +230,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("forget",forget));
     dict_ins_next(forth_dict, code("variable",var));
     dict_ins_next(forth_dict, code("constant",cons));
+    dict_ins_next(forth_dict, code("myself", myself));
     
     FILE *fp; //文件指针
     char c;

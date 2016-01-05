@@ -41,7 +41,6 @@ void destroy_word(Word *word)
 {
     free(word->name);
     free(word->wplist);
-    free(word->str);
 }
 
 int dict_rem_name(Dict *dict, char *name)
@@ -89,10 +88,6 @@ Word *code(char *name, fnP  fp)
     w->fn=fp;
     w->wplist=NULL;   
     w->name=name;
-    
-    char *str = "( Core Word )";
-    w->str=(char*)malloc(strlen(str)+1);
-    strcpy(w->str,str);
 
     return w;
 }
@@ -114,7 +109,7 @@ void change_colon(Word *c, Word **list, int n)
 }
 
 
-Word *colon(char *name, char *str)
+Word *colon(char *name)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=dolist;
@@ -123,9 +118,6 @@ Word *colon(char *name, char *str)
     strcpy(w->name,name);
 
     w->wplist=NULL;
-    
-    w->str=(char*)malloc(strlen(str)+1);
-    strcpy(w->str,str);
     
     return w;
 }
@@ -141,10 +133,6 @@ Word *constant(char *name, Word **list)
     
     w->wplist=(Word**)malloc(sizeof(CELL)*3);
     memcpy(w->wplist,list, sizeof(CELL)*3);
-    
-    char *str = "( Constant )";
-    w->str=(char*)malloc(strlen(str)+1);
-    strcpy(w->str,str);
     
     return w;
 }
@@ -162,10 +150,6 @@ Word *variable(char *name, Word **list, CELL num)
     memcpy(w->wplist,list, sizeof(CELL)*3);
        
     w->num = num;
-    
-    char *str = "( Variable )";
-    w->str=(char*)malloc(strlen(str)+1);
-    strcpy(w->str,str);
     
     return w;
 }
@@ -542,8 +526,32 @@ void see()
         printf("%s :\n\tCan't find!\n", next_word);
     }
     else
-    {
-        printf("%s :\n\t%s ;\n", word_p->name, word_p->str);
+    {   //反编译wplist，得出扩展词的字符串定义
+        printf("%s :\n\t", next_word);
+        if(word_p->wplist != NULL)
+        {
+            Word **p = word_p->wplist;
+            Word *end = dict_search_name(forth_dict, ";");
+            Word *dict_p = forth_dict->head;
+            for(; *p != end; p++)
+            {
+                while (dict_p != NULL && dict_p != *p)
+                {  
+                    dict_p=dict_p->next;
+                }
+
+                if(dict_p != NULL)
+                    printf("%s ", (*p)->name);
+                else
+                    printf("%ld ", (CELL)(*p));
+                dict_p = forth_dict->head;
+            }
+            printf(";\n");
+        }
+        else
+        {
+            printf("%s\n", word_p->name);
+        }
     }
 }
 
@@ -561,7 +569,7 @@ void var()
     Word * v = dict_search_name(forth_dict, next_word);
     variable_IP_list[0] = dict_search_name(forth_dict, "push");
     variable_IP_list[1] = v;
-    variable_IP_list[2] = dict_search_name(forth_dict, "ret");
+    variable_IP_list[2] = dict_search_name(forth_dict, ";");
     change_colon(v, variable_IP_list, sizeof(CELL)*3);
 }
 
@@ -571,7 +579,7 @@ void cons()
     Word *constant_IP_list[3];
     constant_IP_list[0] = dict_search_name(forth_dict, "push");
     constant_IP_list[1] = (Word *)(ds_pop());
-    constant_IP_list[2] = dict_search_name(forth_dict, "ret");
+    constant_IP_list[2] = dict_search_name(forth_dict, ";");
     dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
 }
 
