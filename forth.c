@@ -158,6 +158,20 @@ void interpret(char *s, Dict *dict)
             }
             s++;
         }
+        else if(!strcmp("load",one_word))  //读取外部文件
+        {
+            explain(IP_head);
+            IP_head = IP;
+            
+            immediate = dict_search_name(forth_dict, one_word);
+            s=ignore_blankchar(s);
+            one_word=s;
+            s=split_Word(s);
+            strcpy(next_word, one_word);
+            load_file(next_word);
+            
+            IP_head = IP;
+        }
         else if(!compile(one_word, dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
@@ -179,6 +193,40 @@ void interpret(char *s, Dict *dict)
         printf("\n");
         showds();
     }
+}
+
+
+//从外部文件读取Forth代码
+int load_file(char *file_path)
+{
+    char cmdstr[BUFF_LEN];  //输入缓存区
+    FILE *fp; //文件指针
+    char c;
+    int i = 0;
+
+    if((fp = fopen(file_path, "r")) == NULL)
+    {
+        printf("Can't open %s\n", file_path);
+        return 0;
+    }
+    
+    while((c = getc(fp)) != EOF)
+    {
+        if(c != '\n')
+        {
+            cmdstr[i] = c;
+            i++;
+        }
+        else
+        {
+            cmdstr[i] = '\0';
+            interpret(cmdstr, forth_dict);
+            i = 0;
+        }           
+    }
+    fclose(fp);
+
+    return 1;
 }
 
 
@@ -232,32 +280,9 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("constant",cons));
     dict_ins_next(forth_dict, code("myself", myself));
     
-    FILE *fp; //文件指针
-    char c;
-    int i = 0;
     if(argc > 1) 
     {
-        if((fp = fopen(*++argv, "r")) == NULL)
-        {
-            printf("Can't open %s\n", *argv);
-            return 1;
-        }
-        
-        while((c = getc(fp)) != EOF)
-        {
-            if(c != '\n')
-            {
-                cmdstr[i] = c;
-                i++;
-            }
-            else
-            {
-                cmdstr[i] = '\0';
-                interpret(cmdstr, forth_dict);
-                i = 0;
-            }           
-        }
-        fclose(fp);
+        load_file(*++argv);
     }
 
     while (1)

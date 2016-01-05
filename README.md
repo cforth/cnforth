@@ -21,7 +21,7 @@ c_forth 0.1版
 
 5. 变量和常量（`variable` `constant`）;
 
-6. 从外部读取forth代码（`./forth lib.fs`）;
+6. 从外部读取forth代码（`load lib.fs`或者命令行`./forth lib.fs`）;
 
 7. 递归定义扩展词（`myself`）;
 
@@ -51,6 +51,13 @@ make forth
 >>> : n-- n@ 1 - n ! ;
 >>> : factorial n@ 0 > if n@ n-- myself * else 1 then .s ; 
 >>> 8 n ! factorial
-
-40320
+<9> 8 7 6 5 4 3 2 1 1
+<8> 8 7 6 5 4 3 2 1
+<7> 8 7 6 5 4 3 2
+<6> 8 7 6 5 4 6
+<5> 8 7 6 5 24
+<4> 8 7 6 120
+<3> 8 7 720
+<2> 8 5040
+<1> 40320
 ```
