@@ -98,7 +98,8 @@ void interpret(char *s, Dict *dict)
         else if (!strcmp("constant",one_word)
             || !strcmp("variable",one_word)
             || !strcmp("forget",one_word)
-            || !strcmp("see",one_word))
+            || !strcmp("see",one_word)
+            || !strcmp("load",one_word))
         {
             explain(IP_head);
             IP_head = IP;
@@ -109,7 +110,10 @@ void interpret(char *s, Dict *dict)
             one_word=s;
             s=split_Word(s);
             strcpy(next_word, one_word);
-            immediate->fn();
+            if(immediate == NULL)  //如果是load词
+                load_file(next_word);
+            else
+                immediate->fn();
             
             IP_head = IP;
         }
@@ -157,20 +161,6 @@ void interpret(char *s, Dict *dict)
                 s++;
             }
             s++;
-        }
-        else if(!strcmp("load",one_word))  //读取外部文件
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            immediate = dict_search_name(forth_dict, one_word);
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s);
-            strcpy(next_word, one_word);
-            load_file(next_word);
-            
-            IP_head = IP;
         }
         else if(!compile(one_word, dict) ) //编译词
         {
