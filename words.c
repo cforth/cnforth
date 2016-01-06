@@ -98,7 +98,7 @@ void dolist()
     RP++;
     *RP=(CELL)IP;
     IP=(*IP)->wplist-1;
-    PRINT("[DEBUG]进入dolist\n")
+    PRINT("[DEBUG]进入子例程\n")
 }
 
 
@@ -175,7 +175,7 @@ void stack_error(int n)
 
 void ds_push(CELL n)
 {
-    if(DP == DS+STACK_LEN){stack_error(2); exit(0);}
+    if(DP >= DS+STACK_LEN-1){stack_error(2); exit(0);}
     DP++;
     *DP=n;
 }
@@ -183,7 +183,7 @@ void ds_push(CELL n)
 
 void rs_push(CELL n)
 {
-    if(RP == RS+STACK_LEN){stack_error(2); exit(0);}
+    if(RP >= RS+STACK_LEN-1){stack_error(2); exit(0);}
     RP++;
     *RP=n;
 }
@@ -191,7 +191,7 @@ void rs_push(CELL n)
 
 CELL ds_pop()
 {
-    if(DP == DS-1){stack_error(1); exit(0);}
+    if(DP <= DS-1){stack_error(1); exit(0);}
     DP--;
     return *(DP+1); 
 }
@@ -199,7 +199,7 @@ CELL ds_pop()
 
 CELL rs_pop()
 {
-    if(RP == RS-1){stack_error(1); exit(0);}
+    if(RP <= RS-1){stack_error(1); exit(0);}
     RP--;
     return *(RP+1); 
 }
@@ -207,14 +207,14 @@ CELL rs_pop()
 
 CELL ds_top()
 {
-    if(DP == DS-1){stack_error(1); exit(0);}
+    if(DP <= DS-1){stack_error(1); exit(0);}
     return *DP;
 }
 
 
 CELL rs_top()
 {
-    if(RP == RS-1){stack_error(1); exit(0);}
+    if(RP <= RS-1){stack_error(1); exit(0);}
     return *RP;
 }
 
@@ -224,6 +224,7 @@ void push()
 {
     IP++;
     ds_push((CELL)*IP);
+    PRINT("[DEBUG]数%ld压入数据栈\n", (CELL)*IP)
 }
 
 
@@ -242,6 +243,7 @@ void bye()
 void ret()
 {
     IP=(Word**)(rs_pop());
+    PRINT("[DEBUG]从子例程返回\n")
 }
 
 

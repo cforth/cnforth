@@ -1,5 +1,5 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
-#define     STACK_LEN   100   //定义栈的深度
+#define     STACK_LEN   1024  //定义栈的深度
 #define     WIDTH       100   //词的名字的最大长度
 #define     BUFF_LEN    1024
 
