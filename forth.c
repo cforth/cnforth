@@ -142,15 +142,14 @@ void interpret(char *s, Dict *dict)
             PRINT("[DEBUG]定义扩展词 %s\n", one_word)
             s=ignore_blankchar(s);
             
-            Word *colon_p = colon(one_word);
-            dict_ins_next(dict, colon_p);
-            rs_push((CELL)colon_p);
+            define_p = colon(one_word);
         }
         else if(!strcmp(";",one_word))   //结束扩展词定义模式
         {
             compile(one_word, dict);
             int n = (CELL)IP - (CELL)IP_head;
-            change_colon((Word *)(rs_pop()), IP_head, n);
+            dict_ins_next(dict, define_p);
+            change_colon(define_p, IP_head, n);
             IP_head = IP;
         }
         else if(!strcmp("(",one_word))  //注释模式

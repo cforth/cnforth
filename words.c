@@ -208,14 +208,14 @@ CELL rs_pop()
 CELL ds_top()
 {
     if(DP == DS-1){stack_error(1); exit(0);}
-    return *(DP-1);
+    return *DP;
 }
 
 
 CELL rs_top()
 {
     if(RP == RS-1){stack_error(1); exit(0);}
-    return *(RP-1);
+    return *RP;
 }
 
 
@@ -443,9 +443,7 @@ void rto()
 
 void rat()
 {
-    CELL d = rs_pop();
-    ds_push(d);
-    rs_push(d);
+    ds_push(rs_top());
 }
 
 
@@ -586,6 +584,6 @@ void cons()
 
 void myself()
 {
-    *IP = (Word *)(rs_top());
+    *IP = (Word *)define_p;
     IP++;
 }

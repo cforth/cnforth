@@ -41,6 +41,7 @@ CELL RS[STACK_LEN];          //返回栈
 CELL *DP, *RP;               //栈指针
 Word *IP_list[BUFF_LEN/4];   //指令列表，长度为BUFF_LEN/4   
 Word  **IP;                  //指令列表指针(指针的指针)
+Word *define_p;              //保存在词典中当前定义的扩展词指针，用于支持递归词myself
 char next_word[WIDTH] ;      //用来保存一些立即词需要读取的后面的词的名字 
 
 
