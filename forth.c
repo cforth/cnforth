@@ -112,6 +112,7 @@ void interpret(char *s, Dict *dict)
             one_word=s;
             s=split_Word(s);
             strcpy(next_word, one_word);
+            PRINT("[DEBUG]找到名字 %s\n", one_word)
             if(immediate == NULL)  //如果是load词
                 load_file(next_word);
             else
