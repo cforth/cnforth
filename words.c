@@ -490,7 +490,7 @@ void _if()
 {
     ip_push(dict_search_name(forth_dict, "?branch"));
     rs_push((CELL)IP);
-    IP++;
+    ip_push((Word *)0);
 }
 
 
@@ -501,7 +501,7 @@ void _else()
     Word** if_p = (Word**)(rs_pop());
     rs_push((CELL)else_p);
     *if_p = (Word*)(IP - if_p + 1);
-    IP++;
+    ip_push((Word *)0);
 }
 
 
@@ -516,7 +516,7 @@ void _do()
 {
     ip_push(dict_search_name(forth_dict, "(do)"));
     rs_push((CELL)IP);
-    IP++;
+    ip_push((Word *)0);
     
 }
 
