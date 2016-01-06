@@ -35,18 +35,15 @@ int compile(char *name, Dict *dict)
         else 
         {               //如果是数字
             PRINT("[DEBUG]成功找到数字%s\n",name)
-            *IP=dict_search_name(dict, "push");   //将push核心词指针存入IP数组        
-            IP++;        //数组指针指向下一个位置
-            *IP=(Word*)(CELL)(atoi(name));    //将CELL型数强制转换为Word指针类型
-            IP++;
+            ip_push(dict_search_name(dict, "push"));   //将push核心词指针存入IP数组        
+            ip_push((Word*)(CELL)(atoi(name)));    //将CELL型数强制转换为Word指针类型
 
             return 1;
         }            
     }
     else 
     {
-        *IP=word_p;    
-        IP++;
+        ip_push(word_p);
     }
     
     PRINT("[DEBUG]成功编译%s词\n",name)

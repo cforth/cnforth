@@ -3,7 +3,7 @@
 #define     WIDTH       100   //词的名字的最大长度
 #define     BUFF_LEN    1024
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
     #define PRINT(fmt, args...) printf(fmt,##args);
 #else
@@ -39,7 +39,7 @@ Dict *forth_dict;            //Forth词典指针
 CELL DS[STACK_LEN];          //参数栈
 CELL RS[STACK_LEN];          //返回栈
 CELL *DP, *RP;               //栈指针
-Word *IP_list[BUFF_LEN/4];   //指令列表，长度为BUFF_LEN/4   
+Word *IP_list[BUFF_LEN];     //指令列表，长度为BUFF_LEN/4   
 Word **IP;                   //指令列表指针(指针的指针)
 Word **IP_head;              //保存指令列表的指针位置
 Word *define_p;              //保存在词典中当前定义的扩展词指针，用于支持递归词myself
@@ -59,10 +59,10 @@ Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
 
-//清空栈
-void empty_stack();
-
 //Forth栈操作函数
+void empty_stack();
+void stack_error(int n);
+void ip_push(Word *w);  //IP栈PUSH
 void ds_push(CELL n);
 void rs_push(CELL n);
 CELL ds_pop();

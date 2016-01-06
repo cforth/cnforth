@@ -167,6 +167,14 @@ void stack_error(int n)
 }
 
 
+void ip_push(Word *w)
+{
+    if(IP >= IP_list+BUFF_LEN){stack_error(2); exit(0);}
+    *IP=w;
+    IP++;
+}
+
+
 void ds_push(CELL n)
 {
     if(DP >= DS+STACK_LEN-1){stack_error(2); exit(0);}
@@ -470,8 +478,7 @@ void defcolon()
 
 void endcolon()
 {
-    *IP = dict_search_name(forth_dict, "ret");
-    IP++;
+    ip_push(dict_search_name(forth_dict, "ret"));
     int n = (CELL)IP - (CELL)IP_head;
     dict_ins_next(forth_dict, define_p);
     change_colon(define_p, IP_head, n);
@@ -481,8 +488,7 @@ void endcolon()
 
 void _if()
 {
-    *IP = dict_search_name(forth_dict, "?branch");
-    IP++;
+    ip_push(dict_search_name(forth_dict, "?branch"));
     rs_push((CELL)IP);
     IP++;
 }
@@ -490,8 +496,7 @@ void _if()
 
 void _else()
 {
-    *IP = dict_search_name(forth_dict, "branch");
-    IP++;
+    ip_push(dict_search_name(forth_dict, "branch"));
     Word** else_p = IP;
     Word** if_p = (Word**)(rs_pop());
     rs_push((CELL)else_p);
@@ -509,8 +514,7 @@ void _then()
 
 void _do()
 {
-    *IP = dict_search_name(forth_dict, "(do)");
-    IP++;
+    ip_push(dict_search_name(forth_dict, "(do)"));
     rs_push((CELL)IP);
     IP++;
     
@@ -519,12 +523,10 @@ void _do()
 
 void _loop()
 {
-    *IP = dict_search_name(forth_dict, "(loop)"); 
-    IP++;
+    ip_push(dict_search_name(forth_dict, "(loop)")); 
     Word** do_p = (Word**)(rs_pop());
     *do_p = (Word*)(IP - do_p + 1); 
-    *IP = (Word*)(IP - do_p + 1); 
-    IP++;
+    ip_push((Word*)(IP - do_p + 1)); 
 }
 
 
@@ -597,6 +599,5 @@ void cons()
 
 void myself()
 {
-    *IP = (Word *)define_p;
-    IP++;
+    ip_push((Word *)define_p);
 }
