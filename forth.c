@@ -213,6 +213,8 @@ int load_file(char *file_path)
             i = 0;
         }           
     }
+    cmdstr[i] = '\0';    //如果文件最后一行不是空行
+    interpret(cmdstr, forth_dict);
     fclose(fp);
 
     return 1;

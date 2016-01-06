@@ -41,18 +41,16 @@ void destroy_word(Word *word)
 {
     free(word->name);
     free(word->wplist);
+    free(word);
 }
 
-int dict_rem_name(Dict *dict, char *name)
+int dict_rem_after(Dict *dict, char *name)
 {
     Word *w = dict->head;
-    Word *w_before;
-    Word *w_after;
+    Word *del_w;
     while (w != NULL && strcmp(w->name,name))
     {   
-        w_before = w;
         w=w->next;
-        w_after = (w != NULL) ? w->next : NULL;
     }
     
     if(w->wplist == NULL)
@@ -61,23 +59,19 @@ int dict_rem_name(Dict *dict, char *name)
         return 0;
     }
     
-    if(w != NULL && w != dict->head)
+    if(w != NULL)
     {
-        w_before->next = w_after;
-        destroy_word(w);
-        free(w);
-        dict->size--;
+        do
+        {
+            del_w = dict->head;
+            dict->head = dict->head->next;
+            destroy_word(del_w);
+            dict->size--;
+        } while(del_w != w);
+        
         return 1;
     }
-    else if(w == dict->head)
-    {
-        w_after = (w != NULL) ? w->next : NULL;
-        dict->head = w_after;
-        destroy_word(w);
-        free(w);
-        dict->size--;
-        return 1;
-    }
+    
     return 0;
 }
 
@@ -558,7 +552,7 @@ void see()
 
 void forget()
 {
-    dict_rem_name(forth_dict, next_word);
+    dict_rem_after(forth_dict, next_word); //删除当前扩展词以及词典中该词之后定义的所有扩展词
 }
 
 
