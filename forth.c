@@ -75,7 +75,7 @@ void interpret(char *s, Dict *dict)
 {
     char *one_word;
     Word *immediate;
-    Word  **IP_head = IP_list;
+    IP_head = IP_list;
     IP=IP_list;
        
     while (*ignore_blankchar(s) != '\0')
@@ -89,7 +89,8 @@ void interpret(char *s, Dict *dict)
             || !strcmp("then",one_word)
             || !strcmp("do",one_word)
             || !strcmp("loop",one_word)
-            || !strcmp("myself",one_word))
+            || !strcmp("myself",one_word)
+            || !strcmp(";",one_word))
         {
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
@@ -99,7 +100,8 @@ void interpret(char *s, Dict *dict)
             || !strcmp("variable",one_word)
             || !strcmp("forget",one_word)
             || !strcmp("see",one_word)
-            || !strcmp("load",one_word))
+            || !strcmp("load",one_word)
+            || !strcmp(":",one_word))
         {
             explain(IP_head);
             IP_head = IP;
@@ -130,27 +132,6 @@ void interpret(char *s, Dict *dict)
                 s++;
             }
             s++;
-        }
-        else if (!strcmp(":",one_word))  //进入扩展词定义模式
-        {
-            explain(IP_head);
-            IP_head = IP;
-            
-            s=ignore_blankchar(s);
-            one_word=s;
-            s=split_Word(s); 
-            PRINT("[DEBUG]定义扩展词 %s\n", one_word)
-            s=ignore_blankchar(s);
-            
-            define_p = colon(one_word);
-        }
-        else if(!strcmp(";",one_word))   //结束扩展词定义模式
-        {
-            compile(one_word, dict);
-            int n = (CELL)IP - (CELL)IP_head;
-            dict_ins_next(dict, define_p);
-            change_colon(define_p, IP_head, n);
-            IP_head = IP;
         }
         else if(!strcmp("(",one_word))  //注释模式
         {
@@ -235,7 +216,6 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code(".",popds));
     dict_ins_next(forth_dict, code("bye",bye));
     dict_ins_next(forth_dict, code("ret",ret));
-    dict_ins_next(forth_dict, code(";",ret));
     dict_ins_next(forth_dict, code("depth",depth));
     dict_ins_next(forth_dict, code("+",add));
     dict_ins_next(forth_dict, code("-",sub));
@@ -260,6 +240,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("r@",rat));
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("words",words));
+    dict_ins_next(forth_dict, code(":",defcolon));
+    dict_ins_next(forth_dict, code(";",endcolon));
     dict_ins_next(forth_dict, code("if",_if));
     dict_ins_next(forth_dict, code("else",_else));
     dict_ins_next(forth_dict, code("then",_then));

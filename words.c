@@ -462,6 +462,23 @@ void words()
 
 
 //Forth立即词
+void defcolon()
+{
+    define_p = colon(next_word);
+}
+
+
+void endcolon()
+{
+    *IP = dict_search_name(forth_dict, "ret");
+    IP++;
+    int n = (CELL)IP - (CELL)IP_head;
+    dict_ins_next(forth_dict, define_p);
+    change_colon(define_p, IP_head, n);
+    IP_head = IP;
+}
+
+
 void _if()
 {
     *IP = dict_search_name(forth_dict, "?branch");
@@ -525,7 +542,7 @@ void see()
         if(word_p->wplist != NULL)
         {
             Word **p = word_p->wplist;
-            Word *end = dict_search_name(forth_dict, ";");
+            Word *end = dict_search_name(forth_dict, "ret");
             Word *dict_p = forth_dict->head;
             for(; *p != end; p++)
             {
@@ -563,7 +580,7 @@ void var()
     Word * v = dict_search_name(forth_dict, next_word);
     variable_IP_list[0] = dict_search_name(forth_dict, "push");
     variable_IP_list[1] = v;
-    variable_IP_list[2] = dict_search_name(forth_dict, ";");
+    variable_IP_list[2] = dict_search_name(forth_dict, "ret");
     change_colon(v, variable_IP_list, sizeof(CELL)*3);
 }
 
@@ -573,7 +590,7 @@ void cons()
     Word *constant_IP_list[3];
     constant_IP_list[0] = dict_search_name(forth_dict, "push");
     constant_IP_list[1] = (Word *)(ds_pop());
-    constant_IP_list[2] = dict_search_name(forth_dict, ";");
+    constant_IP_list[2] = dict_search_name(forth_dict, "ret");
     dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
 }
 
