@@ -3,68 +3,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "forth.h"
-    
-//判断字符串是否为数字
-int is_num(char *s)
-{
-    if(*s == '-')
-        s++;
-
-    while (*s != 0)
-    {
-        if (!isdigit((CELL)*s)) 
-            return 0;
-        s++;
-    }
-    return 1;
-}
-
-
-//根据Forth代码中的当前词的名字，去执行相应的编译操作
-int compile(char *name, Dict *dict)
-{
-    Word *word_p;
-    word_p = dict_search_name(dict, name);
-    
-    if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
-    {
-        if (!is_num(name))    
-        {
-            return 0;    //如果不是数字，返回0
-        }
-        else 
-        {               //如果是数字
-            PRINT("[DEBUG]成功找到数字%s\n",name)
-            ip_push(dict_search_name(dict, "push"));   //将push核心词指针存入IP数组        
-            ip_push((Word*)(CELL)(atoi(name)));    //将CELL型数强制转换为Word指针类型
-
-            return 1;
-        }            
-    }
-    else 
-    {
-        ip_push(word_p);
-    }
-    
-    PRINT("[DEBUG]成功编译%s词\n",name)
-    return 1;
-}
-
-
-//指令列表执行
-void explain()
-{
-    Word  **IP_end = IP;
-    IP=IP_head;
-    
-    while(IP != IP_end)
-    {
-        PRINT("[DEBUG]解释执行> %s\n", (*IP)->name)
-        
-        (*IP)->fn();
-        ++IP;
-    }
-}
 
 
 //Forth文本解释器
@@ -101,8 +39,6 @@ void interpret(char *s, Dict *dict)
             || !strcmp(":",one_word))
         {
             explain();
-            IP_head = IP;
-            
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
             s=ignore_blankchar(s);
@@ -114,8 +50,6 @@ void interpret(char *s, Dict *dict)
                 load_file(next_word);
             else
                 immediate->fn();
-            
-            IP_head = IP;
         }
         else if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
@@ -125,8 +59,8 @@ void interpret(char *s, Dict *dict)
             while(*s != '\"')
             {
                 sprintf(tempstr, "%ld", (CELL)(*s));
-                compile(tempstr, dict);
-                compile("emit", dict);
+                find(tempstr, dict);
+                find("emit", dict);
                 s++;
             }
             s++;
@@ -140,7 +74,7 @@ void interpret(char *s, Dict *dict)
             }
             s++;
         }
-        else if(!compile(one_word, dict) ) //编译词
+        else if(!find(one_word, dict) ) //编译词
         {
             printf("[%s]?\n",one_word);
             empty_stack();

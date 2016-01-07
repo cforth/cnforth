@@ -59,6 +59,10 @@ Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
 
+void explain(); //IP列表执行
+int is_num(char *s); //判断字符串是否为数字
+int find(char *name, Dict *dict); //根据词名，去执行相应的IP列表操作
+
 //Forth栈操作函数
 void empty_stack();
 void stack_error(int n);

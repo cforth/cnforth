@@ -3,7 +3,7 @@
 
 int is_num(char *s);
 
-int compile(char *name, Dict *dict);
+int find(char *name, Dict *dict);
 
 void explain();
 
