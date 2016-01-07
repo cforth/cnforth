@@ -39,6 +39,8 @@ void interpret(char *s, Dict *dict)
             || !strcmp(":",one_word))
         {
             explain();
+            IP_head = IP;
+            
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
             immediate = dict_search_name(forth_dict, one_word);
             s=ignore_blankchar(s);
