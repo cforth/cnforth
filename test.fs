@@ -25,6 +25,7 @@ test_fact .s
 ." Hanoi Tower: level 3" cr
 : 4dup 4 pick 4 pick 4 pick 4 pick ;
 : 4drop drop drop drop drop ;
-: move dup 1 = if 4 pick emit space 2 pick emit cr else 4dup 1- >r swap r> myself 4 pick emit space 2 pick emit cr 4dup 1- >r >r swap r> r> myself then 4drop ;
+: arrow 45 emit 62 emit ;
+: move dup 1 = if 4 pick emit arrow 2 pick emit cr else 4dup 1- >r swap r> myself 4 pick emit arrow 2 pick emit cr 4dup 1- >r >r swap r> r> myself then 4drop ;
 : hanoi ( level -- ) 65 66 67 4 roll move cr ;
 3 hanoi

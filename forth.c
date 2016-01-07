@@ -52,7 +52,7 @@ int compile(char *name, Dict *dict)
 
 
 //指令列表执行
-void explain(Word  **IP_head)
+void explain()
 {
     Word  **IP_end = IP;
     IP=IP_head;
@@ -100,7 +100,7 @@ void interpret(char *s, Dict *dict)
             || !strcmp("load",one_word)
             || !strcmp(":",one_word))
         {
-            explain(IP_head);
+            explain();
             IP_head = IP;
             
             PRINT("[DEBUG]执行立即词 %s\n", one_word)
@@ -148,7 +148,7 @@ void interpret(char *s, Dict *dict)
             return;
         }
     }
-    explain(IP_head);
+    explain();
 
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
@@ -178,9 +178,10 @@ int load_file(char *file_path)
         return 0;
     }
     
-    while((c = getc(fp)) != EOF)
+    do
     {
-        if(c != '\n')
+        c = getc(fp);
+        if(c != '\n' && c != EOF)
         {
             cmdstr[i] = c;
             i++;
@@ -191,9 +192,8 @@ int load_file(char *file_path)
             interpret(cmdstr, forth_dict);
             i = 0;
         }           
-    }
-    cmdstr[i] = '\0';    //如果文件最后一行不是空行
-    interpret(cmdstr, forth_dict);
+    } while(c != EOF);
+
     fclose(fp);
 
     return 1;

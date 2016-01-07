@@ -5,7 +5,7 @@ int is_num(char *s);
 
 int compile(char *name, Dict *dict);
 
-void explain(Word  **IP_head);
+void explain();
 
 void interpret(char *s, Dict *dict);
 
