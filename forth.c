@@ -52,6 +52,8 @@ void interpret(char *s, Dict *dict)
                 load_file(next_word);
             else
                 immediate->fn();
+            
+            IP_head = IP;
         }
         else if(!strcmp(".\"",one_word))  //如果是." str " 则立即编译其中的字符串str
         {
