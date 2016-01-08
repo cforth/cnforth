@@ -107,6 +107,7 @@ int load_file(char *file_path)
     FILE *fp; //文件指针
     char c;
     int i = 0;
+    int flag = 0;
 
     if((fp = fopen(file_path, "r")) == NULL)
     {
@@ -117,19 +118,22 @@ int load_file(char *file_path)
     do
     {
         c = getc(fp);
-        if(c != '\n' && c != EOF)
+        if((c != '\n' && c != EOF) 
+            || (c == '\n' && flag == 1))
         {
+            if(c == ':') flag = 1;
+            else if(c == ';') flag = 0;
             cmdstr[i] = c;
             i++;
         }
-        else
+        else if((c == '\n' && flag == 0)
+            || c == EOF)
         {
             cmdstr[i] = '\0';
             interpret(cmdstr, forth_dict);
             i = 0;
         }           
     } while(c != EOF);
-
     fclose(fp);
 
     return 1;
