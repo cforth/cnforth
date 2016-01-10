@@ -40,7 +40,7 @@ Word *dict_search_name(Dict *dict, char *name)
 void destroy_word(Word *word)
 {
     free(word->name);
-    free(word->wplist);
+    if(word->fn == dolist) free(word->wplist);
     free(word);
 }
 
@@ -119,7 +119,7 @@ Word *colon(char *name)
 
 void docons() //处理常数词
 {
-    ds_push((*IP)->num);
+    ds_push((CELL)((*IP)->wplist));
 }
 
 
@@ -131,7 +131,7 @@ Word *constant(char *name, CELL num)
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
     
-    w->num = num;
+    w->wplist = (Word **)num;
     
     return w;
 }
@@ -151,7 +151,7 @@ Word *variable(char *name, CELL num)
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
        
-    w->num = num;
+    w->wplist = (Word **)num;
     
     return w;
 }
@@ -394,14 +394,14 @@ void roll()
 void invar()
 {
     Word *p = (Word *)(ds_pop());
-    p->num = ds_pop();
+    p->wplist = (Word **)ds_pop();
 }
 
 
 void outvar() 
 {
     Word *p = (Word *)(ds_pop());
-    ds_push(p->num);
+    ds_push((CELL)(p->wplist));
 }
 
 

@@ -11,18 +11,17 @@
 #endif
 
 
-//函数指针
+//代码域函数指针
 typedef void(*fnP)();  
 
 
-//用结构体定义Forth中的基础词，利用链表实现词典
+//用结构体定义Forth的词结构，利用链表实现词典
 typedef struct Word
 {
-    struct Word *link;     //指向词典中下个词的指针
-    char *name;            //词的名字
-    fnP fn;                //核心词定义，函数指针
-    struct Word **wplist;  //扩展词中用的函数指针列表
-    CELL num;              //变量词中保存数值
+    struct Word *link;     //Forth词的链接域
+    char *name;            //Forth词的名字域
+    fnP fn;                //Forth词的代码域指针
+    struct Word **wplist;  //Forth词的参数域
 } Word;
 
 
@@ -48,6 +47,7 @@ char next_word[WIDTH] ;      //用来保存一些立即词需要读取的后面�
 
 //Forth词的定义函数
 Word *code(char*name, fnP  fp);
+void dolist();
 void change_colon(Word *c, Word **list, int n); //创建扩展词中的wplist
 Word *colon(char*name);
 Word *constant(char*name, CELL num);
