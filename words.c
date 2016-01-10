@@ -17,7 +17,7 @@ Dict *dict_init()
 
 int dict_ins_next(Dict *dict, Word *word)
 {
-    word->next = dict->head;
+    word->link = dict->head;
     dict->head = word;
     dict->size++;
     
@@ -30,7 +30,7 @@ Word *dict_search_name(Dict *dict, char *name)
     Word *w = dict->head;
     while (w != NULL && strcmp(w->name,name))
     {  
-        w=w->next;
+        w=w->link;
     }
     
     return w;
@@ -50,7 +50,7 @@ int dict_rem_after(Dict *dict, char *name)
     Word *del_w;
     while (w != NULL && strcmp(w->name,name))
     {   
-        w=w->next;
+        w=w->link;
     }
     
     if(w->wplist == NULL)
@@ -64,7 +64,7 @@ int dict_rem_after(Dict *dict, char *name)
         do
         {
             del_w = dict->head;
-            dict->head = dict->head->next;
+            dict->head = dict->head->link;
             destroy_word(del_w);
             dict->size--;
         } while(del_w != w);
@@ -87,7 +87,7 @@ Word *code(char *name, fnP  fp)
 }
 
 
-void dolist()
+void dolist() //用于创建扩展词中的定义
 {
     RP++;
     *RP=(CELL)IP;
@@ -117,31 +117,39 @@ Word *colon(char *name)
 }
 
 
-Word *constant(char *name, Word **list)
+void docons() //处理常数词
+{
+    ds_push((*IP)->num);
+}
+
+
+Word *constant(char *name, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=dolist;
+    w->fn=docons;
     
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
     
-    w->wplist=(Word**)malloc(sizeof(CELL)*3);
-    memcpy(w->wplist,list, sizeof(CELL)*3);
+    w->num = num;
     
     return w;
 }
 
 
-Word *variable(char *name, Word **list, CELL num)
+void dovar()  //处理变量词和数组
+{
+    ds_push((CELL)*IP);
+}
+
+
+Word *variable(char *name, CELL num)
 {
     Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=dolist;
+    w->fn=dovar;
     
     w->name=(char*)malloc(strlen(name)+1);
     strcpy(w->name,name);
-    
-    w->wplist=(Word**)malloc(sizeof(CELL)*3);
-    memcpy(w->wplist,list, sizeof(CELL)*3);
        
     w->num = num;
     
@@ -526,7 +534,7 @@ void words()
     while (w != NULL)
     {  
         printf("%s ", w->name);
-        w=w->next;
+        w=w->link;
     }
     printf("\n");
 }
@@ -604,7 +612,7 @@ void see()
     else
     {   //反编译wplist，得出扩展词的字符串定义
         printf("%s :\n\t", next_word);
-        if(word_p->wplist != NULL)
+        if(word_p->fn == dolist)
         {
             Word **p = word_p->wplist;
             Word *end = dict_search_name(forth_dict, "ret");
@@ -613,7 +621,7 @@ void see()
             {
                 while (dict_p != NULL && dict_p != *p)
                 {  
-                    dict_p=dict_p->next;
+                    dict_p=dict_p->link;
                 }
 
                 if(dict_p != NULL)
@@ -640,23 +648,13 @@ void forget()
 
 void var()
 {
-    Word *variable_IP_list[3] = {NULL, NULL, NULL};
-    dict_ins_next(forth_dict, variable(next_word, variable_IP_list, 0));
-    Word * v = dict_search_name(forth_dict, next_word);
-    variable_IP_list[0] = dict_search_name(forth_dict, "push");
-    variable_IP_list[1] = v;
-    variable_IP_list[2] = dict_search_name(forth_dict, "ret");
-    change_colon(v, variable_IP_list, sizeof(CELL)*3);
+    dict_ins_next(forth_dict, variable(next_word, 0));
 }
 
 
 void cons()
 {
-    Word *constant_IP_list[3];
-    constant_IP_list[0] = dict_search_name(forth_dict, "push");
-    constant_IP_list[1] = (Word *)(ds_pop());
-    constant_IP_list[2] = dict_search_name(forth_dict, "ret");
-    dict_ins_next(forth_dict, constant(next_word, constant_IP_list));
+    dict_ins_next(forth_dict, constant(next_word, ds_pop()));
 }
 
 

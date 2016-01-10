@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
     forth_dict= dict_init();
     
     //初始化词典
-    dict_ins_next(forth_dict, code("dolist",dolist));
     dict_ins_next(forth_dict, code("push",push));
     dict_ins_next(forth_dict, code(".",popds));
     dict_ins_next(forth_dict, code("bye",bye));
@@ -180,6 +179,7 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("r@",rat));
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("words",words));
+    dict_ins_next(forth_dict, code("myself", myself));
     dict_ins_next(forth_dict, code(":",defcolon));
     dict_ins_next(forth_dict, code(";",endcolon));
     dict_ins_next(forth_dict, code("if",_if));
@@ -191,7 +191,6 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("forget",forget));
     dict_ins_next(forth_dict, code("variable",var));
     dict_ins_next(forth_dict, code("constant",cons));
-    dict_ins_next(forth_dict, code("myself", myself));
     
     for(; argc > 1; argc--)
         load_file(*++argv);
