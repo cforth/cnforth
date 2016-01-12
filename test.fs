@@ -12,18 +12,19 @@
         test_fail 
     then ;
 
-." Fib List Test: Print 8 Fib list numbers " cr
-: fib_ ( n1 n2 limit index -- n1 n2 n1+n2 ) 
-    do
-        .s 2dup + 
-    loop ;
+." Fib Test: Print the twelfth fib numbers " cr
+: fib ( fib_index -- fib_number )
+    dup 3 <
+    if
+        drop 1
+    else
+        1- dup 1- myself swap myself +
+    then ;
 
-: fib ( n1 n2 n3 n4 -- n3 n4 n1 n2 )
-    0 1 2swap fib_ .s ;
 : test_fib 
-    6 0 fib + + + + + + + 33 test ;
+    11 fib dup . 89 test ;
     
-test_fib .s
+test_fib cr
 
 ." Factorial Test: Us recursive to Print Eight's Factorial " cr
 variable n
@@ -40,7 +41,7 @@ see factorial
 : test_fact 
     8 n ! factorial 40320 test ;
 
-test_fact .s
+test_fact .s cr
 
 ." Matrix: Test nested statements " cr
 : star 42 emit ;
@@ -55,7 +56,7 @@ test_fact .s
         cr r> 
     loop drop cr ;
     
-5 4 matrix
+5 4 matrix cr
 
 ." Hanoi Tower: level 3" cr
 : 4dup 4 pick 4 pick 4 pick 4 pick ;
@@ -75,4 +76,4 @@ test_fact .s
         
 : hanoi ( level -- ) 65 66 67 4 roll move cr ;
 
-3 hanoi
+3 hanoi cr
