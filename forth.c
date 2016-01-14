@@ -19,19 +19,7 @@ void interpret(char *s, Dict *dict)
         one_word=s;             //将字符串指针赋给one_word
         s=split_Word(s);        //将字符串头部第一个词后的空格换成'\0'，再返回第二个词头的指针
         
-        if(!strcmp("if",one_word)
-            || !strcmp("else",one_word) 
-            || !strcmp("then",one_word)
-            || !strcmp("do",one_word)
-            || !strcmp("loop",one_word)
-            || !strcmp("myself",one_word)
-            || !strcmp(";",one_word))
-        {
-            PRINT("[DEBUG]执行立即词 %s\n", one_word)
-            immediate = dict_search_name(forth_dict, one_word);
-            immediate->fn();
-        }
-        else if (!strcmp("constant",one_word)
+        if (!strcmp("constant",one_word)
             || !strcmp("variable",one_word)
             || !strcmp("forget",one_word)
             || !strcmp("see",one_word)
@@ -179,14 +167,15 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, code("r@",rat));
     dict_ins_next(forth_dict, code("emit", emit));
     dict_ins_next(forth_dict, code("words",words));
-    dict_ins_next(forth_dict, code("myself", myself));
+    dict_ins_next(forth_dict, code("immediate",immediate));
+    dict_ins_next(forth_dict, code("myself", myself)); immediate();
     dict_ins_next(forth_dict, code(":",defcolon));
-    dict_ins_next(forth_dict, code(";",endcolon));
-    dict_ins_next(forth_dict, code("if",_if));
-    dict_ins_next(forth_dict, code("else",_else));
-    dict_ins_next(forth_dict, code("then",_then));
-    dict_ins_next(forth_dict, code("do",_do));
-    dict_ins_next(forth_dict, code("loop",_loop));
+    dict_ins_next(forth_dict, code(";",endcolon)); immediate();
+    dict_ins_next(forth_dict, code("if",_if)); immediate();
+    dict_ins_next(forth_dict, code("else",_else)); immediate();
+    dict_ins_next(forth_dict, code("then",_then)); immediate();
+    dict_ins_next(forth_dict, code("do",_do)); immediate();
+    dict_ins_next(forth_dict, code("loop",_loop)); immediate();
     dict_ins_next(forth_dict, code("see",see));
     dict_ins_next(forth_dict, code("forget",forget));
     dict_ins_next(forth_dict, code("variable",var));

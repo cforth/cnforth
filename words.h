@@ -3,7 +3,7 @@
 #define     WIDTH       100   //词的名字的最大长度
 #define     BUFF_LEN    1024
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
     #define PRINT(fmt, args...) printf(fmt,##args);
 #else
@@ -19,6 +19,7 @@ typedef void(*fnP)();
 typedef struct Word
 {
     struct Word *link;     //Forth词的链接域
+    CELL type;             //立即词标记
     char *name;            //Forth词的名字域
     fnP fn;                //Forth词的代码域指针
     struct Word **wplist;  //Forth词的参数域
@@ -115,6 +116,7 @@ void myself();    // myself
 void words();     // words
 
 //Forth核心词中的立即词
+void immediate();  // immediate
 void defcolon();   // :
 void endcolon();   // ;
 void _if();        // if

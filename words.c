@@ -82,6 +82,7 @@ Word *code(char *name, fnP  fp)
     w->fn=fp;
     w->wplist=NULL;   
     w->name=name;
+    w->type = 0;
 
     return w;
 }
@@ -112,6 +113,7 @@ Word *colon(char *name)
     strcpy(w->name,name);
 
     w->wplist=NULL;
+    w->type = 0;
     
     return w;
 }
@@ -132,6 +134,7 @@ Word *constant(char *name, CELL num)
     strcpy(w->name,name);
     
     w->wplist = (Word **)num;
+    w->type = 0;
     
     return w;
 }
@@ -152,8 +155,15 @@ Word *variable(char *name, CELL num)
     strcpy(w->name,name);
        
     w->wplist = (Word **)num;
+    w->type = 0;
     
     return w;
+}
+
+
+void immediate()
+{
+    forth_dict->head->type = 1;
 }
 
 
@@ -209,6 +219,11 @@ int find(char *name, Dict *dict)
 
             return 1;
         }            
+    }
+    else if(word_p->type == 1)  //立即词
+    {
+        PRINT("[DEBUG]执行立即词 %s\n", name)
+        word_p->fn();
     }
     else 
     {
