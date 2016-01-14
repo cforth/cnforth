@@ -161,12 +161,6 @@ Word *variable(char *name, CELL num)
 }
 
 
-void immediate()
-{
-    forth_dict->head->type = 1;
-}
-
-
 //指令列表执行
 void explain()
 {
@@ -180,6 +174,7 @@ void explain()
         (*IP)->fn();
         ++IP;
     }
+    IP_head = IP;  //重新设置
 }
 
 
@@ -556,6 +551,12 @@ void words()
 
 
 //Forth立即词
+void immediate()
+{
+    forth_dict->head->type = 1;
+}
+
+
 void defcolon()
 {
     define_p = colon(next_word);
