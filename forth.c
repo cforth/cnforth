@@ -8,17 +8,14 @@
 //Forth文本解释器
 void interpret(char *s, Dict *dict)
 {
+    char **head = &s;
     char *now_word;
     char *before_word;
     IP_head = IP_list;
     IP=IP_list;
        
-    while (*ignore_blankchar(s) != '\0')
+    while (*(now_word = ParseWord(head)) != '\0')
     {
-        s=ignore_blankchar(s);  //删除字符串头部空格
-        now_word=s;             //将字符串指针赋给one_word
-        s=split_Word(s);        //将字符串头部第一个词后的空格换成'\0'，再返回第二个词头的指针
-        
         if (!strcmp("constant",now_word)
             || !strcmp("variable",now_word)
             || !strcmp("forget",now_word)
@@ -28,16 +25,14 @@ void interpret(char *s, Dict *dict)
         {
             explain();
             before_word = now_word;
-            s=ignore_blankchar(s);
-            now_word=s;
-            s=split_Word(s);
+            now_word = ParseWord(head);
             strcpy(next_word, now_word);
             find(before_word, dict);
         }
         else if(!strcmp(".\"",now_word))  //如果是." str " 则立即编译其中的字符串str
         {
             PRINT("[DEBUG]编译字符串\n")
-            s=ignore_blankchar(s);
+
             char tempstr[BUFF_LEN]; 
             while(*s != '\"')
             {
@@ -50,7 +45,7 @@ void interpret(char *s, Dict *dict)
         }
         else if(!strcmp("(",now_word))  //注释模式
         {
-            s=ignore_blankchar(s);
+
             while(*s != ')')
             {
                 s++;
