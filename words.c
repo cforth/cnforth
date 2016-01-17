@@ -46,21 +46,20 @@ void destroy_word(Word *word)
 
 int dict_rem_after(Dict *dict, char *name)
 {
-    Word *w = dict->head;
+    Word *w = dict_search_name(dict, name);
     Word *del_w;
-    while (w != NULL && strcmp(w->name,name))
-    {   
-        w=w->link;
-    }
     
-    if(w->wplist == NULL)
+    if(w == NULL)
     {
-        printf("\tCore Word can't be deleted\n");
-        return 0;
+        printf("%s :\n\tCan't find!\n", name);
     }
-    
-    if(w != NULL)
+    else
     {
+        if(w->wplist == NULL)
+        {
+            printf("\tCore Word can't be deleted\n");
+            return 0;
+        }
         do
         {
             del_w = dict->head;
@@ -80,8 +79,12 @@ Word *code(char *name, fnP  fp)
 {
     Word *w=(Word*)malloc(sizeof(Word));
     w->fn=fp;
+    
+    w->name=(char*)malloc(strlen(name)+1);
+    strcpy(w->name,name);
+    
     w->wplist=NULL;   
-    w->name=name;
+
     w->type = 0;
 
     return w;
@@ -99,23 +102,12 @@ void dolist() //用于创建扩展词中的定义
 
 void change_colon(Word *c, Word **list, int n)
 {
-    c->wplist = (Word**)malloc(n);
-    memcpy(c->wplist,list, n);
-}
-
-
-Word *colon(char *name)
-{
-    Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=dolist;
-
-    w->name=(char*)malloc(strlen(name)+1);
-    strcpy(w->name,name);
-
-    w->wplist=NULL;
-    w->type = 0;
-    
-    return w;
+    if(n != 0) {
+        c->wplist = (Word**)malloc(n);
+        memcpy(c->wplist,list, n);
+    } else {
+        c->wplist = list;
+    }
 }
 
 
@@ -125,39 +117,9 @@ void docons() //处理常数词
 }
 
 
-Word *constant(char *name, CELL num)
-{
-    Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=docons;
-    
-    w->name=(char*)malloc(strlen(name)+1);
-    strcpy(w->name,name);
-    
-    w->wplist = (Word **)num;
-    w->type = 0;
-    
-    return w;
-}
-
-
 void dovar()  //处理变量词和数组
 {
     ds_push((CELL)*IP);
-}
-
-
-Word *variable(char *name, CELL num)
-{
-    Word *w=(Word*)malloc(sizeof(Word));
-    w->fn=dovar;
-    
-    w->name=(char*)malloc(strlen(name)+1);
-    strcpy(w->name,name);
-       
-    w->wplist = (Word **)num;
-    w->type = 0;
-    
-    return w;
 }
 
 
@@ -559,7 +521,7 @@ void immediate()
 
 void defcolon()
 {
-    define_p = colon(next_word);
+    define_p = code(next_word, dolist);
 }
 
 
@@ -664,13 +626,16 @@ void forget()
 
 void var()
 {
-    dict_ins_next(forth_dict, variable(next_word, 0));
+    dict_ins_next(forth_dict, code(next_word, dovar));
+    change_colon(forth_dict->head, (Word **)0, 0);
 }
 
 
 void cons()
 {
-    dict_ins_next(forth_dict, constant(next_word, ds_pop()));
+    dict_ins_next(forth_dict, code(next_word, docons));
+    change_colon(forth_dict->head, (Word **)ds_pop(), 0);
+    
 }
 
 

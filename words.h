@@ -50,9 +50,6 @@ char next_word[WIDTH] ;      //用来保存一些立即词需要读取的后面�
 Word *code(char*name, fnP  fp);
 void dolist();
 void change_colon(Word *c, Word **list, int n); //创建扩展词中的wplist
-Word *colon(char*name);
-Word *constant(char*name, CELL num);
-Word *variable(char*name, CELL num);
 
 //Forth词典的接口函数
 Dict *dict_init();
