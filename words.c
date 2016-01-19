@@ -207,12 +207,13 @@ void stack_error(int n)
         case 1: printf("Stack underflow\n"); break;
         case 2: printf("Stack overflow\n"); break;
     }
+    exit(0);
 }
 
 
 void ip_push(Word *w)
 {
-    if(IP >= IP_list+BUFF_LEN){stack_error(2); exit(0);}
+    if(IP >= IP_list+BUFF_LEN){stack_error(2);}
     *IP=w;
     IP++;
 }
@@ -220,7 +221,7 @@ void ip_push(Word *w)
 
 void ds_push(CELL n)
 {
-    if(DP >= DS+STACK_LEN-1){stack_error(2); exit(0);}
+    if(DP >= DS+STACK_LEN-1){stack_error(2);}
     DP++;
     *DP=n;
 }
@@ -228,7 +229,7 @@ void ds_push(CELL n)
 
 void rs_push(CELL n)
 {
-    if(RP >= RS+STACK_LEN-1){stack_error(2); exit(0);}
+    if(RP >= RS+STACK_LEN-1){stack_error(2);}
     RP++;
     *RP=n;
 }
@@ -236,7 +237,7 @@ void rs_push(CELL n)
 
 CELL ds_pop()
 {
-    if(DP <= DS-1){stack_error(1); exit(0);}
+    if(DP <= DS-1){stack_error(1);}
     DP--;
     return *(DP+1); 
 }
@@ -244,7 +245,7 @@ CELL ds_pop()
 
 CELL rs_pop()
 {
-    if(RP <= RS-1){stack_error(1); exit(0);}
+    if(RP <= RS-1){stack_error(1);}
     RP--;
     return *(RP+1); 
 }
@@ -252,14 +253,14 @@ CELL rs_pop()
 
 CELL ds_top()
 {
-    if(DP <= DS-1){stack_error(1); exit(0);}
+    if(DP <= DS-1){stack_error(1);}
     return *DP;
 }
 
 
 CELL rs_top()
 {
-    if(RP <= RS-1){stack_error(1); exit(0);}
+    if(RP <= RS-1){stack_error(1);}
     return *RP;
 }
 
@@ -345,7 +346,7 @@ void showds()
 void pick()
 {
     CELL k = ds_pop();
-    if(DP-k+1 <= DS-1){stack_error(1); exit(0);}
+    if(DP-k+1 <= DS-1){stack_error(1);}
     ds_push(*(DP-k+1));
 }
 
@@ -353,7 +354,7 @@ void pick()
 void roll()
 {
     CELL k = ds_pop();
-    if(DP-k+1 <= DS-1){stack_error(1); exit(0);}
+    if(DP-k+1 <= DS-1){stack_error(1);}
     CELL dk = *(DP-k+1);
     for(; k>1; k--) {
         *(DP-k+1) = *(DP-k+2);
