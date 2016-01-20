@@ -12,6 +12,10 @@
         test_fail 
     then ;
 
+variable foo
+3 foo ! foo @ 3 test cr
+555 constant foo2 foo2 555 test cr
+    
 ." Fib Test: Print the twelfth fib numbers " cr
 : fib ( fib_index -- fib_number )
     dup 3 <
@@ -23,25 +27,25 @@
 
 : test_fib 
     11 fib dup . 89 test ;
-    
+
+see fib
 test_fib cr
 
 ." Factorial Test: Us recursive to Print Eight's Factorial " cr
-variable n
 
-: n@ n @ ;
-
-: n-- n@ 1 - n ! ;
-
-: factorial 
-    n@ 0 > if n@ n-- myself * else 1 then .s ;
-
-see factorial
+: factorial ( Num -- FactorialResult )
+    dup 1 =
+    if
+        drop 1
+    else
+        dup 1- myself *
+    then ;
 
 : test_fact 
-    8 n ! factorial 40320 test ;
+    8 factorial dup . 40320 test ;
 
-test_fact .s cr
+see factorial
+test_fact cr
 
 ." Matrix: Test nested statements " cr
 : star 42 emit ;

@@ -46,18 +46,7 @@ make forth
 ```bash
 ./forth lib.fs
 
->>> variable n
->>> : n@ n @ ;
->>> : n-- n@ 1 - n ! ;
->>> : factorial n@ 0 > if n@ n-- myself * else 1 then .s ; 
->>> 8 n ! factorial
-<9> 8 7 6 5 4 3 2 1 1
-<8> 8 7 6 5 4 3 2 1
-<7> 8 7 6 5 4 3 2
-<6> 8 7 6 5 4 6
-<5> 8 7 6 5 24
-<4> 8 7 6 120
-<3> 8 7 720
-<2> 8 5040
-<1> 40320
+>>> : factorial ( Num -- FactorialResult ) dup 1 = if drop 1 else dup 1- myself * then ;
+>>> 8 factorial .
+40320
 ```
