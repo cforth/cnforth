@@ -1,4 +1,4 @@
-c_forth 0.1版
+CNFORTH NOT FORTH
 ====================
 
 ######Author:Chai Fei
@@ -7,7 +7,7 @@ c_forth 0.1版
 
 ## 简介
 
-[c_forth](https://github.com/cforth/c_forth)项目是一个用C语言实现的简单的Forth系统。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！!
+[cnforth](https://github.com/cforth/cnforth)项目是一个用C语言实现的简单的Forth语言解释器，不是一个传统的Forth系统。受到[耳朵](https://github.com/earforth)的[ear_cforth](https://github.com/earforth/ear-cforth)的启发，以及他的指点。再次感谢[耳朵](https://github.com/earforth)和[CNFIG社区](https://github.com/CNFIG)！！！
 
 ## 特性支持
 
@@ -25,7 +25,7 @@ c_forth 0.1版
 
 7. 递归定义扩展词（`myself`）;
 
-8. 其他特性参见[Wiki](https://github.com/cforth/c_forth/wiki/c_forth%E6%94%AF%E6%8C%81%E7%9A%84%E7%89%B9%E6%80%A7)。
+8. 其他特性参见[Wiki](https://github.com/cforth/cnforth/wiki/cnforth%E6%94%AF%E6%8C%81%E7%9A%84%E7%89%B9%E6%80%A7)。
 
 ## 环境
 
