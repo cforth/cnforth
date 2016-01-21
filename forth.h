@@ -1,7 +1,6 @@
-#define     CELL        long  //¶¨ÒåÊı¾İÀàĞÍ£¬ÔÚ32Î»Óë64Î»ÏµÍ³ÖĞÓëÖ¸ÕëÀàĞÍµÄ¿í¶ÈÏàÍ¬
-#define     STACK_LEN   1024  //¶¨ÒåÕ»µÄÉî¶È
-#define     WIDTH       100   //´ÊµÄÃû×ÖµÄ×î´ó³¤¶È
-#define     BUFF_LEN    1024
+#define     CELL        long  //å®šä¹‰æ•°æ®ç±»å‹ï¼Œåœ¨32ä½ä¸64ä½ç³»ç»Ÿä¸­ä¸æŒ‡é’ˆç±»å‹çš„å®½åº¦ç›¸åŒ
+#define     STACK_LEN   1024  //å®šä¹‰æ ˆçš„æ·±åº¦
+#define     BUFF_LEN    1024  //ç¼“å†²åŒºé•¿åº¦
 
 #define DEBUG 0
 #if DEBUG
@@ -11,64 +10,69 @@
 #endif
 
 
-//´úÂëÓòº¯ÊıÖ¸Õë
-typedef void(*fnP)();  
+//ä»£ç åŸŸå‡½æ•°æŒ‡é’ˆ
+typedef void(*fn_p)();  
 
 
-//ÓÃ½á¹¹Ìå¶¨ÒåForthµÄ´Ê½á¹¹£¬ÀûÓÃÁ´±íÊµÏÖ´Êµä
+//ç”¨ç»“æ„ä½“å®šä¹‰Forthçš„è¯ç»“æ„ï¼Œåˆ©ç”¨é“¾è¡¨å®ç°è¯å…¸
 typedef struct Word
 {
-    struct Word *link;     //Forth´ÊµÄÁ´½ÓÓò
-    CELL type;             //ForthÁ¢¼´´Ê±ê¼Ç
-    char *name;            //Forth´ÊµÄÃû×ÖÓò
-    fnP code_p;            //Forth´ÊµÄ´úÂëÓòÖ¸Õë
-    struct Word **wplist;  //Forth´ÊµÄ²ÎÊıÓò
+    struct Word *link;     //Forthè¯çš„é“¾æ¥åŸŸ
+    CELL type;             //Forthç«‹å³è¯æ ‡è®°
+    char *name;            //Forthè¯çš„åå­—åŸŸ
+    fn_p code_p;           //Forthè¯çš„ä»£ç åŸŸ
+    struct Word **wplist;  //Forthè¯çš„å‚æ•°åŸŸ
 } Word;
 
 
-//¶¨Òå×Öµä½á¹¹
+//å®šä¹‰å­—å…¸ç»“æ„
 typedef struct Dict
 {
-    CELL size;
-    Word *head;
+    CELL size;               //Forthè¯å…¸ä¸­è¯çš„æ•°é‡
+    Word *head;              //Forthè¯å…¸é“¾è¡¨æœ€åä¸€ä¸ªè¯çš„åœ°å€
+    Word *create_p;          //ä¿å­˜å½“å‰æ­£åœ¨å®šä¹‰çš„æ‰©å±•è¯åœ°å€
 } Dict;
 
 
-//ForthÏµÍ³ÔËĞĞÊ±µÄºËĞÄÖ¸Õë
-char cmdstr[BUFF_LEN];       //Forth´úÂëÎÄ±¾»º³åÇø
-char *current_text;          //µ±Ç°Forth´ÊµÄ´ÊÊ×Ö¸Õë
-char *text_p;                //Forth´úÂëÎÄ±¾Ö¸Õë
-Dict *forth_dict;            //Forth´ÊµäÖ¸Õë
-CELL DS[STACK_LEN];          //²ÎÊıÕ»
-CELL RS[STACK_LEN];          //·µ»ØÕ»
-CELL *DP, *RP;               //Õ»Ö¸Õë
-Word *IP_list[BUFF_LEN];     //Ö¸ÁîÁĞ±í£¬³¤¶ÈÎªBUFF_LEN/4   
-Word **IP;                   //Ö¸ÁîÁĞ±íÖ¸Õë(Ö¸ÕëµÄÖ¸Õë)
-Word **IP_head;              //±£´æÖ¸ÁîÁĞ±íµÄÖ¸ÕëÎ»ÖÃ
-Word *define_p;              //±£´æÔÚ´ÊµäÖĞµ±Ç°¶¨ÒåµÄÀ©Õ¹´ÊÖ¸Õë£¬ÓÃÓÚÖ§³Öµİ¹é´Êmyself
+//Forthç³»ç»Ÿè¿è¡Œæ—¶çš„æ ¸å¿ƒæŒ‡é’ˆ
+char forth_text[BUFF_LEN];   //Forthä»£ç æ–‡æœ¬ç¼“å†²åŒº
+char *current_text;          //å½“å‰Forthè¯çš„è¯é¦–æŒ‡é’ˆ
+char *text_p;                //Forthä»£ç æ–‡æœ¬æŒ‡é’ˆ
+Dict *forth_dict;            //Forthè¯å…¸æŒ‡é’ˆ
+CELL DS[STACK_LEN];          //å‚æ•°æ ˆ
+CELL RS[STACK_LEN];          //è¿”å›æ ˆ
+CELL *DP, *RP;               //æ ˆæŒ‡é’ˆ
+Word *IP_list[BUFF_LEN];     //æŒ‡ä»¤åˆ—è¡¨ï¼Œé•¿åº¦ä¸ºBUFF_LEN  
+Word **IP;                   //æŒ‡ä»¤åˆ—è¡¨æŒ‡é’ˆ(æŒ‡é’ˆçš„æŒ‡é’ˆ)
+Word **IP_head;              //ä¿å­˜æŒ‡ä»¤åˆ—è¡¨çš„æŒ‡é’ˆä½ç½®
 
-//ÎÄ±¾½âÎö
-int CheckBlank(char c);
-char *ParseWord();
+//æ–‡æœ¬è§£æ
+int CheckBlank(char c);  //åˆ¤æ–­æ˜¯å¦ä¸ºç©ºç™½å­—ç¬¦
+char *ParseWord();  //è¿”å›è¾“å…¥æµä¸­å½“å‰çš„forthè¯ï¼Œå¹¶æ›´æ–°text_pæŒ‡é’ˆ
 
-//Forth´ÊµÄ¶¨Òåº¯Êı
-Word *create(char*name, fnP  fp);
-void colon_code();
-void does(Word *c, Word **list, int n); //´´½¨À©Õ¹´ÊÖĞµÄwplist
+//Forthè¯çš„æ„å»ºå‡½æ•°
+Word *create(char*name, fn_p  fp); //åˆ›å»ºForthè¯çš„åå­—åŸŸ
+void does(Word *c, Word **list, int n); //åˆ›å»ºForthè¯ä¸­çš„å‚æ•°åŸŸ
+void colon_code();  //æ‰©å±•è¯çš„ä»£ç åŸŸ
+void cons_code();   //å¸¸æ•°è¯çš„ä»£ç åŸŸ
+void var_code();    //å˜é‡è¯çš„ä»£ç åŸŸ
 
-//Forth´ÊµäµÄ½Ó¿Úº¯Êı
+//Forthè¯å…¸çš„æ“ä½œå‡½æ•°
 Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
+void destroy_word(Word *word);
+int dict_rem_after(Dict *dict, char *name);
 
-void explain(); //IPÁĞ±íÖ´ĞĞ
-int is_num(char *s); //ÅĞ¶Ï×Ö·û´®ÊÇ·ñÎªÊı×Ö
-int find(char *name, Dict *dict); //¸ù¾İ´ÊÃû£¬È¥Ö´ĞĞÏàÓ¦µÄIPÁĞ±í²Ù×÷
+//ForthæŒ‡ä»¤åˆ—è¡¨æ“ä½œå‡½æ•°
+void explain(); //IPåˆ—è¡¨æ‰§è¡Œ
+int is_num(char *s); //åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦ä¸ºæ•°å­—
+int find(Dict *dict, char *name); //æ ¹æ®è¯åï¼Œå»æ‰§è¡Œç›¸åº”çš„IPåˆ—è¡¨æ“ä½œ
 
-//ForthÕ»²Ù×÷º¯Êı
+//Forthæ ˆæ“ä½œå‡½æ•°
 void empty_stack();
 void stack_error(int n);
-void ip_push(Word *w);  //IPÕ»PUSH
+void ip_push(Word *w);  //IPæ ˆPUSH
 void ds_push(CELL n);
 void rs_push(CELL n);
 CELL ds_pop();
@@ -76,8 +80,8 @@ CELL rs_pop();
 CELL ds_top();
 CELL rs_top();
 
-//ForthºËĞÄ´Ê
-void push();     // push
+//Forthæ ¸å¿ƒè¯
+void lit();      // (lit)
 void popds();    // .
 void bye();      // bye
 
@@ -105,20 +109,19 @@ void lessthan();  // <
 void if_branch();  // ?branch
 void branch();     // branch
 
-void __do();       // (do)
-void __loop();     // (loop)
+void doo();        // (do)
+void loopp();      // (loop)
 
-void tor();      // >r
-void rto();      // r>
-void rat();      // r@
+void tor();        // >r
+void rto();        // r>
+void rat();        // r@
 
-void emit();      // emit
+void emit();       // emit
+void words();      // words
 
-void myself();    // myself
-void words();     // words
-
-//ForthºËĞÄ´ÊÖĞµÄÁ¢¼´´Ê
+//Forthæ ¸å¿ƒè¯ä¸­çš„ç«‹å³è¯
 void immediate();  // immediate
+void myself();     // myself
 void defcolon();   // :
 void endcolon();   // ;
 void _if();        // if
@@ -130,9 +133,9 @@ void see();        // see
 void forget();     // forget
 void var();        // variable
 void cons();       // constant
+void load();       // load
 
 
-//Forth½âÊÍÆ÷²¿·Ö
+//Forthè§£é‡Šå™¨éƒ¨åˆ†
 void interpret();
 int load_file(char *file_path);
-void load();

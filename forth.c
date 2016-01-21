@@ -4,15 +4,12 @@
 #include <ctype.h>
 #include "forth.h"
 
-
-//判断字符是否为空白字符
 int CheckBlank(char c)
 {
-    return (c==' ' || c=='\t' || c=='\n' );
+    return (c==' ' || c=='\t' || c=='\n');
 }
 
 
-//返回输入流中当前的forth词，并更新text_p指针
 char *ParseWord()
 {
     char *now;
@@ -28,8 +25,56 @@ char *ParseWord()
         return now;
     *text_p = '\0';   //将字符串中第一个词后的空格变为'\0'
     text_p++;
-    return now;
     
+    return now;
+}
+
+
+Word *create(char *name, fn_p  fp)
+{
+    Word *w=(Word*)malloc(sizeof(Word));
+    w->code_p=fp;
+    
+    w->name=(char*)malloc(strlen(name) + 1);
+    strcpy(w->name,name);
+    
+    w->wplist=NULL;   
+
+    w->type = 0;
+
+    return w;
+}
+
+
+void does(Word *c, Word **list, int n)
+{
+    if(n != 0) {
+        c->wplist = (Word**)malloc(n);
+        memcpy(c->wplist,list, n);
+    } else {
+        c->wplist = list;
+    }
+}
+
+
+void colon_code()
+{
+    RP++;
+    *RP=(CELL)IP;
+    IP=(*IP)->wplist-1;
+    PRINT("[DEBUG]进入子例程\n")
+}
+
+
+void cons_code()
+{
+    ds_push((CELL)((*IP)->wplist));
+}
+
+
+void var_code()
+{
+    ds_push((CELL)*IP);
 }
 
 
@@ -38,7 +83,6 @@ Dict *dict_init()
     Dict *dict=(Dict*)malloc(sizeof(Dict));
     dict->size = 0;
     dict->head = NULL;
-    
     return dict;
 }
 
@@ -48,7 +92,6 @@ int dict_ins_next(Dict *dict, Word *word)
     word->link = dict->head;
     dict->head = word;
     dict->size++;
-    
     return 0;
 }
 
@@ -71,6 +114,7 @@ void destroy_word(Word *word)
     if(word->code_p == colon_code) free(word->wplist);
     free(word);
 }
+
 
 int dict_rem_after(Dict *dict, char *name)
 {
@@ -103,55 +147,6 @@ int dict_rem_after(Dict *dict, char *name)
 }
 
 
-Word *create(char *name, fnP  fp) //创建一个Forth词的名字域
-{
-    Word *w=(Word*)malloc(sizeof(Word));
-    w->code_p=fp;
-    
-    w->name=(char*)malloc(strlen(name)+1);
-    strcpy(w->name,name);
-    
-    w->wplist=NULL;   
-
-    w->type = 0;
-
-    return w;
-}
-
-
-void does(Word *c, Word **list, int n)  //创建一个Forth词的参数域
-{
-    if(n != 0) {
-        c->wplist = (Word**)malloc(n);
-        memcpy(c->wplist,list, n);
-    } else {
-        c->wplist = list;
-    }
-}
-
-
-void colon_code() //扩展词的代码域
-{
-    RP++;
-    *RP=(CELL)IP;
-    IP=(*IP)->wplist-1;
-    PRINT("[DEBUG]进入子例程\n")
-}
-
-
-void cons_code() //常数词的代码域
-{
-    ds_push((CELL)((*IP)->wplist));
-}
-
-
-void var_code()  //变量词的代码域
-{
-    ds_push((CELL)*IP);
-}
-
-
-//指令列表执行
 void explain()
 {
     Word  **IP_end = IP;
@@ -168,7 +163,6 @@ void explain()
 }
 
 
-//判断字符串是否为数字
 int is_num(char *s)
 {
     if(*s == '-')
@@ -184,8 +178,7 @@ int is_num(char *s)
 }
 
 
-//根据Forth代码中的当前词的名字，去执行相应的IP列表操作
-int find(char *name, Dict *dict)
+int find(Dict *dict, char *name)
 {
     Word *word_p;
     word_p = dict_search_name(dict, name);
@@ -199,7 +192,7 @@ int find(char *name, Dict *dict)
         else 
         {               //如果是数字
             PRINT("[DEBUG]成功找到数字%s\n",name)
-            ip_push(dict_search_name(dict, "push"));   //将push核心词指针存入IP数组        
+            ip_push(dict_search_name(dict, "(lit)"));   //将push核心词指针存入IP数组        
             ip_push((Word*)(CELL)(atoi(name)));    //将CELL型数强制转换为Word指针类型
 
             return 1;
@@ -220,7 +213,6 @@ int find(char *name, Dict *dict)
 }
 
 
-//Forth栈操作函数
 void empty_stack()
 {
     DP=DS-1;
@@ -293,8 +285,7 @@ CELL rs_top()
 }
 
 
-//Forth核心词
-void push()
+void lit()
 {
     IP++;
     ds_push((CELL)*IP);
@@ -479,7 +470,7 @@ void branch()
 }
 
 
-void __do()
+void doo()
 {
     CELL index = ds_pop();
     CELL limit = ds_pop();
@@ -497,7 +488,7 @@ void __do()
 }
 
 
-void __loop() 
+void loopp() 
 {
     IP = IP - (CELL)(*(IP+1)); 
     ds_push(rs_pop());
@@ -541,18 +532,22 @@ void words()
 }
 
 
-//Forth立即词
 void immediate()
 {
     forth_dict->head->type = 1;
 }
 
 
+void myself()
+{
+    ip_push(forth_dict->create_p);
+}
+
 void defcolon()
 {
     explain();
     current_text = ParseWord();
-    define_p = create(current_text, colon_code);
+    forth_dict->create_p = create(current_text, colon_code);
 }
 
 
@@ -560,8 +555,8 @@ void endcolon()
 {
     ip_push(dict_search_name(forth_dict, "ret"));
     int n = (CELL)IP - (CELL)IP_head;
-    dict_ins_next(forth_dict, define_p);
-    does(define_p, IP_head, n);
+    dict_ins_next(forth_dict, forth_dict->create_p);
+    does(forth_dict->head, IP_head, n);
     IP_head = IP;
 }
 
@@ -678,16 +673,17 @@ void cons()
 }
 
 
-void myself()
+void load()
 {
-    ip_push((Word *)define_p);
+    explain();
+    current_text = ParseWord();
+    load_file(current_text);
 }
 
 
-//Forth文本解释器
 void interpret()
 {
-    text_p = cmdstr;
+    text_p = forth_text;
     IP_head = IP_list;
     IP=IP_list;
        
@@ -701,8 +697,8 @@ void interpret()
             while(*text_p != '\"')
             {
                 sprintf(tempstr, "%ld", (CELL)(*text_p));
-                find(tempstr, forth_dict);
-                find("emit", forth_dict);
+                find(forth_dict, tempstr);
+                find(forth_dict, "emit");
                 text_p++;
             }
             text_p++;
@@ -716,7 +712,7 @@ void interpret()
             }
             text_p++;
         }
-        else if(!find(current_text, forth_dict) )
+        else if(!find(forth_dict, current_text) )
         {
             printf("[%s]?\n",current_text);
             empty_stack();
@@ -762,13 +758,13 @@ int load_file(char *file_path)
         {
             if(c == ':') flag = 1;
             else if(c == ';') flag = 0;
-            cmdstr[i] = c;
+            forth_text[i] = c;
             i++;
         }
         else if((c == '\n' && flag == 0)
             || c == EOF)
         {
-            cmdstr[i] = '\0';
+            forth_text[i] = '\0';
             interpret();
             i = 0;
         }           
@@ -776,15 +772,6 @@ int load_file(char *file_path)
     fclose(fp);
 
     return 1;
-}
-
-
-//load词
-void load()
-{
-    explain();
-    current_text = ParseWord();
-    load_file(current_text);
 }
 
 
@@ -796,7 +783,7 @@ int main(int argc, char *argv[])
     forth_dict= dict_init();
     
     //初始化词典
-    dict_ins_next(forth_dict, create("push",push));
+    dict_ins_next(forth_dict, create("(lit)",lit));
     dict_ins_next(forth_dict, create(".",popds));
     dict_ins_next(forth_dict, create("bye",bye));
     dict_ins_next(forth_dict, create("ret",ret));
@@ -817,8 +804,8 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, create("<",lessthan));
     dict_ins_next(forth_dict, create("?branch",if_branch));
     dict_ins_next(forth_dict, create("branch",branch));
-    dict_ins_next(forth_dict, create("(do)",__do));
-    dict_ins_next(forth_dict, create("(loop)",__loop));
+    dict_ins_next(forth_dict, create("(do)",doo));
+    dict_ins_next(forth_dict, create("(loop)",loopp));
     dict_ins_next(forth_dict, create(">r",tor));
     dict_ins_next(forth_dict, create("r>",rto));
     dict_ins_next(forth_dict, create("r@",rat));
@@ -845,7 +832,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         printf(">>> ");
-        gets(cmdstr);
+        gets(forth_text);
         interpret();
     }
 
