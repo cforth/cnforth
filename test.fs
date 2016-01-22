@@ -82,7 +82,8 @@ test_fact cr
 
 3 hanoi cr
 
-: test[ [ 3 ] dup ;
+." : test[ if 1 [ 4 5 + ] else 2 then ;" cr
+: test[ if 1 [ 4 5 + ] else 2 then ;
 see test[
-3 test cr
+9 test cr
 

@@ -183,7 +183,7 @@ int find(Dict *dict, char *name)
     Word *word_p;
     word_p = dict_search_name(dict, name);
     
-    if(!strcmp(":", name)) state = 1;
+    if(!strcmp(":", name) || !strcmp("]", name)) state = 1;
     
     if(state == 1)
     {
@@ -566,12 +566,16 @@ void immediate()
 void in_interpret()
 {
     state = 0;
+    IP_head = IP_list;
+    rs_push((CELL)IP);
+    IP=IP_head;
 }
 
 
 void out_interpret()
 {
-    state = 1;
+    IP_head = forth_dict->wplist_tmp;
+    IP = (Word **)rs_pop();
 }
 
 
