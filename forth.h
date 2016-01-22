@@ -31,10 +31,12 @@ typedef struct Dict
     CELL size;               //Forth词典中词的数量
     Word *head;              //Forth词典链表最后一个词的地址
     Word *create_p;          //保存当前正在定义的扩展词地址
+    Word *wplist_tmp[BUFF_LEN];//保存编译模式正在定义的扩展词参数域，临时用
 } Dict;
 
 
 //Forth系统运行时的核心指针
+CELL state;                  //Forth状态变量
 char forth_text[BUFF_LEN];   //Forth代码文本缓冲区
 char *current_text;          //当前Forth词的词首指针
 char *text_p;                //Forth代码文本指针
@@ -42,9 +44,9 @@ Dict *forth_dict;            //Forth词典指针
 CELL DS[STACK_LEN];          //参数栈
 CELL RS[STACK_LEN];          //返回栈
 CELL *DP, *RP;               //栈指针
-Word *IP_list[BUFF_LEN];     //指令列表，长度为BUFF_LEN  
+Word *IP_list[BUFF_LEN];     //解释模式指令列表，长度为BUFF_LEN  
 Word **IP;                   //指令列表指针(指针的指针)
-Word **IP_head;              //保存指令列表的指针位置
+Word **IP_head;              //IPlist选择指针，根据状态变量指向不同的指令列表
 
 //文本解析
 int CheckBlank(char c);  //判断是否为空白字符
@@ -72,7 +74,7 @@ int find(Dict *dict, char *name); //根据词名，去执行相应的IP列表操
 //Forth栈操作函数
 void empty_stack();
 void stack_error(int n);
-void ip_push(Word *w);  //IP栈PUSH
+void ip_push(Word *w, Word** list);  //IP栈PUSH
 void ds_push(CELL n);
 void rs_push(CELL n);
 CELL ds_pop();

@@ -159,7 +159,7 @@ void explain()
         (*IP)->code_p();
         ++IP;
     }
-    IP_head = IP;  //重新设置
+    IP_head = IP;
 }
 
 
@@ -192,8 +192,8 @@ int find(Dict *dict, char *name)
         else 
         {               //如果是数字
             PRINT("[DEBUG]成功找到数字%s\n",name)
-            ip_push(dict_search_name(dict, "(lit)"));   //将push核心词指针存入IP数组        
-            ip_push((Word*)(CELL)(atoi(name)));    //将CELL型数强制转换为Word指针类型
+            ip_push(dict_search_name(dict, "(lit)"), IP_head);   //将push核心词指针存入IP数组        
+            ip_push((Word*)(CELL)(atoi(name)), IP_head);    //将CELL型数强制转换为Word指针类型
 
             return 1;
         }            
@@ -205,7 +205,7 @@ int find(Dict *dict, char *name)
     }
     else 
     {
-        ip_push(word_p);
+        ip_push(word_p, IP_head);
     }
     
     PRINT("[DEBUG]成功找到%s词\n",name)
@@ -231,9 +231,9 @@ void stack_error(int n)
 }
 
 
-void ip_push(Word *w)
+void ip_push(Word *w, Word** list)
 {
-    if(IP >= IP_list+BUFF_LEN){stack_error(2);}
+    if(IP >= list+BUFF_LEN){stack_error(2);}
     *IP=w;
     IP++;
 }
@@ -540,12 +540,14 @@ void immediate()
 
 void myself()
 {
-    ip_push(forth_dict->create_p);
+    ip_push(forth_dict->create_p, IP_head);
 }
 
 void defcolon()
 {
     explain();
+    IP_head = forth_dict->wplist_tmp;
+    IP=IP_head;
     current_text = ParseWord();
     forth_dict->create_p = create(current_text, colon_code);
 }
@@ -553,30 +555,31 @@ void defcolon()
 
 void endcolon()
 {
-    ip_push(dict_search_name(forth_dict, "ret"));
+    ip_push(dict_search_name(forth_dict, "ret"), IP_head);
     int n = (CELL)IP - (CELL)IP_head;
     dict_ins_next(forth_dict, forth_dict->create_p);
     does(forth_dict->head, IP_head, n);
-    IP_head = IP;
+    IP_head = IP_list;
+    IP=IP_head;
 }
 
 
 void _if()
 {
-    ip_push(dict_search_name(forth_dict, "?branch"));
+    ip_push(dict_search_name(forth_dict, "?branch"), IP_head);
     rs_push((CELL)IP);
-    ip_push((Word *)0);
+    ip_push((Word *)0, IP_head);
 }
 
 
 void _else()
 {
-    ip_push(dict_search_name(forth_dict, "branch"));
+    ip_push(dict_search_name(forth_dict, "branch"), IP_head);
     Word** else_p = IP;
     Word** if_p = (Word**)(rs_pop());
     rs_push((CELL)else_p);
     *if_p = (Word*)(IP - if_p + 1);
-    ip_push((Word *)0);
+    ip_push((Word *)0, IP_head);
 }
 
 
@@ -589,19 +592,19 @@ void _then()
 
 void _do()
 {
-    ip_push(dict_search_name(forth_dict, "(do)"));
+    ip_push(dict_search_name(forth_dict, "(do)"), IP_head);
     rs_push((CELL)IP);
-    ip_push((Word *)0);
+    ip_push((Word *)0, IP_head);
     
 }
 
 
 void _loop()
 {
-    ip_push(dict_search_name(forth_dict, "(loop)")); 
+    ip_push(dict_search_name(forth_dict, "(loop)"), IP_head); 
     Word** do_p = (Word**)(rs_pop());
     *do_p = (Word*)(IP - do_p + 1); 
-    ip_push((Word*)(IP - do_p + 1)); 
+    ip_push((Word*)(IP - do_p + 1), IP_head); 
 }
 
 
@@ -685,7 +688,7 @@ void interpret()
 {
     text_p = forth_text;
     IP_head = IP_list;
-    IP=IP_list;
+    IP=IP_head;
        
     while (*(current_text = ParseWord()) != '\0')
     {
@@ -716,7 +719,7 @@ void interpret()
         {
             printf("[%s]?\n",current_text);
             empty_stack();
-            IP=IP_list;
+            IP=IP_head;
             return;
         }
     }
@@ -725,7 +728,7 @@ void interpret()
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
         printf("[DEBUG]IP指针列表> ");
-        Word **p=IP_list;
+        Word **p=IP_head;
         for (;p<IP ;p++ )
         {
             printf("%ld ",(CELL)(*p));
@@ -779,7 +782,8 @@ int load_file(char *file_path)
 int main(int argc, char *argv[]) 
 {
     empty_stack();
-    IP=IP_list;
+    IP_head = IP_list;
+    IP = IP_head;
     forth_dict= dict_init();
     
     //初始化词典
