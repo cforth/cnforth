@@ -21,11 +21,15 @@ cnforth -- not forth
 
 5. 变量和常量（`variable` `constant`）;
 
-6. 从外部读取forth代码（`load lib.fs`或者命令行`./forth lib.fs`）;
+6. 状态变量`state`，状态切换词`[`和`]` ; 
 
-7. 递归定义扩展词（`myself`）;
+7. 反编译扩展词`see` ;
 
-8. 其他特性参见[Wiki](https://github.com/cforth/cnforth/wiki/cnforth%E6%94%AF%E6%8C%81%E7%9A%84%E7%89%B9%E6%80%A7)。
+8. 递归定义扩展词（`myself`）;
+
+9. 从外部读取forth代码（`load lib.fs`或者命令行`./forth lib.fs`）;
+
+10. 其他特性参见[Wiki](https://github.com/cforth/cnforth/wiki/cnforth%E6%94%AF%E6%8C%81%E7%9A%84%E7%89%B9%E6%80%A7)。
 
 ## 环境
 
