@@ -81,3 +81,8 @@ test_fact cr
 : hanoi ( level -- ) 65 66 67 4 roll move cr ;
 
 3 hanoi cr
+
+: test[ [ 3 ] dup ;
+see test[
+3 test cr
+

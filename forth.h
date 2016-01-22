@@ -123,6 +123,8 @@ void words();      // words
 
 //Forth核心词中的立即词
 void immediate();  // immediate
+void in_interpret(); // [
+void out_interpret();// ]
 void myself();     // myself
 void defcolon();   // :
 void endcolon();   // ;

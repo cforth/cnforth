@@ -183,31 +183,56 @@ int find(Dict *dict, char *name)
     Word *word_p;
     word_p = dict_search_name(dict, name);
     
-    if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
+    if(!strcmp(":", name)) state = 1;
+    
+    if(state == 1)
     {
-        if (!is_num(name))    
+        if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
         {
-            return 0;    //如果不是数字，返回0
+            if (!is_num(name))    
+            {
+                return 0;    //如果不是数字，返回0
+            }
+            else 
+            {               //如果是数字
+                PRINT("[DEBUG]成功找到数字%s\n",name)
+                ip_push(dict_search_name(dict, "(lit)"), IP_head);   //将push核心词指针存入IP数组        
+                ip_push((Word*)(CELL)(atoi(name)), IP_head);    //将CELL型数强制转换为Word指针类型
+
+                return 1;
+            }            
+        }
+        else if(word_p->type == 1)  //立即词
+        {
+            PRINT("[DEBUG]执行立即词 %s\n", name)
+            word_p->code_p();
         }
         else 
-        {               //如果是数字
-            PRINT("[DEBUG]成功找到数字%s\n",name)
-            ip_push(dict_search_name(dict, "(lit)"), IP_head);   //将push核心词指针存入IP数组        
-            ip_push((Word*)(CELL)(atoi(name)), IP_head);    //将CELL型数强制转换为Word指针类型
+        {
+            ip_push(word_p, IP_head);
+        }
+    }
+    else
+    {
+        if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
+        {
+            if (!is_num(name))    
+            {
+                return 0;    //如果不是数字，返回0
+            }
+            else 
+            {               //如果是数字
+                ds_push((CELL)(atoi(name)));
 
-            return 1;
-        }            
+                return 1;
+            }            
+        }
+        else
+        {
+            ip_push(word_p, IP_head);
+            explain();
+        }
     }
-    else if(word_p->type == 1)  //立即词
-    {
-        PRINT("[DEBUG]执行立即词 %s\n", name)
-        word_p->code_p();
-    }
-    else 
-    {
-        ip_push(word_p, IP_head);
-    }
-    
     PRINT("[DEBUG]成功找到%s词\n",name)
     return 1;
 }
@@ -538,6 +563,18 @@ void immediate()
 }
 
 
+void in_interpret()
+{
+    state = 0;
+}
+
+
+void out_interpret()
+{
+    state = 1;
+}
+
+
 void myself()
 {
     ip_push(forth_dict->create_p, IP_head);
@@ -545,7 +582,6 @@ void myself()
 
 void defcolon()
 {
-    explain();
     IP_head = forth_dict->wplist_tmp;
     IP=IP_head;
     current_text = ParseWord();
@@ -561,6 +597,7 @@ void endcolon()
     does(forth_dict->head, IP_head, n);
     IP_head = IP_list;
     IP=IP_head;
+    state = 0;
 }
 
 
@@ -610,7 +647,6 @@ void _loop()
 
 void see()
 {
-    explain();
     current_text = ParseWord();
     Word *word_p = dict_search_name(forth_dict, current_text);
     
@@ -651,7 +687,6 @@ void see()
 
 void forget()
 {
-    explain();
     current_text = ParseWord();
     dict_rem_after(forth_dict, current_text); //删除当前扩展词以及词典中该词之后定义的所有扩展词
 }
@@ -659,7 +694,6 @@ void forget()
 
 void var()
 {
-    explain();
     current_text = ParseWord();
     dict_ins_next(forth_dict, create(current_text, var_code));
     does(forth_dict->head, (Word **)0, 0);
@@ -668,7 +702,6 @@ void var()
 
 void cons()
 {
-    explain();
     current_text = ParseWord();
     dict_ins_next(forth_dict, create(current_text, cons_code));
     does(forth_dict->head, (Word **)ds_pop(), 0);
@@ -678,7 +711,6 @@ void cons()
 
 void load()
 {
-    explain();
     current_text = ParseWord();
     load_file(current_text);
 }
@@ -686,6 +718,7 @@ void load()
 
 void interpret()
 {
+    state = 0;
     text_p = forth_text;
     IP_head = IP_list;
     IP=IP_head;
@@ -723,7 +756,6 @@ void interpret()
             return;
         }
     }
-    explain();
 
     //DEBUG模式下打印出IP指针列表
     if(DEBUG) {
@@ -815,6 +847,9 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, create("r@",rat));
     dict_ins_next(forth_dict, create("emit", emit));
     dict_ins_next(forth_dict, create("words",words));
+    
+    dict_ins_next(forth_dict, create("[",in_interpret)); immediate();
+    dict_ins_next(forth_dict, create("]",out_interpret)); immediate();
     dict_ins_next(forth_dict, create("myself", myself)); immediate();
     dict_ins_next(forth_dict, create(":",defcolon)); immediate();
     dict_ins_next(forth_dict, create(";",endcolon)); immediate();
