@@ -1,4 +1,4 @@
-CNFORTH NOT FORTH
+cnforth -- not forth
 ====================
 
 ######Author:Chai Fei
