@@ -1,6 +1,11 @@
 #define     CELL        long  //定义数据类型，在32位与64位系统中与指针类型的宽度相同
 #define     STACK_LEN   1024  //定义栈的深度
 #define     BUFF_LEN    1024  //缓冲区长度
+#define     TRUE        1
+#define     FALSE       0
+#define     REVEAL_WORD 0     //标记为显示词
+#define     IMMD_WORD   1     //标记为立即词
+#define     HIDE_WORD   2     //标记为隐藏词
 
 #define DEBUG 0
 #if DEBUG
@@ -18,7 +23,7 @@ typedef void(*fn_p)();
 typedef struct Word
 {
     struct Word *link;     //Forth词的链接域
-    CELL type;             //Forth立即词标记
+    CELL flag;             //Forth标记数，用来识别立即词、隐藏词
     char *name;            //Forth词的名字域
     fn_p code_p;           //Forth词的代码域
     struct Word **wplist;  //Forth词的参数域

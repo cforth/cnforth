@@ -40,7 +40,7 @@ Word *create(char *name, fn_p  fp)
     
     w->wplist=NULL;   
 
-    w->type = 0;
+    w->flag = REVEAL_WORD;
 
     return w;
 }
@@ -99,7 +99,7 @@ int dict_ins_next(Dict *dict, Word *word)
 Word *dict_search_name(Dict *dict, char *name)
 {
     Word *w = dict->head;
-    while (w != NULL && strcmp(w->name,name))
+    while (w != NULL && w->flag != HIDE_WORD && strcmp(w->name,name))
     {  
         w=w->link;
     }
@@ -202,7 +202,7 @@ int find(Dict *dict, char *name)
                 return 1;
             }            
         }
-        else if(word_p->type == 1)  //立即词
+        else if(word_p->flag == IMMD_WORD)  //立即词
         {
             PRINT("[DEBUG]执行立即词 %s\n", name)
             word_p->code_p();
@@ -559,7 +559,7 @@ void words()
 
 void immediate()
 {
-    forth_dict->head->type = 1;
+    forth_dict->head->flag = IMMD_WORD;
 }
 
 
@@ -781,7 +781,7 @@ int load_file(char *file_path)
     FILE *fp; //文件指针
     char c;
     int i = 0;
-    int flag = 0;
+    int colon_flag = FALSE;
 
     if((fp = fopen(file_path, "r")) == NULL)
     {
@@ -793,14 +793,14 @@ int load_file(char *file_path)
     {
         c = getc(fp);
         if((c != '\n' && c != EOF) 
-            || (c == '\n' && flag == 1))
+            || (c == '\n' && colon_flag == TRUE))
         {
-            if(c == ':') flag = 1;
-            else if(c == ';') flag = 0;
+            if(c == ':') colon_flag = TRUE;
+            else if(c == ';') colon_flag = FALSE;
             forth_text[i] = c;
             i++;
         }
-        else if((c == '\n' && flag == 0)
+        else if((c == '\n' && colon_flag == FALSE)
             || c == EOF)
         {
             forth_text[i] = '\0';
