@@ -4,21 +4,21 @@
 #include <ctype.h>
 #include "forth.h"
 
-int CheckBlank(char c)
+int check_blank(char c)
 {
     return (c==' ' || c=='\t' || c=='\n');
 }
 
 
-char *ParseWord()
+char *parse_word()
 {
     char *now;
-    while (CheckBlank(*text_p)) //跳过字符串头部的空白字符后返回指针
+    while (check_blank(*text_p)) //跳过字符串头部的空白字符后返回指针
         text_p++;
     
     now = text_p;
     
-    while ( !CheckBlank(*text_p)  && (*text_p)!='\0') //跳过字符串中第一个词
+    while ( !check_blank(*text_p)  && (*text_p)!='\0') //跳过字符串中第一个词
         text_p++;
     
     if(*text_p == '\0') 
@@ -108,7 +108,7 @@ Word *dict_search_name(Dict *dict, char *name)
 }
 
 
-void destroy_word(Word *word)
+void dict_destroy_word(Word *word)
 {
     free(word->name);
     if(word->code_p == colon_code) free(word->wplist);
@@ -136,7 +136,7 @@ int dict_rem_after(Dict *dict, char *name)
         {
             del_w = dict->head;
             dict->head = dict->head->link;
-            destroy_word(del_w);
+            dict_destroy_word(del_w);
             dict->size--;
         } while(del_w != w);
         
@@ -588,7 +588,7 @@ void defcolon()
 {
     IP_head = forth_dict->wplist_tmp;
     IP=IP_head;
-    current_text = ParseWord();
+    current_text = parse_word();
     forth_dict->create_p = create(current_text, colon_code);
 }
 
@@ -651,7 +651,7 @@ void _loop()
 
 void see()
 {
-    current_text = ParseWord();
+    current_text = parse_word();
     Word *word_p = dict_search_name(forth_dict, current_text);
     
     if(word_p == NULL)
@@ -691,14 +691,14 @@ void see()
 
 void forget()
 {
-    current_text = ParseWord();
+    current_text = parse_word();
     dict_rem_after(forth_dict, current_text); //删除当前扩展词以及词典中该词之后定义的所有扩展词
 }
 
 
 void var()
 {
-    current_text = ParseWord();
+    current_text = parse_word();
     dict_ins_next(forth_dict, create(current_text, var_code));
     does(forth_dict->head, (Word **)0, 0);
 }
@@ -706,7 +706,7 @@ void var()
 
 void cons()
 {
-    current_text = ParseWord();
+    current_text = parse_word();
     dict_ins_next(forth_dict, create(current_text, cons_code));
     does(forth_dict->head, (Word **)ds_pop(), 0);
     
@@ -715,7 +715,7 @@ void cons()
 
 void load()
 {
-    current_text = ParseWord();
+    current_text = parse_word();
     load_file(current_text);
 }
 
@@ -727,7 +727,7 @@ void interpret()
     IP_head = IP_list;
     IP=IP_head;
        
-    while (*(current_text = ParseWord()) != '\0')
+    while (*(current_text = parse_word()) != '\0')
     {
         if(!strcmp(".\"",current_text))  //如果是." str " 则立即编译其中的字符串str
         {

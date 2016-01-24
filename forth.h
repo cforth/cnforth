@@ -49,8 +49,8 @@ Word **IP;                   //指令列表指针(指针的指针)
 Word **IP_head;              //IPlist选择指针，根据状态变量指向不同的指令列表
 
 //文本解析
-int CheckBlank(char c);  //判断是否为空白字符
-char *ParseWord();  //返回输入流中当前的forth词，并更新text_p指针
+int check_blank(char c);  //判断是否为空白字符
+char *parse_word();  //返回输入流中当前的forth词，并更新text_p指针
 
 //Forth词的构建函数
 Word *create(char*name, fn_p  fp); //创建Forth词的名字域
@@ -63,7 +63,7 @@ void var_code();    //变量词的代码域
 Dict *dict_init();
 int dict_ins_next(Dict *dict, Word *word);
 Word *dict_search_name(Dict *dict, char *name);
-void destroy_word(Word *word);
+void dict_destroy_word(Word *word);
 int dict_rem_after(Dict *dict, char *name);
 
 //Forth指令列表操作函数
