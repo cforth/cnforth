@@ -3,6 +3,9 @@
 #define     BUFF_LEN    1024  //缓冲区长度
 #define     TRUE        1
 #define     FALSE       0
+#define     EXPLAIN     0     //解释模式标记
+#define     COMPILE     1     //编译模式标记
+#define     IGNORE      2     //注释模式标记
 #define     REVEAL_WORD 0     //标记为显示词
 #define     IMMD_WORD   1     //标记为立即词
 #define     HIDE_WORD   2     //标记为隐藏词

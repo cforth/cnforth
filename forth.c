@@ -183,9 +183,9 @@ int find(Dict *dict, char *name)
     Word *word_p;
     word_p = dict_search_name(dict, name);
     
-    if(!strcmp(":", name) || !strcmp("]", name)) state = 1;
+    if(!strcmp(":", name) || !strcmp("]", name)) state = COMPILE;
     
-    if(state == 1)
+    if(state == COMPILE)
     {
         if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
         {
@@ -565,7 +565,7 @@ void immediate()
 
 void in_interpret()
 {
-    state = 0;
+    state = EXPLAIN;
     IP_head = IP_list;
     rs_push((CELL)IP);
     IP=IP_head;
@@ -601,7 +601,7 @@ void endcolon()
     does(forth_dict->head, IP_head, n);
     IP_head = IP_list;
     IP=IP_head;
-    state = 0;
+    state = EXPLAIN;
 }
 
 
@@ -722,7 +722,7 @@ void load()
 
 void interpret()
 {
-    state = 0;
+    state = EXPLAIN;
     text_p = forth_text;
     IP_head = IP_list;
     IP=IP_head;
