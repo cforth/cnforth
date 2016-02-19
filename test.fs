@@ -91,7 +91,11 @@ see test[
 : bbb 3 4 ;
 see aaa
 see bbb
-: testcompile [compile] aaa [compile] bbb ;
-see testcompile
-testcompile
-+ + + 10 test cr
+: ccc compile aaa compile bbb ; immediate
+see ccc
+: testccc ccc ;
+see testccc
+testccc + + + 10 test cr
+
+see literal
+: five+ [ 5 ] literal + ;

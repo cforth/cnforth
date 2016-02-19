@@ -37,4 +37,6 @@
 : ?dup dup 0<> if dup then ;
 
 : space 32 emit ;
+
+: literal ( n -- ) compile (lit) , ; immediate
 ( Forth System Words End ) words cr

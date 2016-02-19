@@ -217,7 +217,17 @@ int find(Dict *dict, char *name)
         else if(word_p->flag == IMMD_WORD)  //立即词
         {
             PRINT("[DEBUG]执行立即词 %s\n", name)
-            word_p->code_p();
+            if(word_p->wplist != NULL)
+            {
+                in_interpret();
+                ip_push(word_p, IP_head);
+                explain();
+                out_interpret();
+            }
+            else
+            {
+                word_p->code_p();
+            }
         }
         else
         {
@@ -591,29 +601,48 @@ void out_interpret()
 {
     IP_head = forth_dict->wplist_tmp;
     IP = (Word **)rs_pop();
+    state = COMPILE;
 }
 
 
 void compile()
 {
-    current_text = parse_word();
-    Word *word_p = dict_search_name(forth_dict, current_text);
-    if(word_p != NULL)
+    IP++;
+    Word **tmp = IP;
+    Word *word_p = *IP;
+    Word **IP_over = (Word **)rs_pop();
+    IP = (Word **)rs_pop();
+    if(word_p->wplist != NULL)
     {
-        if(word_p->wplist != NULL)
+        Word **p = word_p->wplist;
+        Word *end = dict_search_name(forth_dict, "ret");
+        for (; *p != end; p++)
         {
-            Word **p = word_p->wplist;
-            Word *end = dict_search_name(forth_dict, "ret");
-            for (; *p != end; p++)
-            {
-                ip_push(*p, IP_head);
-            }
-        }
-        else
-        {
-            ip_push(*(word_p->wplist), IP_head);
+            ip_push(*p, forth_dict->wplist_tmp);
         }
     }
+    else
+    {
+        PRINT("[DEBUG]编译核心词 %s\n", word_p->name)
+        ip_push((Word *)word_p, forth_dict->wplist_tmp);
+    }
+    rs_push((CELL)IP);
+    rs_push((CELL)IP_over);
+    IP = tmp;
+}
+
+
+void compile_s()
+{
+    Word **tmp = IP;
+    Word **IP_over = (Word **)rs_pop();
+    IP = (Word **)rs_pop();
+    CELL num = ds_pop();
+    PRINT("[DEBUG]编译栈顶数 %ld\n", num)
+    ip_push((Word *)num, forth_dict->wplist_tmp);
+    rs_push((CELL)IP);
+    rs_push((CELL)IP_over);
+    IP = tmp;
 }
 
 
@@ -891,9 +920,11 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, def_core("emit", emit));
     dict_ins_next(forth_dict, def_core("words",words));
     
+    dict_ins_next(forth_dict, def_core("immediate",immediate));
     dict_ins_next(forth_dict, def_core("[",in_interpret)); immediate();
     dict_ins_next(forth_dict, def_core("]",out_interpret)); immediate();
-    dict_ins_next(forth_dict, def_core("[compile]", compile)); immediate();
+    dict_ins_next(forth_dict, def_core("compile", compile)); 
+    dict_ins_next(forth_dict, def_core(",", compile_s));
     dict_ins_next(forth_dict, def_core("myself", myself)); immediate();
     dict_ins_next(forth_dict, def_core(":",defcolon)); immediate();
     dict_ins_next(forth_dict, def_core(";",endcolon)); immediate();
