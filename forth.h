@@ -3,9 +3,8 @@
 #define     BUFF_LEN    1024  //缓冲区长度
 #define     TRUE        1
 #define     FALSE       0
-#define     EXPLAIN     0     //解释模式标记
-#define     COMPILE     1     //编译模式标记
-#define     IGNORE      2     //注释模式标记
+#define     EXPLAIN     0     //解释模式
+#define     COMPILE     1     //编译模式
 #define     REVEAL_WORD 0     //标记为显示词
 #define     IMMD_WORD   1     //标记为立即词
 #define     HIDE_WORD   2     //标记为隐藏词
@@ -38,7 +37,6 @@ typedef struct Dict
 {
     CELL size;               //Forth词典中词的数量
     Word *head;              //Forth词典链表最后一个词的地址
-    Word *create_p;          //保存当前正在定义的扩展词地址
     Word *wplist_tmp[BUFF_LEN];//保存编译模式正在定义的扩展词参数域，临时用
 } Dict;
 
@@ -61,8 +59,9 @@ int check_blank(char c);  //判断是否为空白字符
 char *parse_word();  //返回输入流中当前的forth词，并更新text_p指针
 
 //Forth词的构建函数
-Word *create(char*name, fn_p  fp); //创建Forth词的名字域
+Word *create(char *name, fn_p  fp); //创建Forth词的名字域
 void does(Word *c, Word **list, int n); //创建Forth词中的参数域
+Word *def_core(char *name, fn_p  fp); //创建一个Forth核心词
 void colon_code();  //扩展词的代码域
 void cons_code();   //常数词的代码域
 void var_code();    //变量词的代码域

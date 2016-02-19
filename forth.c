@@ -40,20 +40,30 @@ Word *create(char *name, fn_p  fp)
     
     w->wplist=NULL;   
 
-    w->flag = REVEAL_WORD;
+    w->flag = HIDE_WORD;
 
     return w;
 }
 
 
-void does(Word *c, Word **list, int n)
+void does(Word *w, Word **list, int n)
 {
     if(n != 0) {
-        c->wplist = (Word**)malloc(n);
-        memcpy(c->wplist,list, n);
+        w->wplist = (Word**)malloc(n);
+        memcpy(w->wplist,list, n);
     } else {
-        c->wplist = list;
+        w->wplist = list;
     }
+    w->flag = REVEAL_WORD;
+}
+
+
+Word *def_core(char *name, fn_p  fp)
+{
+    Word *w=create(name, fp);
+    w->flag = REVEAL_WORD;
+
+    return w;
 }
 
 
@@ -99,7 +109,9 @@ int dict_ins_next(Dict *dict, Word *word)
 Word *dict_search_name(Dict *dict, char *name)
 {
     Word *w = dict->head;
-    while (w != NULL && w->flag != HIDE_WORD && strcmp(w->name,name))
+    //为了支持递归忽略隐藏词
+    while ((w != NULL && strcmp(w->name,name))
+        || (w != NULL && !strcmp(w->name,name) && w->flag == HIDE_WORD))
     {  
         w=w->link;
     }
@@ -207,8 +219,9 @@ int find(Dict *dict, char *name)
             PRINT("[DEBUG]执行立即词 %s\n", name)
             word_p->code_p();
         }
-        else 
+        else
         {
+            PRINT("[DEBUG]成功编译%s词\n",name)
             ip_push(word_p, IP_head);
         }
     }
@@ -222,6 +235,7 @@ int find(Dict *dict, char *name)
             }
             else 
             {               //如果是数字
+                PRINT("[DEBUG]数据栈压入 %s\n",name)
                 ds_push((CELL)(atoi(name)));
 
                 return 1;
@@ -229,11 +243,12 @@ int find(Dict *dict, char *name)
         }
         else
         {
+            PRINT("[DEBUG]成功找到%s词\n",name)
             ip_push(word_p, IP_head);
             explain();
         }
     }
-    PRINT("[DEBUG]成功找到%s词\n",name)
+
     return 1;
 }
 
@@ -581,15 +596,16 @@ void out_interpret()
 
 void myself()
 {
-    ip_push(forth_dict->create_p, IP_head);
+    ip_push(forth_dict->head, IP_head);
 }
+
 
 void defcolon()
 {
     IP_head = forth_dict->wplist_tmp;
     IP=IP_head;
     current_text = parse_word();
-    forth_dict->create_p = create(current_text, colon_code);
+    dict_ins_next(forth_dict, create(current_text, colon_code));
 }
 
 
@@ -597,8 +613,20 @@ void endcolon()
 {
     ip_push(dict_search_name(forth_dict, "ret"), IP_head);
     int n = (CELL)IP - (CELL)IP_head;
-    dict_ins_next(forth_dict, forth_dict->create_p);
     does(forth_dict->head, IP_head, n);
+    
+    //DEBUG模式下打印出IP指针列表
+    if(DEBUG) {
+        printf("[DEBUG]IP指针列表> ");
+        Word **p=IP_head;
+        for (;p<IP ;p++ )
+        {
+            printf("%ld ",(CELL)(*p));
+        }
+        printf("\n");
+        showds();
+    }
+    
     IP_head = IP_list;
     IP=IP_head;
     state = EXPLAIN;
@@ -760,18 +788,6 @@ void interpret()
             return;
         }
     }
-
-    //DEBUG模式下打印出IP指针列表
-    if(DEBUG) {
-        printf("[DEBUG]IP指针列表> ");
-        Word **p=IP_head;
-        for (;p<IP ;p++ )
-        {
-            printf("%ld ",(CELL)(*p));
-        }
-        printf("\n");
-        showds();
-    }
 }
 
 
@@ -823,50 +839,50 @@ int main(int argc, char *argv[])
     forth_dict= dict_init();
     
     //初始化词典
-    dict_ins_next(forth_dict, create("(lit)",lit));
-    dict_ins_next(forth_dict, create(".",popds));
-    dict_ins_next(forth_dict, create("bye",bye));
-    dict_ins_next(forth_dict, create("ret",ret));
-    dict_ins_next(forth_dict, create("depth",depth));
-    dict_ins_next(forth_dict, create("+",add));
-    dict_ins_next(forth_dict, create("-",sub));
-    dict_ins_next(forth_dict, create("*",mul));
-    dict_ins_next(forth_dict, create("/",divv));
-    dict_ins_next(forth_dict, create("drop",drop));
-    dict_ins_next(forth_dict, create(".s",showds));
-    dict_ins_next(forth_dict, create("pick",pick));
-    dict_ins_next(forth_dict, create("roll",roll));
-    dict_ins_next(forth_dict, create("!", invar));
-    dict_ins_next(forth_dict, create("@", outvar));
-    dict_ins_next(forth_dict, create("=",equal));
-    dict_ins_next(forth_dict, create("<>",noequal));
-    dict_ins_next(forth_dict, create(">",morethan));
-    dict_ins_next(forth_dict, create("<",lessthan));
-    dict_ins_next(forth_dict, create("?branch",if_branch));
-    dict_ins_next(forth_dict, create("branch",branch));
-    dict_ins_next(forth_dict, create("(do)",doo));
-    dict_ins_next(forth_dict, create("(loop)",loopp));
-    dict_ins_next(forth_dict, create(">r",tor));
-    dict_ins_next(forth_dict, create("r>",rto));
-    dict_ins_next(forth_dict, create("r@",rat));
-    dict_ins_next(forth_dict, create("emit", emit));
-    dict_ins_next(forth_dict, create("words",words));
+    dict_ins_next(forth_dict, def_core("(lit)",lit));
+    dict_ins_next(forth_dict, def_core(".",popds));
+    dict_ins_next(forth_dict, def_core("bye",bye));
+    dict_ins_next(forth_dict, def_core("ret",ret));
+    dict_ins_next(forth_dict, def_core("depth",depth));
+    dict_ins_next(forth_dict, def_core("+",add));
+    dict_ins_next(forth_dict, def_core("-",sub));
+    dict_ins_next(forth_dict, def_core("*",mul));
+    dict_ins_next(forth_dict, def_core("/",divv));
+    dict_ins_next(forth_dict, def_core("drop",drop));
+    dict_ins_next(forth_dict, def_core(".s",showds));
+    dict_ins_next(forth_dict, def_core("pick",pick));
+    dict_ins_next(forth_dict, def_core("roll",roll));
+    dict_ins_next(forth_dict, def_core("!", invar));
+    dict_ins_next(forth_dict, def_core("@", outvar));
+    dict_ins_next(forth_dict, def_core("=",equal));
+    dict_ins_next(forth_dict, def_core("<>",noequal));
+    dict_ins_next(forth_dict, def_core(">",morethan));
+    dict_ins_next(forth_dict, def_core("<",lessthan));
+    dict_ins_next(forth_dict, def_core("?branch",if_branch));
+    dict_ins_next(forth_dict, def_core("branch",branch));
+    dict_ins_next(forth_dict, def_core("(do)",doo));
+    dict_ins_next(forth_dict, def_core("(loop)",loopp));
+    dict_ins_next(forth_dict, def_core(">r",tor));
+    dict_ins_next(forth_dict, def_core("r>",rto));
+    dict_ins_next(forth_dict, def_core("r@",rat));
+    dict_ins_next(forth_dict, def_core("emit", emit));
+    dict_ins_next(forth_dict, def_core("words",words));
     
-    dict_ins_next(forth_dict, create("[",in_interpret)); immediate();
-    dict_ins_next(forth_dict, create("]",out_interpret)); immediate();
-    dict_ins_next(forth_dict, create("myself", myself)); immediate();
-    dict_ins_next(forth_dict, create(":",defcolon)); immediate();
-    dict_ins_next(forth_dict, create(";",endcolon)); immediate();
-    dict_ins_next(forth_dict, create("if",_if)); immediate();
-    dict_ins_next(forth_dict, create("else",_else)); immediate();
-    dict_ins_next(forth_dict, create("then",_then)); immediate();
-    dict_ins_next(forth_dict, create("do",_do)); immediate();
-    dict_ins_next(forth_dict, create("loop",_loop)); immediate();
-    dict_ins_next(forth_dict, create("see",see)); immediate();
-    dict_ins_next(forth_dict, create("forget",forget)); immediate();
-    dict_ins_next(forth_dict, create("variable",var)); immediate();
-    dict_ins_next(forth_dict, create("constant",cons)); immediate();
-    dict_ins_next(forth_dict, create("load",load)); immediate();
+    dict_ins_next(forth_dict, def_core("[",in_interpret)); immediate();
+    dict_ins_next(forth_dict, def_core("]",out_interpret)); immediate();
+    dict_ins_next(forth_dict, def_core("myself", myself)); immediate();
+    dict_ins_next(forth_dict, def_core(":",defcolon)); immediate();
+    dict_ins_next(forth_dict, def_core(";",endcolon)); immediate();
+    dict_ins_next(forth_dict, def_core("if",_if)); immediate();
+    dict_ins_next(forth_dict, def_core("else",_else)); immediate();
+    dict_ins_next(forth_dict, def_core("then",_then)); immediate();
+    dict_ins_next(forth_dict, def_core("do",_do)); immediate();
+    dict_ins_next(forth_dict, def_core("loop",_loop)); immediate();
+    dict_ins_next(forth_dict, def_core("see",see)); immediate();
+    dict_ins_next(forth_dict, def_core("forget",forget)); immediate();
+    dict_ins_next(forth_dict, def_core("variable",var)); immediate();
+    dict_ins_next(forth_dict, def_core("constant",cons)); immediate();
+    dict_ins_next(forth_dict, def_core("load",load)); immediate();
     
     
     for(; argc > 1; argc--)
