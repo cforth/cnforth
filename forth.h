@@ -132,6 +132,7 @@ void words();      // words
 void immediate();  // immediate
 void in_interpret(); // [
 void out_interpret();// ]
+void compile();    // [compile] 强行编译后面一个词的运行时代码
 void myself();     // myself
 void defcolon();   // :
 void endcolon();   // ;

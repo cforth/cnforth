@@ -87,3 +87,11 @@ test_fact cr
 see test[
 9 test cr
 
+: aaa 1 2 ;
+: bbb 3 4 ;
+see aaa
+see bbb
+: testcompile [compile] aaa [compile] bbb ;
+see testcompile
+testcompile
++ + + 10 test cr

@@ -594,6 +594,29 @@ void out_interpret()
 }
 
 
+void compile()
+{
+    current_text = parse_word();
+    Word *word_p = dict_search_name(forth_dict, current_text);
+    if(word_p != NULL)
+    {
+        if(word_p->wplist != NULL)
+        {
+            Word **p = word_p->wplist;
+            Word *end = dict_search_name(forth_dict, "ret");
+            for (; *p != end; p++)
+            {
+                ip_push(*p, IP_head);
+            }
+        }
+        else
+        {
+            ip_push(*(word_p->wplist), IP_head);
+        }
+    }
+}
+
+
 void myself()
 {
     ip_push(forth_dict->head, IP_head);
@@ -780,7 +803,7 @@ void interpret()
             }
             text_p++;
         }
-        else if(!find(forth_dict, current_text) )
+        else if(!find(forth_dict, current_text))
         {
             printf("[%s]?\n",current_text);
             empty_stack();
@@ -870,6 +893,7 @@ int main(int argc, char *argv[])
     
     dict_ins_next(forth_dict, def_core("[",in_interpret)); immediate();
     dict_ins_next(forth_dict, def_core("]",out_interpret)); immediate();
+    dict_ins_next(forth_dict, def_core("[compile]", compile)); immediate();
     dict_ins_next(forth_dict, def_core("myself", myself)); immediate();
     dict_ins_next(forth_dict, def_core(":",defcolon)); immediate();
     dict_ins_next(forth_dict, def_core(";",endcolon)); immediate();
