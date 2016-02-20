@@ -235,7 +235,7 @@ int find(Dict *dict, char *name)
             ip_push(word_p, IP_head);
         }
     }
-    else
+    else if(state == EXPLAIN)
     {
         if(word_p==NULL)    //词典链表搜索不到名字后，去判断是不是数字
         {
@@ -588,24 +588,14 @@ void immediate()
 }
 
 
-void in_interpret()
+void pushds_cfa()
 {
-    state = EXPLAIN;
-    IP_head = IP_list;
-    rs_push((CELL)IP);
-    IP=IP_head;
+    current_text = parse_word();
+    ds_push((CELL)dict_search_name(forth_dict, current_text));
 }
 
 
-void out_interpret()
-{
-    IP_head = forth_dict->wplist_tmp;
-    IP = (Word **)rs_pop();
-    state = COMPILE;
-}
-
-
-void compile()
+void compile_wplist()
 {
     IP++;
     Word **tmp = IP;
@@ -643,6 +633,23 @@ void compile_s()
     rs_push((CELL)IP);
     rs_push((CELL)IP_over);
     IP = tmp;
+}
+
+
+void in_interpret()
+{
+    state = EXPLAIN;
+    IP_head = IP_list;
+    rs_push((CELL)IP);
+    IP=IP_head;
+}
+
+
+void out_interpret()
+{
+    IP_head = forth_dict->wplist_tmp;
+    IP = (Word **)rs_pop();
+    state = COMPILE;
 }
 
 
@@ -759,7 +766,11 @@ void see()
                     printf("%ld ", (CELL)(*p));
                 dict_p = forth_dict->head;
             }
-            printf(";\n");
+            printf(";");
+            if(word_p->flag == IMMD_WORD)
+                printf(" immediate\n");
+            else
+                printf("\n");
         }
         else
         {
@@ -919,12 +930,13 @@ int main(int argc, char *argv[])
     dict_ins_next(forth_dict, def_core("r@",rat));
     dict_ins_next(forth_dict, def_core("emit", emit));
     dict_ins_next(forth_dict, def_core("words",words));
-    
     dict_ins_next(forth_dict, def_core("immediate",immediate));
+    dict_ins_next(forth_dict, def_core("compile", compile_wplist)); 
+    dict_ins_next(forth_dict, def_core(",", compile_s));
+    dict_ins_next(forth_dict, def_core("'", pushds_cfa));
+    
     dict_ins_next(forth_dict, def_core("[",in_interpret)); immediate();
     dict_ins_next(forth_dict, def_core("]",out_interpret)); immediate();
-    dict_ins_next(forth_dict, def_core("compile", compile)); 
-    dict_ins_next(forth_dict, def_core(",", compile_s));
     dict_ins_next(forth_dict, def_core("myself", myself)); immediate();
     dict_ins_next(forth_dict, def_core(":",defcolon)); immediate();
     dict_ins_next(forth_dict, def_core(";",endcolon)); immediate();

@@ -38,5 +38,6 @@
 
 : space 32 emit ;
 
+: [compile] ' , ; immediate
 : literal ( n -- ) compile (lit) , ; immediate
 ( Forth System Words End ) words cr

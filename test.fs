@@ -98,4 +98,7 @@ see testccc
 testccc + + + 10 test cr
 
 see literal
-: five+ [ 5 ] literal + ;
+." : new-five+ [ 5 ] literal + ; " cr
+: new-five+ [ 5 ] literal + ;
+see new-five+
+2 new-five+ 7 test cr

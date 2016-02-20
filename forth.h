@@ -128,11 +128,14 @@ void rat();        // r@
 void emit();       // emit
 void words();      // words
 
-//Forth核心词中的立即词
 void immediate();  // immediate
+void compile();    // compile 编译后面一个词的运行时代码
+void compile_s();  // , 编译栈顶数到扩展词定义中
+void pushds_cfa(); // ' 将后面一个词的执行地址压入数据栈
+
+//Forth核心词中的立即词
 void in_interpret(); // [
 void out_interpret();// ]
-void compile();    // [compile] 强行编译后面一个词的运行时代码
 void myself();     // myself
 void defcolon();   // :
 void endcolon();   // ;
