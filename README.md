@@ -1,8 +1,8 @@
 cnforth -- not forth
 ====================
 
-######Author:Chai Fei
-######E-mail:cforth@cfxyz.com
+###### Author:Chai Fei
+###### E-mail:cforth@cfxyz.com
 --------------------
 
 ## 简介
